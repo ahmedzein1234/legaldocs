@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
@@ -37,6 +37,7 @@ import {
 import { cn } from '@/lib/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
+import { useUserPreferences } from '@/lib/user-preferences-context';
 
 interface SidebarProps {
   isOpen?: boolean;
@@ -53,6 +54,7 @@ interface NavItem {
   exact?: boolean;
   description?: string;
   descriptionAr?: string;
+  featureId?: string;
 }
 
 interface NavSection {
@@ -63,6 +65,7 @@ interface NavSection {
   items: NavItem[];
   collapsible?: boolean;
   defaultOpen?: boolean;
+  featureId?: string;
 }
 
 export function Sidebar({ isOpen, onClose }: SidebarProps) {
@@ -70,6 +73,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
   const pathname = usePathname();
   const locale = useLocale();
   const isArabic = locale === 'ar';
+  const { isProMode, isSimpleMode, shouldShowFeature, isLegalProfessional } = useUserPreferences();
 
   // Collapsible sections state
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
@@ -126,8 +130,8 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
     }));
   };
 
-  // Navigation sections
-  const navSections: NavSection[] = [
+  // Navigation sections - all items with featureId for filtering
+  const allNavSections: NavSection[] = [
     {
       id: 'main',
       title: 'Main',
@@ -144,6 +148,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           exact: true,
           description: 'Overview & stats',
           descriptionAr: 'نظرة عامة والإحصائيات',
+          featureId: 'dashboard',
         },
         {
           href: `/${locale}/dashboard/documents`,
@@ -152,6 +157,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           labelAr: 'المستندات',
           description: 'Manage documents',
           descriptionAr: 'إدارة المستندات',
+          featureId: 'documents',
         },
         {
           href: `/${locale}/dashboard/templates`,
@@ -160,6 +166,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           labelAr: 'القوالب',
           description: 'Document templates',
           descriptionAr: 'قوالب المستندات',
+          featureId: 'templates',
         },
       ],
     },
@@ -170,6 +177,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
       icon: Briefcase,
       collapsible: true,
       defaultOpen: true,
+      featureId: 'cases',
       items: [
         {
           href: `/${locale}/dashboard/cases`,
@@ -180,6 +188,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           badgeVariant: 'secondary',
           description: 'View & manage cases',
           descriptionAr: 'عرض وإدارة القضايا',
+          featureId: 'cases',
         },
         {
           href: `/${locale}/dashboard/cases/new`,
@@ -188,6 +197,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           labelAr: 'قضية جديدة',
           description: 'Create a new case',
           descriptionAr: 'إنشاء قضية جديدة',
+          featureId: 'cases',
         },
         {
           href: `/${locale}/dashboard/consultations`,
@@ -196,6 +206,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           labelAr: 'الاستشارات',
           description: 'Manage consultations',
           descriptionAr: 'إدارة الاستشارات',
+          featureId: 'consultations',
         },
       ],
     },
@@ -216,6 +227,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           badgeVariant: 'default',
           description: 'Create with AI',
           descriptionAr: 'إنشاء بالذكاء الاصطناعي',
+          featureId: 'generate',
         },
         {
           href: `/${locale}/dashboard/advisor`,
@@ -226,6 +238,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           badgeVariant: 'default',
           description: 'Get legal advice',
           descriptionAr: 'احصل على استشارة قانونية',
+          featureId: 'advisor',
         },
         {
           href: `/${locale}/dashboard/negotiate`,
@@ -236,6 +249,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           badgeVariant: 'secondary',
           description: 'Contract negotiation',
           descriptionAr: 'التفاوض على العقود',
+          featureId: 'negotiate',
         },
       ],
     },
@@ -254,6 +268,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           labelAr: 'التوقيعات',
           description: 'Digital signing',
           descriptionAr: 'التوقيع الرقمي',
+          featureId: 'signatures',
         },
         {
           href: `/${locale}/dashboard/scan`,
@@ -262,6 +277,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           labelAr: 'ماسح OCR',
           description: 'Extract from images',
           descriptionAr: 'استخراج من الصور',
+          featureId: 'scan',
         },
         {
           href: `/${locale}/dashboard/certify`,
@@ -272,6 +288,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           badgeVariant: 'secondary',
           description: 'Blockchain certification',
           descriptionAr: 'التوثيق بالبلوكشين',
+          featureId: 'certify',
         },
       ],
     },
@@ -292,6 +309,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           badgeVariant: 'secondary',
           description: 'Browse verified lawyers',
           descriptionAr: 'تصفح المحامين المعتمدين',
+          featureId: 'lawyers',
         },
         {
           href: `/${locale}/dashboard/lawyers/requests`,
@@ -300,6 +318,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           labelAr: 'طلباتي',
           description: 'Track your quotes',
           descriptionAr: 'تتبع عروض الأسعار',
+          featureId: 'lawyers',
         },
         {
           href: `/${locale}/dashboard/lawyer-portal`,
@@ -310,10 +329,34 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
           badgeVariant: 'default',
           description: 'Manage your practice',
           descriptionAr: 'إدارة ممارستك',
+          featureId: 'lawyer-portal',
         },
       ],
     },
   ];
+
+  // Filter sections based on user mode and role
+  const navSections = useMemo(() => {
+    return allNavSections
+      .filter(section => {
+        // If section has a featureId, check if it should be shown
+        if (section.featureId && !shouldShowFeature(section.featureId)) {
+          return false;
+        }
+        return true;
+      })
+      .map(section => ({
+        ...section,
+        items: section.items.filter(item => {
+          // If item has a featureId, check if it should be shown
+          if (item.featureId && !shouldShowFeature(item.featureId)) {
+            return false;
+          }
+          return true;
+        }),
+      }))
+      .filter(section => section.items.length > 0) as NavSection[];
+  }, [shouldShowFeature]);
 
   const bottomNavItems: NavItem[] = [
     {

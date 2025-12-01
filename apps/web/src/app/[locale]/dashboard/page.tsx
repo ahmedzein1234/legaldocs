@@ -29,11 +29,35 @@ import { StatsCard } from '@/components/ui/stats-card';
 import { Badge } from '@/components/ui/badge';
 import { DocumentCard } from '@/components/documents/document-card';
 import { cn } from '@/lib/utils';
+import { useUserPreferences } from '@/lib/user-preferences-context';
+import { SimpleDashboard } from '@/components/dashboard/simple-dashboard';
+import { ProDashboard } from '@/components/dashboard/pro-dashboard';
 
 export default function DashboardPage() {
   const t = useTranslations();
   const locale = useLocale();
   const isArabic = locale === 'ar';
+  const { isProMode, isSimpleMode, isLoading } = useUserPreferences();
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center h-64">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
+  // Render mode-specific dashboard
+  if (isSimpleMode) {
+    return <SimpleDashboard />;
+  }
+
+  if (isProMode) {
+    return <ProDashboard />;
+  }
+
+  // Default fallback to original dashboard (shouldn't happen)
 
   const translations = {
     welcome: isArabic ? 'مرحباً' : 'Welcome back',

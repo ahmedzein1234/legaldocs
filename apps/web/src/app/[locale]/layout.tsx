@@ -3,6 +3,7 @@ import { getMessages, setRequestLocale } from 'next-intl/server';
 import { notFound } from 'next/navigation';
 import { locales, getDirection, type Locale } from '@/i18n';
 import { AuthProvider } from '@/lib/auth-context';
+import { UserPreferencesProvider } from '@/lib/user-preferences-context';
 import { ClientOnly } from '@/components/ui/client-only';
 import { QueryProvider } from '@/providers/query-provider';
 import { generateMetadata as genMeta, getHomeMetadata, SITE_URL } from '@/lib/seo';
@@ -58,7 +59,9 @@ export default async function LocaleLayout({
                 </div>
               }
             >
-              <AuthProvider>{children}</AuthProvider>
+              <UserPreferencesProvider>
+                <AuthProvider>{children}</AuthProvider>
+              </UserPreferencesProvider>
             </ClientOnly>
           </QueryProvider>
         </NextIntlClientProvider>

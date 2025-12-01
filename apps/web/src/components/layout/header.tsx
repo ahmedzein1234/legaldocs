@@ -4,15 +4,17 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Menu, Bell, FileText, Search, Command, User, Settings, LogOut, Shield, CreditCard } from 'lucide-react';
+import { Menu, Bell, FileText, Search, Command, User, Settings, LogOut, Shield, CreditCard, Zap, Briefcase, ChevronDown } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Badge } from '@/components/ui/badge';
 import { LanguageSwitcher } from './language-switcher';
 import { ThemeSwitcher } from '@/components/ui/theme-switcher';
 import { CommandPalette } from '@/components/ui/command-palette';
 import { useTheme } from '@/components/ui/theme-switcher';
 import { cn } from '@/lib/utils';
 import { useAuth } from '@/lib/auth-context';
+import { useUserPreferences } from '@/lib/user-preferences-context';
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -24,10 +26,12 @@ export function Header({ onMenuClick }: HeaderProps) {
   const router = useRouter();
   const { resolvedTheme, toggleTheme } = useTheme();
   const { user, isAuthenticated, logout, isLoading } = useAuth();
+  const { preferences, toggleInterfaceMode, isProMode, isSimpleMode } = useUserPreferences();
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [showNotifications, setShowNotifications] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [showModeMenu, setShowModeMenu] = useState(false);
 
   const handleLogout = async () => {
     setIsLoggingOut(true);
@@ -103,6 +107,102 @@ export function Header({ onMenuClick }: HeaderProps) {
 
           {/* Right side actions */}
           <div className="flex items-center gap-1 md:gap-2">
+            {/* Mode Toggle */}
+            <div className="relative hidden sm:block">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowModeMenu(!showModeMenu)}
+                className={cn(
+                  'gap-2 rounded-full px-3 h-9 font-medium transition-all',
+                  isProMode
+                    ? 'bg-gradient-to-r from-purple-500/10 to-indigo-500/10 text-purple-600 dark:text-purple-400 hover:from-purple-500/20 hover:to-indigo-500/20'
+                    : 'bg-gradient-to-r from-green-500/10 to-emerald-500/10 text-green-600 dark:text-green-400 hover:from-green-500/20 hover:to-emerald-500/20'
+                )}
+              >
+                {isProMode ? (
+                  <>
+                    <Briefcase className="h-4 w-4" />
+                    <span className="hidden md:inline">Pro</span>
+                  </>
+                ) : (
+                  <>
+                    <Zap className="h-4 w-4" />
+                    <span className="hidden md:inline">{locale === 'ar' ? 'بسيط' : 'Simple'}</span>
+                  </>
+                )}
+                <ChevronDown className="h-3 w-3 opacity-60" />
+              </Button>
+
+              {/* Mode dropdown */}
+              {showModeMenu && (
+                <>
+                  <div
+                    className="fixed inset-0 z-40"
+                    onClick={() => setShowModeMenu(false)}
+                  />
+                  <div className="absolute end-0 top-full mt-2 w-64 rounded-xl border bg-background shadow-lg z-50 animate-in fade-in slide-in-from-top-2 duration-200 p-2">
+                    <button
+                      onClick={() => {
+                        if (isProMode) toggleInterfaceMode();
+                        setShowModeMenu(false);
+                      }}
+                      className={cn(
+                        'w-full flex items-center gap-3 p-3 rounded-xl transition-colors',
+                        isSimpleMode ? 'bg-green-500/10' : 'hover:bg-muted'
+                      )}
+                    >
+                      <div className={cn(
+                        'w-10 h-10 rounded-lg flex items-center justify-center',
+                        isSimpleMode ? 'bg-green-500/20 text-green-600' : 'bg-muted text-muted-foreground'
+                      )}>
+                        <Zap className="h-5 w-5" />
+                      </div>
+                      <div className="text-start flex-1">
+                        <p className="font-medium text-sm">{locale === 'ar' ? 'الوضع البسيط' : 'Simple Mode'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {locale === 'ar' ? 'واجهة سهلة للمبتدئين' : 'Easy interface for beginners'}
+                        </p>
+                      </div>
+                      {isSimpleMode && (
+                        <Badge variant="secondary" className="text-xs bg-green-500/20 text-green-600">
+                          {locale === 'ar' ? 'نشط' : 'Active'}
+                        </Badge>
+                      )}
+                    </button>
+                    <button
+                      onClick={() => {
+                        if (isSimpleMode) toggleInterfaceMode();
+                        setShowModeMenu(false);
+                      }}
+                      className={cn(
+                        'w-full flex items-center gap-3 p-3 rounded-xl transition-colors',
+                        isProMode ? 'bg-purple-500/10' : 'hover:bg-muted'
+                      )}
+                    >
+                      <div className={cn(
+                        'w-10 h-10 rounded-lg flex items-center justify-center',
+                        isProMode ? 'bg-purple-500/20 text-purple-600' : 'bg-muted text-muted-foreground'
+                      )}>
+                        <Briefcase className="h-5 w-5" />
+                      </div>
+                      <div className="text-start flex-1">
+                        <p className="font-medium text-sm">{locale === 'ar' ? 'الوضع المتقدم' : 'Pro Mode'}</p>
+                        <p className="text-xs text-muted-foreground">
+                          {locale === 'ar' ? 'جميع الميزات للمحترفين' : 'All features for professionals'}
+                        </p>
+                      </div>
+                      {isProMode && (
+                        <Badge variant="secondary" className="text-xs bg-purple-500/20 text-purple-600">
+                          {locale === 'ar' ? 'نشط' : 'Active'}
+                        </Badge>
+                      )}
+                    </button>
+                  </div>
+                </>
+              )}
+            </div>
+
             {/* Theme Switcher - compact on mobile */}
             <ThemeSwitcher compact />
 
