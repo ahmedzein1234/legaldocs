@@ -1,0 +1,37 @@
+name = "legaldocs-api"
+main = "src/index.ts"
+compatibility_date = "2024-01-01"
+compatibility_flags = ["nodejs_compat"]
+
+# Development port
+[dev]
+port = 4001
+
+# Environment variables (set these in Cloudflare dashboard for production)
+[vars]
+ENVIRONMENT = "development"
+APP_URL = "https://legaldocs-web.pages.dev"
+
+# D1 Database (Cloudflare's SQLite)
+[[d1_databases]]
+binding = "DB"
+database_name = "legaldocs-db"
+database_id = "0bea26ba-9b8e-421a-9c41-888207c42d35"
+
+# R2 Storage
+[[r2_buckets]]
+binding = "STORAGE"
+bucket_name = "legaldocs-storage"
+
+# KV Namespace for caching
+[[kv_namespaces]]
+binding = "CACHE"
+id = "62c5cf643b2a4f3eba1d2dd86330247e"
+
+# Secrets (set via wrangler secret put)
+# - JWT_SECRET
+# - OPENROUTER_API_KEY
+# - RESEND_API_KEY
+# - TWILIO_ACCOUNT_SID
+# - TWILIO_AUTH_TOKEN
+# - TWILIO_WHATSAPP_FROM (e.g., whatsapp:+14155238886)

@@ -1,0 +1,1045 @@
+{
+  "app": {
+    "name": "LegalDocs",
+    "tagline": "AI-Powered Legal Documents for GCC"
+  },
+  "seo": {
+    "home": {
+      "title": "LegalDocs - AI-Powered Legal Documents & Digital Signatures UAE",
+      "description": "Create, manage, and sign legal documents in UAE with AI assistance. Employment contracts, NDAs, rental agreements in English, Arabic & Urdu. Secure digital signatures, instant document generation.",
+      "ogTitle": "LegalDocs UAE - AI Legal Document Generation & Digital Signatures",
+      "ogDescription": "Generate professional legal documents instantly with AI. Multilingual support (English, Arabic, Urdu). Secure e-signatures. Trusted by businesses across UAE."
+    },
+    "templates": {
+      "title": "Legal Document Templates - Employment, NDA, Rental Agreements | LegalDocs UAE",
+      "description": "Browse 100+ professional legal document templates for UAE. Employment contracts, NDAs, rental agreements, service agreements in English, Arabic & Urdu. Free & premium templates.",
+      "ogTitle": "Professional Legal Document Templates - UAE",
+      "ogDescription": "Access 100+ legal templates tailored for UAE law. Employment contracts, NDAs, agreements in multiple languages. Start creating professional documents today."
+    },
+    "generate": {
+      "title": "AI Document Generator - Create Legal Documents in Minutes | LegalDocs UAE",
+      "description": "Generate professional legal documents with AI in minutes. Employment contracts, NDAs, agreements in English, Arabic & Urdu. Smart forms, instant generation, legally compliant.",
+      "ogTitle": "AI-Powered Legal Document Generator - UAE",
+      "ogDescription": "Create professional legal documents in minutes with AI assistance. Just answer a few questions and get legally compliant documents instantly."
+    },
+    "certify": {
+      "title": "Digital Signature & E-Signature Solutions | Secure Document Signing UAE",
+      "description": "Secure digital signature and e-signature solutions for UAE. Sign documents online, legally binding signatures, multi-party signing, audit trail. Compliant with UAE laws.",
+      "ogTitle": "Secure Digital Signature Solutions - UAE",
+      "ogDescription": "Sign documents securely online with legally binding digital signatures. Compliant with UAE laws, instant signing, complete audit trail."
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "documents": "Documents",
+    "templates": "Templates",
+    "settings": "Settings",
+    "help": "Help",
+    "aiGenerate": "AI Generate"
+  },
+  "auth": {
+    "login": "Login",
+    "register": "Register",
+    "logout": "Logout",
+    "email": "Email Address",
+    "phone": "Phone Number",
+    "password": "Password",
+    "confirmPassword": "Confirm Password",
+    "forgotPassword": "Forgot Password?",
+    "rememberMe": "Remember me",
+    "noAccount": "Don't have an account?",
+    "hasAccount": "Already have an account?",
+    "signUp": "Sign up",
+    "signIn": "Sign in",
+    "sendOtp": "Send OTP",
+    "verifyOtp": "Verify OTP",
+    "enterOtp": "Enter the code sent to your phone"
+  },
+  "dashboard": {
+    "welcome": "Welcome back",
+    "overview": "Here's what's happening with your documents",
+    "recentDocuments": "Recent Documents",
+    "pendingSignatures": "Pending Signatures",
+    "totalDocuments": "Total Documents",
+    "signedThisMonth": "Signed This Month",
+    "averageSignTime": "Average Sign Time",
+    "newDocument": "New Document",
+    "viewAll": "View All",
+    "recentActivity": "Recent Activity",
+    "activityDescription": "Updates on your documents",
+    "documentSigned": "Document Signed",
+    "pendingSignature": "Pending Signature",
+    "documentSent": "Document Sent",
+    "quickActions": {
+      "newDocument": "New Document",
+      "newDocumentDesc": "Create from scratch or template",
+      "aiGenerate": "AI Generate",
+      "aiGenerateDesc": "Create with AI assistance",
+      "browseTemplates": "Browse Templates",
+      "browseTemplatesDesc": "Choose from library"
+    }
+  },
+  "documents": {
+    "title": "Documents",
+    "subtitle": "Manage and track all your documents",
+    "create": "Create Document",
+    "search": "Search documents...",
+    "filter": "Filter",
+    "sort": "Sort",
+    "noDocuments": "No documents found",
+    "noDocumentsFiltered": "Try adjusting your search or filters",
+    "createFirst": "Create your first document to get started",
+    "allDocuments": "All",
+    "drafts": "Drafts",
+    "pending": "Pending",
+    "signed": "Signed",
+    "rowsPerPage": "Rows per page",
+    "page": "Page",
+    "of": "of",
+    "status": {
+      "draft": "Draft",
+      "pending": "Pending Signature",
+      "partiallySigned": "Partially Signed",
+      "signed": "Signed",
+      "expired": "Expired",
+      "cancelled": "Cancelled"
+    },
+    "type": {
+      "all": "All Types",
+      "depositReceipt": "Deposit Receipt",
+      "rentalAgreement": "Rental Agreement",
+      "nda": "Non-Disclosure Agreement",
+      "serviceAgreement": "Service Agreement",
+      "employmentContract": "Employment Contract",
+      "powerOfAttorney": "Power of Attorney",
+      "mou": "Memorandum of Understanding",
+      "salesContract": "Sales Contract",
+      "custom": "Custom Document"
+    },
+    "columns": {
+      "document": "Document",
+      "type": "Type",
+      "status": "Status",
+      "signers": "Signers",
+      "created": "Created"
+    },
+    "actions": {
+      "view": "View",
+      "sendForSigning": "Send for Signing",
+      "downloadPdf": "Download PDF",
+      "delete": "Delete"
+    }
+  },
+  "templates": {
+    "title": "Templates",
+    "subtitle": "Choose from our library of professional templates",
+    "browse": "Browse Templates",
+    "myTemplates": "My Templates",
+    "system": "System Templates",
+    "create": "Create Template",
+    "use": "Use Template",
+    "useThis": "Use This Template",
+    "preview": "Preview",
+    "previewTitle": "Template Preview",
+    "noTemplates": "No templates found",
+    "noTemplatesFiltered": "Try adjusting your search or filters",
+    "aiGenerateCustom": "AI Generate Custom",
+    "allTemplates": "All Templates",
+    "popular": "Popular",
+    "new": "New",
+    "premium": "Premium",
+    "estimatedTime": "Est. time",
+    "categories": {
+      "all": "All Categories",
+      "realEstate": "Real Estate",
+      "employment": "Employment",
+      "business": "Business",
+      "legal": "Legal",
+      "general": "General",
+      "nda": "NDA",
+      "services": "Services"
+    },
+    "languages": {
+      "all": "All Languages",
+      "en": "English",
+      "ar": "Arabic",
+      "ur": "Urdu"
+    },
+    "items": {
+      "depositReceipt": {
+        "name": "Deposit Receipt",
+        "description": "Standard deposit receipt for real estate transactions with acknowledgment of payment"
+      },
+      "rentalAgreement": {
+        "name": "Rental Agreement",
+        "description": "Comprehensive rental agreement covering terms, conditions, and obligations for both parties"
+      },
+      "nda": {
+        "name": "Non-Disclosure Agreement",
+        "description": "Standard NDA to protect confidential information between parties"
+      },
+      "employmentContract": {
+        "name": "Employment Contract",
+        "description": "Full employment agreement with salary, benefits, and termination clauses"
+      },
+      "powerOfAttorney": {
+        "name": "Power of Attorney",
+        "description": "Grant legal authority to another person to act on your behalf"
+      },
+      "serviceAgreement": {
+        "name": "Service Agreement",
+        "description": "Professional services agreement with scope, timeline, and payment terms"
+      },
+      "salesContract": {
+        "name": "Sales Contract",
+        "description": "Property sales contract with terms, conditions, and payment schedule"
+      },
+      "mou": {
+        "name": "Memorandum of Understanding",
+        "description": "MOU for partnership or collaboration between organizations"
+      }
+    }
+  },
+  "generator": {
+    "title": "AI Document Generator",
+    "subtitle": "Create professional documents with AI assistance",
+    "steps": {
+      "type": "Document Type",
+      "typeDesc": "Select type",
+      "details": "Details",
+      "detailsDesc": "Enter information",
+      "generate": "Generate",
+      "generateDesc": "AI creates document",
+      "review": "Review",
+      "reviewDesc": "Finalize document"
+    },
+    "selectDocumentType": "Select Document Type",
+    "selectLanguage": "Select Language",
+    "partyA": "Party A (First Party)",
+    "partyB": "Party B (Second Party)",
+    "fullName": "Full Name",
+    "idNumber": "ID/Passport Number",
+    "address": "Address",
+    "additionalDetails": "Additional Details",
+    "additionalDetailsDesc": "Provide relevant details for your",
+    "propertyAddress": "Property Address",
+    "amount": "Amount",
+    "startDate": "Start Date",
+    "endDate": "End Date",
+    "additionalTerms": "Additional Terms or Notes",
+    "additionalTermsPlaceholder": "Enter any special terms, conditions, or notes to include...",
+    "readyToGenerate": "Ready to Generate",
+    "readyToGenerateDesc": "Click the button below to create your document with AI",
+    "generating": "Generating Your Document",
+    "generatingDesc": "AI is creating your document...",
+    "generationFailed": "Generation Failed",
+    "tryAgain": "Try Again",
+    "summary": "Summary",
+    "reviewDocument": "Review Generated Document",
+    "startOver": "Start Over",
+    "saveAsDraft": "Save as Draft",
+    "documentTypes": {
+      "depositReceipt": {
+        "name": "Deposit Receipt",
+        "description": "Acknowledge receipt of deposit payment"
+      },
+      "rentalAgreement": {
+        "name": "Rental Agreement",
+        "description": "Full rental/lease agreement"
+      },
+      "nda": {
+        "name": "NDA",
+        "description": "Non-disclosure agreement"
+      },
+      "serviceAgreement": {
+        "name": "Service Agreement",
+        "description": "Professional services contract"
+      },
+      "employmentContract": {
+        "name": "Employment Contract",
+        "description": "Full employment agreement"
+      },
+      "powerOfAttorney": {
+        "name": "Power of Attorney",
+        "description": "Grant legal authority to another"
+      }
+    },
+    "categories": {
+      "realEstate": "Real Estate",
+      "business": "Business",
+      "employment": "Employment",
+      "legal": "Legal"
+    }
+  },
+  "editor": {
+    "title": "Document Editor",
+    "describe": "Describe your document",
+    "describePlaceholder": "E.g., I need a deposit receipt for AED 5,000 from Mohammed Ali for apartment reservation at Marina Tower...",
+    "generate": "Generate with AI",
+    "generating": "Generating...",
+    "preview": "Preview",
+    "edit": "Edit",
+    "languages": "Languages",
+    "bindingLanguage": "Legally Binding Version",
+    "addSigner": "Add Signer",
+    "signers": "Signers",
+    "signingOrder": "Signing Order",
+    "sendForSignature": "Send for Signature",
+    "save": "Save Draft",
+    "aiAssistant": "AI Assistant",
+    "askAi": "Ask AI about this document..."
+  },
+  "signing": {
+    "title": "Sign Document",
+    "secureDocument": "Secure Document Signing",
+    "verifyIdentity": "Verify Your Identity",
+    "verificationSent": "A verification code was sent to",
+    "verificationCode": "Verification Code",
+    "enterCode": "Enter 6-digit code",
+    "didntReceive": "Didn't receive the code?",
+    "resend": "Resend",
+    "resendIn": "Resend in",
+    "sendCode": "Send Verification Code",
+    "sendingCode": "Sending code...",
+    "verifyAndContinue": "Verify & Continue",
+    "verifying": "Verifying...",
+    "invalidCode": "Invalid verification code. Please try again.",
+    "reviewRequired": "Review Required",
+    "reviewRequiredDesc": "Please review the document carefully before signing.",
+    "awaitingSignature": "Awaiting Signature",
+    "proceedToSign": "Proceed to Sign",
+    "signDocument": "Sign Document",
+    "drawSignature": "Draw your signature below to sign the document",
+    "drawTab": "Draw",
+    "typeTab": "Type",
+    "uploadTab": "Upload",
+    "typeNamePlaceholder": "Type your full name",
+    "typeNameHint": "Your typed name will be converted to a signature",
+    "clearAndRedraw": "Clear & Redraw",
+    "agreeToTerms": "I agree that my signature above is the legal equivalent of my handwritten signature and I consent to be legally bound by this document.",
+    "signing": "Signing...",
+    "successTitle": "Document Signed Successfully",
+    "successDesc": "Thank you for signing. A copy of the signed document has been sent to your email.",
+    "signedOn": "Signed on",
+    "downloadSignedCopy": "Download Signed Copy",
+    "closeWindow": "You can close this window. The document owner will be notified of your signature.",
+    "documentNotFound": "Document Not Found",
+    "documentNotFoundDesc": "This signing link may have expired or is invalid.",
+    "review": "Review Document",
+    "agree": "I have read and agree to the terms",
+    "sign": "Sign",
+    "signHere": "Sign here with your finger or mouse",
+    "draw": "Draw",
+    "type": "Type",
+    "upload": "Upload",
+    "clear": "Clear",
+    "confirm": "Confirm Signature",
+    "confirmSignature": "Confirm Signature",
+    "signed": "Document Signed!",
+    "thankYou": "Thank you for signing",
+    "downloadCopy": "Download a copy",
+    "loadingDocument": "Loading document...",
+    "expired": "Signing Link Expired",
+    "expiredDesc": "This signing link has expired. Please contact the document owner for a new link.",
+    "alreadySigned": "Already Signed",
+    "alreadySignedDesc": "You have already signed this document.",
+    "mobileAndDesktop": "Works on mobile & desktop",
+    "secureConnection": "Secure connection",
+    "from": "From",
+    "signingAs": "Signing as",
+    "messageFromSender": "Message from sender",
+    "documentPreview": "Document Preview",
+    "documentPreviewUnavailable": "Document preview not available",
+    "expiresOn": "Expires on",
+    "decline": "Decline",
+    "declineDocument": "Decline Document",
+    "declineConfirmation": "Are you sure you want to decline signing this document?",
+    "declineReason": "Reason for declining",
+    "declineReasonPlaceholder": "Please explain why you are declining to sign...",
+    "declineWarning": "The document owner will be notified of your decision.",
+    "declining": "Declining...",
+    "confirmDecline": "Confirm Decline",
+    "declinedTitle": "Document Declined",
+    "declinedDesc": "You have declined to sign this document.",
+    "chooseMethod": "Choose how you want to sign",
+    "yourSignature": "Your Signature",
+    "uploadSignature": "Upload Signature Image",
+    "dragDropOrClick": "Drag & drop or click to upload",
+    "supportedFormats": "PNG, JPG, or transparent PNG (max 2MB)",
+    "strokeWidth": "Thickness",
+    "color": "Color",
+    "font": "Font Style",
+    "fullscreen": "Fullscreen"
+  },
+  "verification": {
+    "title": "Identity Verification",
+    "required": "Verification Required",
+    "emiratesId": "Emirates ID",
+    "uploadFront": "Upload Front",
+    "uploadBack": "Upload Back",
+    "takeSelfie": "Take Selfie",
+    "verifying": "Verifying...",
+    "verified": "Identity Verified",
+    "failed": "Verification Failed",
+    "tryAgain": "Try Again"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account and preferences",
+    "profile": "Profile",
+    "profileInfo": "Profile Information",
+    "profileInfoDesc": "Update your personal information and preferences",
+    "changePhoto": "Change Photo",
+    "photoHint": "JPG, PNG or GIF. Max 2MB.",
+    "firstName": "First Name",
+    "lastName": "Last Name",
+    "preferredLanguage": "Preferred Language",
+    "company": "Company",
+    "companyInfo": "Company Information",
+    "companyInfoDesc": "Your company details will appear on generated documents",
+    "companyName": "Company Name",
+    "tradeLicense": "Trade License Number",
+    "taxNumber": "Tax Registration Number",
+    "companyAddress": "Address",
+    "companyEmail": "Company Email",
+    "companyPhone": "Company Phone",
+    "notifications": "Notifications",
+    "notificationPrefs": "Notification Preferences",
+    "notificationPrefsDesc": "Choose how you want to be notified about document activity",
+    "emailNotifications": "Email Notifications",
+    "emailNotificationsDesc": "Receive updates via email",
+    "smsNotifications": "SMS Notifications",
+    "smsNotificationsDesc": "Receive updates via SMS",
+    "whatsappNotifications": "WhatsApp Notifications",
+    "whatsappNotificationsDesc": "Receive updates via WhatsApp",
+    "savePreferences": "Save Preferences",
+    "security": "Security",
+    "password": "Password",
+    "passwordDesc": "Change your account password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "updatePassword": "Update Password",
+    "twoFactor": "Two-Factor Authentication",
+    "twoFactorDesc": "Add an extra layer of security to your account",
+    "twoFactorNotEnabled": "2FA Not Enabled",
+    "twoFactorEnableHint": "Enable two-factor authentication for enhanced account security.",
+    "enable2fa": "Enable 2FA",
+    "billing": "Billing",
+    "currentPlan": "Current Plan",
+    "currentPlanDesc": "Manage your subscription",
+    "professionalPlan": "Professional Plan",
+    "professionalPlanDesc": "Unlimited documents, AI generation, priority support",
+    "perMonth": "/month",
+    "changePlan": "Change Plan",
+    "cancelSubscription": "Cancel Subscription",
+    "paymentMethod": "Payment Method",
+    "paymentMethodDesc": "Manage your payment information",
+    "cardEnding": "ending in",
+    "expires": "Expires",
+    "update": "Update",
+    "organization": "Organization",
+    "language": "Language",
+    "appearance": "Appearance",
+    "apiKeys": "API Keys"
+  },
+  "notifications": {
+    "documentCreated": "Document created successfully",
+    "documentSent": "Document sent for signature",
+    "documentSigned": "Document signed successfully",
+    "reminderSent": "Reminder sent",
+    "error": "Something went wrong",
+    "saved": "Changes saved"
+  },
+  "actions": {
+    "create": "Create",
+    "save": "Save",
+    "saveChanges": "Save Changes",
+    "cancel": "Cancel",
+    "close": "Close",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "download": "Download",
+    "share": "Share",
+    "copy": "Copy",
+    "send": "Send",
+    "remind": "Send Reminder",
+    "duplicate": "Duplicate",
+    "archive": "Archive",
+    "restore": "Restore",
+    "confirm": "Confirm",
+    "back": "Back",
+    "next": "Next",
+    "submit": "Submit",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "generate": "Generate"
+  },
+  "common": {
+    "loading": "Loading...",
+    "noResults": "No results found",
+    "required": "Required",
+    "optional": "Optional",
+    "or": "or",
+    "and": "and",
+    "yes": "Yes",
+    "no": "No",
+    "all": "All",
+    "none": "None",
+    "selected": "Selected",
+    "date": "Date",
+    "time": "Time",
+    "amount": "Amount",
+    "currency": "Currency",
+    "aed": "AED",
+    "status": "Status",
+    "type": "Type",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "address": "Address",
+    "vsLastMonth": "vs last month",
+    "poweredBy": "Powered by LegalDocs - Secure Digital Signatures"
+  },
+  "errors": {
+    "required": "This field is required",
+    "invalidEmail": "Invalid email address",
+    "invalidPhone": "Invalid phone number",
+    "minLength": "Must be at least {min} characters",
+    "maxLength": "Must be at most {max} characters",
+    "passwordMismatch": "Passwords do not match",
+    "somethingWentWrong": "Something went wrong. Please try again.",
+    "unauthorized": "You are not authorized to perform this action",
+    "notFound": "Not found",
+    "expired": "This link has expired"
+  },
+  "footer": {
+    "copyright": "All rights reserved.",
+    "terms": "Terms of Service",
+    "privacy": "Privacy Policy",
+    "contact": "Contact Us",
+    "faq": "FAQ",
+    "tagline": "Professional legal document generation platform powered by AI. Create, manage, and sign documents with confidence.",
+    "softwareNotice": "Software Platform - Not Legal Advice",
+    "registeredTrademark": "LegalDocs is a registered trademark.",
+    "sections": {
+      "product": "Product",
+      "legal": "Legal",
+      "company": "Company",
+      "support": "Support"
+    },
+    "product": {
+      "aiGenerator": "AI Generator",
+      "templates": "Templates",
+      "eSignatures": "E-Signatures",
+      "legalAdvisor": "Legal Advisor"
+    },
+    "legal": {
+      "disclaimer": "Disclaimer",
+      "privacy": "Privacy Policy",
+      "terms": "Terms of Service",
+      "cookies": "Cookie Policy"
+    },
+    "company": {
+      "about": "About Us",
+      "contact": "Contact",
+      "blog": "Blog",
+      "careers": "Careers"
+    },
+    "support": {
+      "helpCenter": "Help Center",
+      "faq": "FAQ",
+      "api": "API Docs",
+      "status": "Status"
+    },
+    "regional": {
+      "title": "UAE & GCC Region",
+      "notice": "LegalDocs is a software platform designed for the UAE and GCC markets. All documents should be reviewed by qualified legal professionals familiar with local laws and regulations before use in legal matters."
+    }
+  },
+  "legal": {
+    "disclaimer": {
+      "title": "Legal Disclaimer",
+      "lastUpdated": "Last Updated",
+      "importantNotice": "IMPORTANT: Please read this disclaimer carefully before using LegalDocs. By using our platform, you acknowledge that you have read, understood, and agree to be bound by this disclaimer.",
+      "criticalWarning": {
+        "title": "Critical Warning",
+        "subtitle": "LegalDocs is a SOFTWARE COMPANY, NOT a law firm or legal service provider.",
+        "point1": "We do NOT provide legal advice, legal representation, or legal services of any kind",
+        "point2": "We are NOT attorneys, lawyers, or legal professionals",
+        "point3": "We do NOT create attorney-client relationships with our users",
+        "point4": "Our platform is a TECHNOLOGY TOOL for document generation, NOT a substitute for legal counsel"
+      },
+      "natureOfService": {
+        "title": "Nature of Our Service",
+        "description": "LegalDocs is a software-as-a-service (SaaS) platform that provides technology tools for creating, managing, and signing documents. We are a technology company, not a legal services provider.",
+        "weProvide": "What We Provide:",
+        "item1": "Document template libraries and generation tools",
+        "item2": "AI-powered document drafting assistance",
+        "item3": "Electronic signature and document management features",
+        "item4": "Technology infrastructure for document workflows",
+        "weDoNotProvide": "What We Do NOT Provide:",
+        "notItem1": "Legal advice, opinions, or recommendations",
+        "notItem2": "Legal representation or advocacy",
+        "notItem3": "Review or validation of legal documents for compliance",
+        "notItem4": "Attorney-client privileged communications"
+      },
+      "noAttorneyClient": {
+        "title": "No Attorney-Client Relationship",
+        "statement": "Use of LegalDocs does NOT create an attorney-client relationship.",
+        "explanation": "No attorney-client relationship exists between you and LegalDocs, its owners, employees, contractors, or affiliated entities. The information provided through our platform:",
+        "point1": "Is for general informational purposes only",
+        "point2": "Does not constitute legal advice or legal services",
+        "point3": "Should not be relied upon as legal guidance",
+        "point4": "Cannot replace consultation with a qualified attorney"
+      },
+      "templates": {
+        "title": "Templates and AI-Generated Content",
+        "description": "All document templates and AI-generated content provided by LegalDocs are generic forms intended for informational purposes only. They are NOT tailored to your specific legal needs or circumstances.",
+        "aiWarning": "AI-generated documents may contain errors, omissions, or inappropriate content. Always review and verify all AI-generated content.",
+        "point1": "Templates are starting points, not finished legal documents",
+        "point2": "AI-generated content may not be accurate, complete, or suitable for your needs",
+        "point3": "Templates may not comply with current laws in your jurisdiction",
+        "point4": "Using our templates does not guarantee legal validity or enforceability"
+      },
+      "userResponsibility": {
+        "title": "Your Responsibility",
+        "statement": "YOU are solely responsible for:",
+        "point1": "Reviewing all documents for accuracy, completeness, and legal compliance",
+        "point2": "Consulting with qualified legal professionals before using any document",
+        "point3": "Ensuring documents comply with applicable laws and regulations",
+        "point4": "Understanding the legal implications of any document you create or sign",
+        "point5": "Making informed decisions about your legal matters"
+      },
+      "liability": {
+        "title": "Limitation of Liability",
+        "statement": "TO THE MAXIMUM EXTENT PERMITTED BY LAW, LEGALDOCS DISCLAIMS ALL LIABILITY.",
+        "description": "LegalDocs, its owners, employees, contractors, and affiliated entities shall not be liable for any damages, losses, or consequences arising from:",
+        "point1": "Use or inability to use our platform or services",
+        "point2": "Reliance on any templates, documents, or information provided",
+        "point3": "Errors, omissions, or inaccuracies in AI-generated content",
+        "point4": "Legal disputes, invalid documents, or unenforceable agreements"
+      },
+      "regional": {
+        "title": "UAE & GCC Specific Disclaimers",
+        "subtitle": "Important notices for users in the United Arab Emirates and GCC countries",
+        "uae": {
+          "title": "United Arab Emirates",
+          "point1": "Our templates are NOT reviewed or approved by UAE legal authorities",
+          "point2": "Documents may require notarization, attestation, or other formalities under UAE law",
+          "point3": "Certain documents may need to be in Arabic to be legally enforceable",
+          "point4": "Free zones, mainland, and offshore jurisdictions have different legal requirements"
+        },
+        "gcc": {
+          "title": "GCC Countries",
+          "point1": "Laws vary significantly between GCC countries (UAE, Saudi Arabia, Kuwait, Bahrain, Oman, Qatar)",
+          "point2": "Our templates may not comply with specific national or emirate-level regulations",
+          "point3": "Always consult local legal counsel familiar with the specific jurisdiction"
+        }
+      },
+      "recommendation": {
+        "title": "Our Strong Recommendation",
+        "statement": "We STRONGLY RECOMMEND that you consult with qualified legal professionals before using any document for legal purposes.",
+        "whenToConsult": "You should ALWAYS consult a lawyer when:",
+        "case1": "The document involves significant financial transactions or obligations",
+        "case2": "The matter involves complex legal issues or regulations",
+        "case3": "The document could significantly impact your legal rights",
+        "case4": "You are unsure about any aspect of the document or its legal implications",
+        "case5": "The document will be used in official proceedings or with government entities"
+      },
+      "changes": {
+        "title": "Changes to This Disclaimer",
+        "description": "We reserve the right to modify this disclaimer at any time. Changes will be effective immediately upon posting. Your continued use of LegalDocs after changes constitutes acceptance of the modified disclaimer."
+      },
+      "contact": {
+        "title": "Questions About This Disclaimer",
+        "description": "If you have questions about this disclaimer or our services, please contact us:",
+        "email": "Email",
+        "address": "Address"
+      },
+      "footer": {
+        "privacy": "Privacy Policy",
+        "terms": "Terms of Service",
+        "backToDashboard": "Back to Dashboard"
+      },
+      "badges": {
+        "softwareCompany": "Software Company",
+        "technologyProvider": "Technology Provider"
+      }
+    },
+    "privacy": {
+      "title": "Privacy Policy",
+      "effectiveDate": "Effective Date",
+      "commitment": "Your privacy is important to us. This policy explains how we collect, use, and protect your personal information.",
+      "introduction": {
+        "title": "Introduction",
+        "p1": "LegalDocs (\"we\", \"our\", \"us\") is committed to protecting your privacy and personal data. This Privacy Policy explains how we collect, use, store, and share information when you use our platform.",
+        "p2": "By using LegalDocs, you agree to the collection and use of information in accordance with this policy. If you do not agree with this policy, please do not use our services."
+      },
+      "collection": {
+        "title": "Information We Collect",
+        "personal": {
+          "title": "Personal Information",
+          "item1": "Name, email address, phone number",
+          "item2": "Company information (name, trade license, tax number)",
+          "item3": "Payment information (processed securely by third-party providers)",
+          "item4": "Identity verification data (Emirates ID, passport for verification features)",
+          "item5": "Correspondence and support communications"
+        },
+        "usage": {
+          "title": "Usage Information",
+          "item1": "IP address, browser type, device information",
+          "item2": "Pages viewed, features used, time spent on platform",
+          "item3": "Document creation and signing activity",
+          "item4": "Search queries and interaction data",
+          "item5": "Performance and error logs"
+        },
+        "documents": {
+          "title": "Document Content",
+          "item1": "Document text, data entered into templates",
+          "item2": "AI prompts and generated content",
+          "item3": "Signatures and signer information",
+          "item4": "Document metadata (timestamps, versions, status)"
+        }
+      },
+      "usage": {
+        "title": "How We Use Your Information",
+        "purpose1": "Provide and maintain our services",
+        "purpose2": "Process transactions and send notifications",
+        "purpose3": "Improve and personalize user experience",
+        "purpose4": "Generate AI-powered document suggestions and content",
+        "purpose5": "Detect and prevent fraud and abuse",
+        "purpose6": "Comply with legal obligations",
+        "purpose7": "Communicate updates, security alerts, and support messages"
+      },
+      "storage": {
+        "title": "Data Storage and Security",
+        "location": {
+          "title": "Storage Location",
+          "description": "Your data is stored securely on cloud servers provided by Supabase, with data centers located in regions that ensure optimal performance and compliance."
+        },
+        "encryption": {
+          "title": "Encryption",
+          "description": "We use industry-standard encryption (TLS/SSL) for data in transit and AES-256 encryption for data at rest. Passwords are hashed using bcrypt."
+        },
+        "backup": {
+          "title": "Backups",
+          "description": "Regular automated backups are performed to prevent data loss. Backups are encrypted and stored securely."
+        },
+        "security": "While we implement strong security measures, no system is 100% secure. We cannot guarantee absolute security of your data."
+      },
+      "thirdParty": {
+        "title": "Third-Party Services",
+        "description": "We use trusted third-party service providers to operate our platform. These providers may have access to your data only to perform tasks on our behalf and are obligated to protect it.",
+        "cloudflare": {
+          "purpose": "Content delivery, DDoS protection, and security services"
+        },
+        "openrouter": {
+          "purpose": "AI model access for document generation and legal assistance"
+        },
+        "supabase": {
+          "purpose": "Database hosting, authentication, and storage services"
+        },
+        "viewPolicy": "View Privacy Policy",
+        "aiWarning": "When using AI features, your prompts and document content may be processed by AI providers (OpenRouter/OpenAI). These providers have their own privacy policies."
+      },
+      "cookies": {
+        "title": "Cookies and Tracking",
+        "description": "We use cookies and similar technologies to improve your experience and analyze platform usage.",
+        "essential": {
+          "title": "Essential Cookies",
+          "description": "Required for authentication, security, and core platform functionality"
+        },
+        "functional": {
+          "title": "Functional Cookies",
+          "description": "Remember your preferences (language, theme, settings)"
+        },
+        "analytics": {
+          "title": "Analytics Cookies",
+          "description": "Help us understand how users interact with our platform (anonymized data)"
+        },
+        "control": "You can control cookies through your browser settings, but disabling essential cookies may affect platform functionality."
+      },
+      "rights": {
+        "title": "Your Rights",
+        "subtitle": "You have the following rights regarding your personal data (subject to applicable laws):",
+        "access": {
+          "title": "Right to Access",
+          "description": "Request a copy of your personal data"
+        },
+        "portability": {
+          "title": "Right to Portability",
+          "description": "Receive your data in a structured format"
+        },
+        "correction": {
+          "title": "Right to Correction",
+          "description": "Correct inaccurate or incomplete data"
+        },
+        "deletion": {
+          "title": "Right to Deletion",
+          "description": "Request deletion of your data (with exceptions)"
+        },
+        "exercise": "To exercise these rights, contact us at"
+      },
+      "retention": {
+        "title": "Data Retention",
+        "description": "We retain your data for as long as necessary to provide services and comply with legal obligations:",
+        "account": "Account data: Retained while your account is active, plus 90 days after deletion",
+        "documents": "Document data: Retained for 7 years or as required by law",
+        "logs": "Access and security logs: Retained for 90 days",
+        "analytics": "Anonymous analytics: Retained indefinitely for platform improvement"
+      },
+      "children": {
+        "title": "Children's Privacy",
+        "description": "LegalDocs is not intended for users under 18 years of age. We do not knowingly collect personal information from children. If we become aware of such data collection, we will delete it promptly."
+      },
+      "international": {
+        "title": "International Data Transfers",
+        "description": "Your data may be transferred to and processed in countries outside the UAE. We ensure appropriate safeguards are in place for international data transfers.",
+        "protection": "We use Standard Contractual Clauses and other mechanisms approved by data protection authorities to protect your data during international transfers."
+      },
+      "changes": {
+        "title": "Changes to This Policy",
+        "description": "We may update this Privacy Policy from time to time. Significant changes will be communicated via email or platform notifications.",
+        "notification": "Continued use of LegalDocs after changes constitutes acceptance of the updated policy."
+      },
+      "contact": {
+        "title": "Contact Us",
+        "description": "For privacy-related questions, concerns, or to exercise your rights, contact our Data Protection Officer:",
+        "email": "Email",
+        "support": "General Support",
+        "address": "Address"
+      },
+      "footer": {
+        "disclaimer": "Disclaimer",
+        "terms": "Terms of Service",
+        "backToDashboard": "Back to Dashboard"
+      },
+      "badges": {
+        "encrypted": "End-to-End Encrypted",
+        "gdprCompliant": "GDPR Principles",
+        "secureStorage": "Secure Storage"
+      }
+    }
+  },
+  "components": {
+    "disclaimerBanner": {
+      "message": "This is a template, not legal advice. Documents should be reviewed by qualified legal professionals.",
+      "generateMessage": "AI-generated documents are templates only. Always have legal professionals review before use in legal matters.",
+      "reviewMessage": "This document is AI-generated and for informational purposes. Consult a lawyer before using in legal proceedings.",
+      "editorMessage": "You are editing a legal document template. Professional legal review is recommended before finalizing.",
+      "learnMore": "Full Disclaimer",
+      "dismiss": "Dismiss"
+    },
+    "documentFooter": {
+      "aiGenerated": {
+        "title": "AI-Generated Document",
+        "description": "This document was generated using artificial intelligence and should be reviewed by a qualified legal professional before use."
+      },
+      "disclaimer": {
+        "title": "Not Legal Advice",
+        "description": "LegalDocs is a software platform, not a law firm. This document is a template and does not constitute legal advice. No attorney-client relationship is formed."
+      },
+      "review": {
+        "title": "Professional Review Recommended",
+        "description": "We strongly recommend having this document reviewed by a qualified attorney familiar with applicable laws before using it in any legal matter."
+      },
+      "metadata": {
+        "documentId": "Document ID",
+        "generatedAt": "Generated",
+        "version": "Version"
+      },
+      "footer": {
+        "generatedBy": "Generated by",
+        "softwarePlatform": "Software Platform",
+        "notLegalAdvice": "Not Legal Advice",
+        "website": "Website",
+        "email": "Email"
+      },
+      "verification": {
+        "title": "Document Verification",
+        "description": "Scan this QR code to verify document authenticity online"
+      },
+      "minimal": {
+        "disclaimer": "Template only - Not legal advice"
+      }
+    }
+  },
+  "faq": {
+    "metaTitle": "Frequently Asked Questions - LegalDocs UAE",
+    "metaDescription": "Find answers to common questions about LegalDocs platform, document generation, digital signatures, billing, security, and more.",
+    "title": "Frequently Asked Questions",
+    "subtitle": "Find answers to common questions about our platform",
+    "searchPlaceholder": "Search FAQs...",
+    "searchResults": "Found {count} results",
+    "noResults": "No results found",
+    "noResultsHint": "Try different keywords or browse categories below",
+    "categories": {
+      "general": "General Questions",
+      "documents": "Document Generation",
+      "signatures": "Digital Signatures",
+      "billing": "Account & Billing",
+      "security": "Security & Privacy",
+      "technical": "Technical Questions",
+      "legal": "Legal Compliance"
+    },
+    "general": {
+      "whatIsLegalDocs": {
+        "question": "What is LegalDocs?",
+        "answer": "LegalDocs is an AI-powered platform that helps individuals and businesses in the UAE and GCC region create, manage, and sign legal documents. We offer intelligent document generation, professional templates in multiple languages (English, Arabic, Urdu), and secure digital signature capabilities. Our platform is designed to make legal documentation faster, more accessible, and more affordable while ensuring compliance with local laws."
+      },
+      "isLawFirm": {
+        "question": "Is LegalDocs a law firm?",
+        "answer": "No, LegalDocs is not a law firm and does not provide legal advice. We are a technology platform that provides tools for document creation and management. Our AI-generated documents and templates are designed to meet common legal requirements, but we strongly recommend consulting with a qualified lawyer for complex legal matters or if you have specific legal questions. For certain transactions, you may also need to have documents reviewed or notarized by legal professionals."
+      },
+      "countries": {
+        "question": "What countries do you support?",
+        "answer": "LegalDocs is primarily designed for the United Arab Emirates (UAE) and GCC (Gulf Cooperation Council) countries, including Saudi Arabia, Kuwait, Qatar, Bahrain, and Oman. Our documents are tailored to comply with UAE legal frameworks and common practices in the region. However, our digital signature technology is accepted in many countries worldwide. If you're using our platform outside the GCC, please verify that our documents and signatures meet your local legal requirements."
+      },
+      "languages": {
+        "question": "What languages are available?",
+        "answer": "LegalDocs supports three languages:\n\n• English - Full support for all features\n• Arabic - Full support including right-to-left text and native document generation\n• Urdu - Full support with native document generation\n\nYou can switch between languages at any time, and all generated documents can be created in your preferred language. For bilingual documents, you can generate the same document in multiple languages and specify which version is legally binding."
+      },
+      "dataSecurity": {
+        "question": "Is my data secure?",
+        "answer": "Yes, we take security very seriously. All data is encrypted in transit (TLS 1.3) and at rest (AES-256 encryption). We use enterprise-grade security measures including:\n\n• Encrypted data storage\n• Secure authentication with 2FA support\n• Regular security audits\n• SOC 2 Type II compliance (in progress)\n• GDPR-compliant data handling\n• Regular backups in multiple geographic locations\n\nYour documents are private and only accessible by you and the people you explicitly share them with. We never share your data with third parties for marketing purposes."
+      }
+    },
+    "documents": {
+      "howAiWorks": {
+        "question": "How does AI document generation work?",
+        "answer": "Our AI document generator uses advanced natural language processing to create professional legal documents. Here's how it works:\n\n1. You select a document type (e.g., employment contract, NDA)\n2. You answer simple questions about the parties, terms, and conditions\n3. Our AI analyzes your inputs and generates a legally compliant document\n4. You can review and edit the document using our editor\n5. The document is ready to sign or download\n\nThe AI is trained on thousands of legal documents and understands legal terminology in English, Arabic, and Urdu. It ensures proper formatting, clause structure, and compliance with UAE legal requirements."
+      },
+      "legallyValid": {
+        "question": "Are the documents legally valid?",
+        "answer": "Our documents are designed to be legally compliant and follow standard legal frameworks used in the UAE. However, legal validity depends on several factors:\n\n• Proper execution by all parties\n• Compliance with specific regulations for your situation\n• Proper witnessing or notarization when required\n\nWhile our documents are suitable for most common business and personal transactions, we recommend:\n\n1. Having important documents reviewed by a qualified lawyer\n2. Ensuring all parties understand the terms\n3. Checking if notarization is required for your specific use case\n4. Verifying compliance with any industry-specific regulations\n\nLegalDocs is a tool to help you create documents, but final legal responsibility rests with the signing parties."
+      },
+      "customizeTemplates": {
+        "question": "Can I customize templates?",
+        "answer": "Yes, absolutely! All templates and AI-generated documents are fully customizable:\n\n• Edit text, clauses, and terms using our rich text editor\n• Add or remove sections as needed\n• Insert variables that auto-populate from party information\n• Format text with headings, lists, and styling\n• Add images, logos, or signatures\n• Create your own templates from customized documents\n• Save frequently used clauses for quick insertion\n\nYou have complete control over the final document. The templates and AI generations are starting points that you can modify to meet your specific needs."
+      },
+      "documentTypes": {
+        "question": "What document types are available?",
+        "answer": "We offer a comprehensive library of legal document templates including:\n\nBusiness Documents:\n• Non-Disclosure Agreements (NDA)\n• Service Agreements\n• Memorandum of Understanding (MOU)\n• Partnership Agreements\n• Consulting Agreements\n\nEmployment:\n• Employment Contracts\n• Offer Letters\n• Termination Letters\n• Non-Compete Agreements\n\nReal Estate:\n• Rental Agreements (Tenancy Contracts)\n• Deposit Receipts\n• Property Sale Agreements\n• Ejari Registration Support\n\nLegal:\n• Power of Attorney\n• Affidavits\n• Witness Statements\n• Authorization Letters\n\nWe're constantly adding new templates based on user feedback. If you need a specific document type, let us know!"
+      },
+      "arabicTranslations": {
+        "question": "How accurate are the Arabic translations?",
+        "answer": "Our Arabic document generation is not simple translation - it's native content creation. We use:\n\n• Native Arabic legal terminology\n• Proper right-to-left formatting\n• Culture-appropriate phrasing\n• Legal terms commonly used in UAE courts and government\n\nOur AI is trained on authentic Arabic legal documents from the region, ensuring proper legal language and cultural context. However, for critical documents, we recommend having a bilingual legal professional review the Arabic version to ensure it perfectly matches your intent, especially if it will be the legally binding version."
+      }
+    },
+    "signatures": {
+      "legalInUae": {
+        "question": "Are digital signatures legal in UAE?",
+        "answer": "Yes! Digital signatures are legally recognized in the UAE under:\n\n• Federal Decree-Law No. 46 of 2021 on Electronic Transactions and Trust Services\n• UAE Electronic Transactions Law\n• Various emirate-specific regulations\n\nOur e-signatures are legally binding for most commercial transactions. However, certain documents may require:\n\n• Wet ink signatures (original handwritten)\n• Notarization or attestation\n• Government department approval\n\nExamples requiring additional steps include property transfers, marriage contracts, wills, and some government submissions. Our platform will warn you if a document type typically requires notarization."
+      },
+      "signingProcess": {
+        "question": "How does the signing process work?",
+        "answer": "Our signing process is simple and secure:\n\n1. Document Preparation: Create or upload your document\n2. Add Signers: Enter email addresses and names of all signers\n3. Set Signing Order: Choose sequential or parallel signing\n4. Send for Signature: Signers receive email notifications\n5. Identity Verification: Signers verify their identity via SMS/email OTP\n6. Review & Sign: Signers review the document and add their signature\n7. Completion: All parties receive the signed document\n\nEach signature includes:\n• Time stamp\n• IP address\n• Identity verification proof\n• Unique signature ID\n• Complete audit trail\n\nThe signed document is tamper-proof and includes a certificate of authenticity."
+      },
+      "mobileSupport": {
+        "question": "Can I sign documents on mobile?",
+        "answer": "Yes! Our platform is fully mobile-responsive. You can:\n\n• Review documents on any mobile device\n• Sign using touch screen (draw signature)\n• Type your signature\n• Upload a signature image\n• Receive and respond to signing requests\n• Track document status\n\nThe mobile experience is optimized for both iOS and Android devices. No app download is required - everything works in your mobile browser. For the best experience, we recommend using the latest version of Safari (iOS) or Chrome (Android)."
+      },
+      "verification": {
+        "question": "How are signatures verified?",
+        "answer": "We use multiple layers of verification:\n\n1. Identity Verification:\n   • SMS OTP to registered phone number\n   • Email verification link\n   • Optional: Emirates ID verification for high-value transactions\n\n2. Document Integrity:\n   • Cryptographic hash of the document\n   • Tamper-evident sealing\n   • Any changes invalidate the signature\n\n3. Audit Trail:\n   • Time stamps for all actions\n   • IP address logging\n   • Geographic location (when available)\n   • Device information\n   • Full activity log\n\nEvery signed document includes a verification certificate that can be used to prove authenticity. Third parties can verify the signature using our verification portal."
+      },
+      "countries": {
+        "question": "What countries accept your e-signatures?",
+        "answer": "Our e-signatures are accepted in:\n\n• All GCC countries (UAE, Saudi Arabia, Kuwait, Qatar, Bahrain, Oman)\n• Most EU countries under eIDAS regulation\n• United States (under ESIGN Act and UETA)\n• Many other countries with electronic signature laws\n\nHowever, acceptance depends on:\n• Document type\n• Industry regulations\n• Specific use case\n• Local laws\n\nSome countries or situations require specific certification levels (e.g., qualified electronic signatures in the EU). For international transactions, we recommend verifying that our signature method meets the requirements of all relevant jurisdictions.\n\nNote: Government documents, property transfers, and certain legal filings may require wet signatures or notarization even in countries that accept e-signatures."
+      }
+    },
+    "billing": {
+      "createAccount": {
+        "question": "How do I create an account?",
+        "answer": "Creating an account is simple:\n\n1. Click \"Sign Up\" in the top right corner\n2. Choose your registration method:\n   • Email and password\n   • Phone number with OTP\n   • Google account\n   • Apple account\n3. Verify your email or phone number\n4. Complete your profile\n5. Choose a plan (Free or Professional)\n\nYou can start using the platform immediately with the free plan. No credit card is required for the free tier."
+      },
+      "freePlan": {
+        "question": "Is there a free plan?",
+        "answer": "Yes! Our free plan includes:\n\n• 3 document generations per month\n• Access to all templates\n• Basic document editing\n• 5 signature requests per month\n• Single language support\n• Community support\n\nProfessional Plan ($29/month) includes:\n• Unlimited document generation\n• Unlimited signature requests\n• All languages (English, Arabic, Urdu)\n• Priority AI generation\n• Advanced editor features\n• Template customization\n• Version history\n• Priority email support\n• API access\n• Custom branding\n• Bulk operations\n\nEnterprise plans with custom features are available for larger organizations."
+      },
+      "paymentMethods": {
+        "question": "What payment methods do you accept?",
+        "answer": "We accept multiple payment methods:\n\n• Credit/Debit Cards: Visa, Mastercard, American Express\n• Apple Pay\n• Google Pay\n• Bank Transfer (for annual plans)\n• PayPal (coming soon)\n\nAll payments are processed securely through Stripe, and we never store your full card details. Payments are in USD or AED depending on your location.\n\nFor enterprise accounts, we can accommodate:\n• Purchase orders\n• Wire transfers\n• Annual invoicing\n• Multi-currency billing"
+      },
+      "cancelSubscription": {
+        "question": "Can I cancel my subscription?",
+        "answer": "Yes, you can cancel your subscription at any time:\n\n1. Go to Settings > Billing\n2. Click \"Cancel Subscription\"\n3. Provide optional feedback\n4. Confirm cancellation\n\nWhen you cancel:\n• You keep access until the end of your billing period\n• No refunds for partial months\n• Your documents remain accessible\n• You can re-subscribe anytime\n• You'll automatically downgrade to the free plan\n\nWe don't lock you in - no cancellation fees or penalties. If you cancel, we'd love to hear what we could have done better!"
+      },
+      "deleteAccount": {
+        "question": "How do I delete my account?",
+        "answer": "To delete your account:\n\n1. Go to Settings > Security\n2. Scroll to \"Delete Account\"\n3. Click \"Delete My Account\"\n4. Confirm by entering your password\n5. Acknowledge the data deletion warning\n\nIMPORTANT: Deleting your account will:\n• Permanently delete all your documents\n• Remove all signatures and audit trails\n• Cancel any active subscription\n• Delete all personal data within 30 days\n• This action cannot be undone\n\nBefore deleting:\n• Download any documents you want to keep\n• Ensure all pending signatures are complete\n• Cancel any active subscriptions\n\nWe're required by law to keep certain transaction records for 7 years, but these are anonymized after account deletion."
+      }
+    },
+    "security": {
+      "dataProtection": {
+        "question": "How is my data protected?",
+        "answer": "We implement enterprise-grade security:\n\nEncryption:\n• TLS 1.3 for all data in transit\n• AES-256 encryption for data at rest\n• End-to-end encryption for sensitive documents\n• Encrypted database backups\n\nAccess Control:\n• Role-based access control (RBAC)\n• Two-factor authentication (2FA)\n• Session management and timeout\n• IP whitelisting for enterprise accounts\n\nInfrastructure:\n• SOC 2 Type II certified data centers\n• Redundant systems and backups\n• DDoS protection\n• 24/7 security monitoring\n• Regular penetration testing\n• Automated vulnerability scanning\n\nCompliance:\n• GDPR compliant\n• ISO 27001 (in progress)\n• Regular security audits\n• Incident response plan"
+      },
+      "dataStorage": {
+        "question": "Where is data stored?",
+        "answer": "Your data is stored securely:\n\nPrimary Storage:\n• AWS data centers in UAE (Dubai, Abu Dhabi)\n• EU data centers (for European customers)\n• All data remains within your chosen region\n\nBackups:\n• Daily encrypted backups\n• Geographic redundancy (multiple data centers)\n• 30-day backup retention\n• Point-in-time recovery capability\n\nWe comply with UAE data residency requirements and GDPR regulations. For enterprise customers, we can accommodate specific data residency requirements.\n\nYour data never leaves the approved regions unless you explicitly export it. We don't use your documents for AI training without explicit consent."
+      },
+      "documentAccess": {
+        "question": "Who can access my documents?",
+        "answer": "Document access is strictly controlled:\n\nBy Default:\n• Only you (the document creator)\n• People you explicitly invite as signers\n• Team members you add (on team plans)\n\nLegalDocs Staff:\n• No access to your documents under normal circumstances\n• Access only with your explicit permission for support issues\n• All access is logged and auditable\n• Subject to strict confidentiality agreements\n\nWe will only access documents:\n1. With your written permission for troubleshooting\n2. If required by valid legal process (court order, subpoena)\n3. For security investigations with your notification\n\nYou can:\n• View full access logs for each document\n• Revoke access at any time\n• Set expiration dates for document links\n• Require password protection for shared links\n• Enable audit trail notifications"
+      },
+      "dataRetention": {
+        "question": "How long do you keep my data?",
+        "answer": "Our data retention policy:\n\nActive Accounts:\n• Documents: Kept indefinitely while your account is active\n• Signatures: Kept for 7 years (legal requirement)\n• Activity logs: 2 years\n• Payment records: 7 years (legal requirement)\n\nDeleted Documents:\n• Moved to trash: 30 days\n• Permanently deleted: Removed from active systems immediately\n• Backup retention: 90 days from deletion\n• Complete removal: Within 90 days\n\nClosed Accounts:\n• Account data deleted: 30 days after closure\n• Legal records: 7 years (anonymized)\n• Signatures and audit trails: 7 years (legal requirement)\n\nYou can request:\n• Immediate deletion of specific documents\n• Export of all your data\n• Deletion of your account and data\n\nNote: We're legally required to retain certain transaction and signature records for compliance purposes, but these are anonymized after account deletion."
+      },
+      "gdprCompliant": {
+        "question": "Are you GDPR compliant?",
+        "answer": "Yes, we are fully GDPR compliant. Your rights include:\n\nRight to Access:\n• Request all data we hold about you\n• Receive data in portable format\n• Access within 30 days\n\nRight to Rectification:\n• Correct inaccurate data\n• Update incomplete data\n• Real-time self-service updates\n\nRight to Erasure (Right to be Forgotten):\n• Delete your account and data\n• Remove specific documents\n• Exception: legally required records\n\nRight to Restriction:\n• Limit how we process your data\n• Object to certain processing\n• Opt-out of marketing\n\nRight to Data Portability:\n• Export your data in JSON/PDF format\n• Transfer to another service\n\nRight to Object:\n• Object to automated decision making\n• Opt-out of profiling\n\nWe also:\n• Have a Data Protection Officer\n• Conduct Data Protection Impact Assessments\n• Maintain records of processing activities\n• Report data breaches within 72 hours\n• Use privacy by design principles"
+      }
+    },
+    "technical": {
+      "browsers": {
+        "question": "What browsers are supported?",
+        "answer": "LegalDocs works best on modern browsers:\n\nFully Supported:\n• Google Chrome (version 90+)\n• Microsoft Edge (version 90+)\n• Safari (version 14+)\n• Firefox (version 88+)\n\nMobile Browsers:\n• Safari on iOS 14+\n• Chrome on Android 10+\n• Samsung Internet 14+\n\nFeatures that require modern browsers:\n• Digital signature pad\n• Document preview\n• Real-time collaboration\n• Drag-and-drop file upload\n\nFor the best experience:\n• Enable JavaScript\n• Allow cookies\n• Use the latest browser version\n• Enable pop-ups for document downloads\n\nInternet Explorer is not supported. If you're on a corporate network with browser restrictions, please contact your IT department to whitelist *.legaldocs.ae"
+      },
+      "offline": {
+        "question": "Can I use LegalDocs offline?",
+        "answer": "LegalDocs requires an internet connection for most features:\n\nRequires Internet:\n• Document generation\n• Saving and syncing\n• Sending for signature\n• Real-time collaboration\n• Template browsing\n\nLimited Offline Capability:\n• View recently opened documents (cached)\n• Read-only access to downloaded PDFs\n• Mobile apps have offline document viewing\n\nComing Soon:\n• Progressive Web App (PWA) with offline editing\n• Sync when connection is restored\n• Offline signature capability\n\nWorkaround:\n• Download documents as PDF for offline access\n• Edit offline in your preferred app\n• Upload edited versions when online\n\nFor industries requiring offline capability (ships, remote locations), please contact us about our enterprise offline solution."
+      },
+      "exportDocuments": {
+        "question": "How do I export documents?",
+        "answer": "You can export documents in multiple formats:\n\nPDF Export:\n• High-quality PDF with fonts embedded\n• Preserves formatting and signatures\n• Includes audit trail and certificate\n• Watermark options for drafts\n\nWord Export (DOCX):\n• Editable Microsoft Word format\n• Maintains basic formatting\n• Useful for further editing\n• Available on Professional plan\n\nOther Formats:\n• HTML for web publishing\n• Plain text (TXT)\n• Markdown for documentation\n\nBulk Export:\n• Export multiple documents at once\n• Organized in folders by type/date\n• Includes metadata CSV\n• ZIP file download\n\nTo Export:\n1. Open the document\n2. Click \"Download\" or \"Export\"\n3. Choose format\n4. Select options (signatures, watermark, etc.)\n5. Click \"Download\"\n\nSignatures and audit trails are included in PDF exports but may be lost in other formats."
+      },
+      "fileFormats": {
+        "question": "What file formats are supported?",
+        "answer": "Supported formats:\n\nDocument Upload:\n• PDF (.pdf) - Most common\n• Microsoft Word (.docx, .doc)\n• Rich Text Format (.rtf)\n• Plain Text (.txt)\n• Markdown (.md)\n\nExport Formats:\n• PDF (.pdf) - Recommended\n• Word (.docx)\n• HTML (.html)\n• Plain Text (.txt)\n\nImage Upload (for logos, signatures):\n• PNG (recommended for transparency)\n• JPEG/JPG\n• SVG (vector graphics)\n• GIF\n• WebP\n\nFile Size Limits:\n• Free plan: 10 MB per file\n• Professional plan: 50 MB per file\n• Enterprise: Custom limits\n\nFor best results:\n• Use PDF for finalized documents\n• Use DOCX for templates\n• Use PNG for logos and signatures\n• Compress large files before upload"
+      },
+      "api": {
+        "question": "Is there an API?",
+        "answer": "Yes! We offer a REST API for Professional and Enterprise customers:\n\nAPI Capabilities:\n• Generate documents programmatically\n• Send for signature\n• Check signature status\n• Retrieve signed documents\n• Webhook notifications\n• Bulk operations\n\nCommon Use Cases:\n• Integration with CRM systems\n• Automated contract generation\n• HR system integration\n• E-commerce order confirmations\n• Automated tenant agreements\n\nAPI Features:\n• RESTful endpoints\n• JSON request/response\n• OAuth 2.0 authentication\n• Rate limiting\n• Comprehensive documentation\n• Code examples (Node.js, Python, PHP)\n• Sandbox environment for testing\n• Webhook support for real-time updates\n\nTo Get Started:\n1. Upgrade to Professional or Enterprise\n2. Go to Settings > API Keys\n3. Generate an API key\n4. Read our API documentation\n5. Start integrating\n\nAPI Documentation: https://docs.legaldocs.ae/api\nSupport: api-support@legaldocs.ae"
+      }
+    },
+    "legal": {
+      "uaeLaws": {
+        "question": "What UAE laws do you follow?",
+        "answer": "Our platform is designed to comply with:\n\nElectronic Transactions:\n• Federal Decree-Law No. 46 of 2021 on Electronic Transactions\n• UAE Electronic Transactions Law\n• Dubai Electronic Transactions Regulations\n\nData Protection:\n• UAE Data Protection Law\n• Dubai International Financial Centre (DIFC) Data Protection Law\n• Abu Dhabi Global Market (ADGM) Data Protection Regulations\n\nCommercial Law:\n• UAE Commercial Companies Law\n• UAE Civil Code\n• UAE Labour Law (for employment contracts)\n\nDocument Specific:\n• Tenancy Law (for rental agreements)\n• Real Estate Regulatory Agency (RERA) requirements\n• Various free zone regulations\n\nImportant Notes:\n• We follow best practices and common legal standards\n• Specific transactions may require additional compliance\n• Free zones may have specific requirements\n• Always verify requirements for your specific situation\n• Consult a lawyer for complex matters\n\nWe regularly update our templates to reflect legal changes."
+      },
+      "governmentUse": {
+        "question": "Are documents valid for government use?",
+        "answer": "It depends on the specific government requirement:\n\nGenerally Accepted:\n• Business licenses applications (supporting docs)\n• Commercial contracts\n• Internal company documents\n• Employment offer letters\n• Service agreements\n\nMay Require Additional Steps:\n• Property transfers (need notarization)\n• Tenancy contracts (may need Ejari registration)\n• Power of Attorney (requires notarization)\n• Immigration documents (require attestation)\n• Court filings (may need wet signatures)\n\nGovernment Portals:\n• Some accept uploaded PDFs\n• Others require specific formats\n• Digital signatures acceptance varies by department\n\nRecommendations:\n1. Check specific government department requirements\n2. Ask if digital signatures are accepted\n3. Verify if notarization is needed\n4. Check if attestation is required\n5. Keep both digital and printed copies\n\nFor Ejari (Dubai tenancy registration):\n• Our tenancy contracts meet RERA requirements\n• You can upload our PDFs to Ejari portal\n• Signatures must be present before registration\n\nWhen in doubt, contact the specific government department to confirm their requirements."
+      },
+      "notarization": {
+        "question": "Do I need to notarize generated documents?",
+        "answer": "Notarization requirements depend on the document type and use:\n\nUsually Require Notarization:\n• Power of Attorney\n• Property sale agreements\n• Mortgage documents\n• Wills and testaments\n• Some affidavits\n• Documents for government submission\n• International use documents\n\nUsually Don't Require Notarization:\n• Employment contracts\n• Service agreements\n• Non-disclosure agreements (NDA)\n• Internal company documents\n• Vendor agreements\n• Most business contracts\n\nNotarization Process in UAE:\n1. Complete document on LegalDocs\n2. Print the document\n3. Visit notary public or court\n4. Present Emirates ID\n5. Sign in presence of notary\n6. Pay notarization fees\n7. Receive notarized document\n\nNotary Locations in UAE:\n• UAE Courts (most emirates)\n• Notary Public offices\n• DIFC Courts (for DIFC entities)\n• ADGM Courts (for ADGM entities)\n• Typing centers (some have notary services)\n\nCosts:\n• Vary by document type and emirate\n• Typically AED 50-200 per document\n• Translation costs if needed\n\nOur platform will display a warning if a document typically requires notarization."
+      },
+      "courtProceedings": {
+        "question": "Can I use these for court proceedings?",
+        "answer": "Documents can be used in court, but with important considerations:\n\nAdmissibility:\n• Electronic documents are generally admissible as evidence\n• Digital signatures are recognized under UAE law\n• Court may require authentication of digital signatures\n• Original documents may be requested\n\nBest Practices for Court Use:\n1. Keep original digital copies with audit trails\n2. Print and have parties sign physical copies for backup\n3. Maintain complete signature verification records\n4. Keep all email communications and notifications\n5. Document the signing process\n6. Have a lawyer review before relying on for litigation\n\nCourt Requirements:\n• Some courts prefer wet signatures\n• Notarization may strengthen the document\n• Translation may be required (Arabic for UAE courts)\n• Authentication of electronic signatures may be needed\n\nTypes of Court Proceedings:\n\nCivil Cases (contracts, disputes):\n• Our documents are suitable as evidence\n• Include the signature verification certificate\n• Print the audit trail\n\nLabour Cases:\n• Employment contracts are admissible\n• Ministry of Labour may require specific formats\n• Keep signed copies for both parties\n\nCommercial Cases:\n• Business agreements are generally accepted\n• Strong audit trail is beneficial\n• Court may verify signatures\n\nRecommendations:\n• If you anticipate litigation, have documents notarized\n• Consult a lawyer before relying on documents for court\n• Keep comprehensive records of the signing process\n• Consider having a lawyer draft or review critical documents\n\nFor court use, we recommend our Professional plan which includes enhanced audit trails and verification features."
+      }
+    },
+    "stillNeedHelp": {
+      "title": "Still need help?",
+      "description": "Can't find the answer you're looking for? Our support team is here to help.",
+      "contactSupport": "Contact Support",
+      "backToDashboard": "Back to Dashboard"
+    }
+  }
+}
