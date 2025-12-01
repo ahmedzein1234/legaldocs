@@ -23,18 +23,18 @@ interface VerifyEmailProps {
 export const VerifyEmail = ({
   name,
   locale = "en",
-  verificationUrl = "https://legaldocs.app/verify",
+  verificationUrl = "https://qannoni.com/verify",
   verificationCode = "123456",
 }: VerifyEmailProps) => {
   const isRTL = locale === "ar";
 
   const content = {
     en: {
-      preview: "Verify your email address for LegalDocs",
+      preview: "Verify your email address for Qannoni",
       greeting: `Hi ${name},`,
       title: "Verify Your Email Address",
       paragraph1:
-        "Thank you for signing up for LegalDocs. To complete your registration and secure your account, please verify your email address.",
+        "Thank you for signing up for Qannoni. To complete your registration and secure your account, please verify your email address.",
       paragraph2:
         "Click the button below to verify your email, or use the verification code:",
       cta: "Verify Email Address",
@@ -43,16 +43,16 @@ export const VerifyEmail = ({
       expiryText: "This link will expire in 24 hours.",
       securityTitle: "Security Notice",
       securityText:
-        "If you didn't create an account with LegalDocs, please ignore this email or contact our support team if you have concerns.",
-      footer: "LegalDocs - AI-Powered Legal Document Platform for GCC",
+        "If you didn't create an account with Qannoni, please ignore this email or contact our support team if you have concerns.",
+      footer: "Qannoni - AI-Powered Legal Document Platform for GCC",
       footerAddress: "Building legal solutions across the Middle East",
     },
     ar: {
-      preview: "تحقق من عنوان بريدك الإلكتروني لـ LegalDocs",
+      preview: "تحقق من عنوان بريدك الإلكتروني لـ Qannoni",
       greeting: `مرحباً ${name}،`,
       title: "تحقق من عنوان بريدك الإلكتروني",
       paragraph1:
-        "شكراً لك على التسجيل في LegalDocs. لإكمال تسجيلك وتأمين حسابك، يرجى التحقق من عنوان بريدك الإلكتروني.",
+        "شكراً لك على التسجيل في Qannoni. لإكمال تسجيلك وتأمين حسابك، يرجى التحقق من عنوان بريدك الإلكتروني.",
       paragraph2:
         "انقر على الزر أدناه للتحقق من بريدك الإلكتروني، أو استخدم رمز التحقق:",
       cta: "تحقق من البريد الإلكتروني",
@@ -61,8 +61,8 @@ export const VerifyEmail = ({
       expiryText: "سينتهي صلاحية هذا الرابط خلال 24 ساعة.",
       securityTitle: "إشعار أمني",
       securityText:
-        "إذا لم تقم بإنشاء حساب في LegalDocs، يرجى تجاهل هذا البريد الإلكتروني أو الاتصال بفريق الدعم لدينا إذا كانت لديك مخاوف.",
-      footer: "LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
+        "إذا لم تقم بإنشاء حساب في Qannoni، يرجى تجاهل هذا البريد الإلكتروني أو الاتصال بفريق الدعم لدينا إذا كانت لديك مخاوف.",
+      footer: "Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
       footerAddress: "بناء الحلول القانونية في جميع أنحاء الشرق الأوسط",
     },
   };
@@ -77,10 +77,10 @@ export const VerifyEmail = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://legaldocs.app/logo.png"
+              src="https://qannoni.com/logo.png"
               width="150"
               height="50"
-              alt="LegalDocs"
+              alt="Qannoni"
               style={logo}
             />
           </Section>

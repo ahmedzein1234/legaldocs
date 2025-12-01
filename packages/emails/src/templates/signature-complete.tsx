@@ -26,8 +26,8 @@ export const SignatureComplete = ({
   recipientName,
   documentName,
   locale = "en",
-  documentUrl = "https://legaldocs.app/documents",
-  downloadUrl = "https://legaldocs.app/download",
+  documentUrl = "https://qannoni.com/documents",
+  downloadUrl = "https://qannoni.com/download",
   completedAt,
   signers = [],
 }: SignatureCompleteProps) => {
@@ -50,8 +50,8 @@ export const SignatureComplete = ({
       step4: "Access it anytime from your documents library",
       legalNote:
         "This document has been secured with blockchain-verified digital signatures and is legally binding under GCC electronic signature laws.",
-      helpText: "Need a certified copy? Contact support@legaldocs.app",
-      footer: "LegalDocs - AI-Powered Legal Document Platform for GCC",
+      helpText: "Need a certified copy? Contact support@qannoni.com",
+      footer: "Qannoni - AI-Powered Legal Document Platform for GCC",
       footerAddress: "Building legal solutions across the Middle East",
     },
     ar: {
@@ -70,8 +70,8 @@ export const SignatureComplete = ({
       step4: "الوصول إليه في أي وقت من مكتبة المستندات الخاصة بك",
       legalNote:
         "تم تأمين هذا المستند بتوقيعات رقمية تم التحقق منها بواسطة blockchain وهو ملزم قانونياً بموجب قوانين التوقيع الإلكتروني في دول مجلس التعاون الخليجي.",
-      helpText: "هل تحتاج إلى نسخة معتمدة؟ اتصل بـ support@legaldocs.app",
-      footer: "LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
+      helpText: "هل تحتاج إلى نسخة معتمدة؟ اتصل بـ support@qannoni.com",
+      footer: "Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
       footerAddress: "بناء الحلول القانونية في جميع أنحاء الشرق الأوسط",
     },
   };
@@ -87,10 +87,10 @@ export const SignatureComplete = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://legaldocs.app/logo.png"
+              src="https://qannoni.com/logo.png"
               width="150"
               height="50"
-              alt="LegalDocs"
+              alt="Qannoni"
               style={logo}
             />
           </Section>

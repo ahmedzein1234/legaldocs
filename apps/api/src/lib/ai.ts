@@ -176,7 +176,7 @@ export class AIService {
         headers: {
           'Content-Type': 'application/json',
           'Authorization': `Bearer ${this.config.apiKey}`,
-          'HTTP-Referer': this.config.referer || 'https://legaldocs-web.pages.dev',
+          'HTTP-Referer': this.config.referer || 'https://www.qannoni.com',
           'X-Title': this.config.appTitle || 'LegalDocs',
         },
         body: JSON.stringify({
@@ -237,7 +237,7 @@ export class AIService {
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${this.config.apiKey}`,
-        'HTTP-Referer': this.config.referer || 'https://legaldocs-web.pages.dev',
+        'HTTP-Referer': this.config.referer || 'https://www.qannoni.com',
         'X-Title': this.config.appTitle || 'LegalDocs',
       },
       body: JSON.stringify({

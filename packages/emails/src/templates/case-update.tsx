@@ -42,7 +42,7 @@ export const CaseUpdate = ({
   previousStatus,
   newStatus,
   updatedBy,
-  caseUrl = "https://legaldocs.app/cases",
+  caseUrl = "https://qannoni.com/cases",
   actionRequired = false,
   actionText,
   actionUrl,
@@ -85,7 +85,7 @@ export const CaseUpdate = ({
       nextSteps: "What's Next:",
       nextStepsText:
         "Review the update details and any attached documents. If you have questions, contact your legal advisor or our support team.",
-      footer: "LegalDocs - AI-Powered Legal Document Platform for GCC",
+      footer: "Qannoni - AI-Powered Legal Document Platform for GCC",
       footerAddress: "Building legal solutions across the Middle East",
     },
     ar: {
@@ -107,7 +107,7 @@ export const CaseUpdate = ({
       nextSteps: "ما التالي:",
       nextStepsText:
         "راجع تفاصيل التحديث وأي مستندات مرفقة. إذا كانت لديك أسئلة، اتصل بمستشارك القانوني أو فريق الدعم لدينا.",
-      footer: "LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
+      footer: "Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
       footerAddress: "بناء الحلول القانونية في جميع أنحاء الشرق الأوسط",
     },
   };
@@ -139,10 +139,10 @@ export const CaseUpdate = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://legaldocs.app/logo.png"
+              src="https://qannoni.com/logo.png"
               width="150"
               height="50"
-              alt="LegalDocs"
+              alt="Qannoni"
               style={logo}
             />
           </Section>

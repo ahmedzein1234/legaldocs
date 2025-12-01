@@ -56,8 +56,8 @@ export interface SendEmailResult {
 // ============================================
 
 const RESEND_API_URL = 'https://api.resend.com/emails';
-const DEFAULT_FROM_EMAIL = 'LegalDocs <noreply@legaldocs.app>';
-const DEFAULT_REPLY_TO = 'support@legaldocs.app';
+const DEFAULT_FROM_EMAIL = 'Qannoni <noreply@qannoni.com>';
+const DEFAULT_REPLY_TO = 'support@qannoni.com';
 
 // ============================================
 // CORE EMAIL SENDING FUNCTION

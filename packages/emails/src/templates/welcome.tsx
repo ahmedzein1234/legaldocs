@@ -22,18 +22,18 @@ interface WelcomeEmailProps {
 export const WelcomeEmail = ({
   name,
   locale = "en",
-  dashboardUrl = "https://legaldocs.app/dashboard",
+  dashboardUrl = "https://qannoni.com/dashboard",
 }: WelcomeEmailProps) => {
   const isRTL = locale === "ar";
 
   const content = {
     en: {
-      preview: "Welcome to LegalDocs - Your AI-Powered Legal Document Platform",
+      preview: "Welcome to Qannoni - Your AI-Powered Legal Document Platform",
       greeting: `Hi ${name},`,
-      title: "Welcome to LegalDocs!",
+      title: "Welcome to Qannoni!",
       paragraph1:
-        "We're thrilled to have you on board. LegalDocs is your trusted AI-powered platform for creating, managing, and signing legal documents across the GCC region.",
-      paragraph2: "Here's what you can do with LegalDocs:",
+        "We're thrilled to have you on board. Qannoni is your trusted AI-powered platform for creating, managing, and signing legal documents across the GCC region.",
+      paragraph2: "Here's what you can do with Qannoni:",
       feature1: "Create legally compliant documents in Arabic, English, and Urdu",
       feature2: "E-sign documents with secure digital signatures",
       feature3: "Consult with verified legal professionals",
@@ -42,17 +42,17 @@ export const WelcomeEmail = ({
       helpTitle: "Need Help?",
       helpText:
         "Our support team is here to assist you. Visit our help center or contact us anytime.",
-      footer: "LegalDocs - AI-Powered Legal Document Platform for GCC",
+      footer: "Qannoni - AI-Powered Legal Document Platform for GCC",
       footerAddress: "Building legal solutions across the Middle East",
       unsubscribe: "Unsubscribe from these emails",
     },
     ar: {
-      preview: "مرحباً بك في LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي",
+      preview: "مرحباً بك في Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي",
       greeting: `مرحباً ${name}،`,
-      title: "مرحباً بك في LegalDocs!",
+      title: "مرحباً بك في Qannoni!",
       paragraph1:
-        "يسعدنا انضمامك إلينا. LegalDocs هي منصتك الموثوقة المدعومة بالذكاء الاصطناعي لإنشاء وإدارة وتوقيع المستندات القانونية في منطقة دول مجلس التعاون الخليجي.",
-      paragraph2: "إليك ما يمكنك القيام به مع LegalDocs:",
+        "يسعدنا انضمامك إلينا. Qannoni هي منصتك الموثوقة المدعومة بالذكاء الاصطناعي لإنشاء وإدارة وتوقيع المستندات القانونية في منطقة دول مجلس التعاون الخليجي.",
+      paragraph2: "إليك ما يمكنك القيام به مع Qannoni:",
       feature1: "إنشاء مستندات متوافقة قانونياً بالعربية والإنجليزية والأردية",
       feature2: "التوقيع الإلكتروني على المستندات بتوقيعات رقمية آمنة",
       feature3: "استشارة متخصصين قانونيين معتمدين",
@@ -61,7 +61,7 @@ export const WelcomeEmail = ({
       helpTitle: "هل تحتاج إلى مساعدة؟",
       helpText:
         "فريق الدعم لدينا هنا لمساعدتك. قم بزيارة مركز المساعدة أو اتصل بنا في أي وقت.",
-      footer: "LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
+      footer: "Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
       footerAddress: "بناء الحلول القانونية في جميع أنحاء الشرق الأوسط",
       unsubscribe: "إلغاء الاشتراك في هذه الرسائل",
     },
@@ -77,10 +77,10 @@ export const WelcomeEmail = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://legaldocs.app/logo.png"
+              src="https://qannoni.com/logo.png"
               width="150"
               height="50"
-              alt="LegalDocs"
+              alt="Qannoni"
               style={logo}
             />
           </Section>
@@ -107,7 +107,7 @@ export const WelcomeEmail = ({
           <Section style={footer}>
             <Text style={footerText}>{t.footer}</Text>
             <Text style={footerText}>{t.footerAddress}</Text>
-            <Link href="https://legaldocs.app/unsubscribe" style={link}>
+            <Link href="https://qannoni.com/unsubscribe" style={link}>
               {t.unsubscribe}
             </Link>
           </Section>

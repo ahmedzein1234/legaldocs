@@ -220,6 +220,8 @@ export async function getCSRFToken(c: Context<{ Bindings: Bindings }>) {
 // ============================================
 
 const ALLOWED_ORIGINS = [
+  'https://www.qannoni.com',
+  'https://qannoni.com',
   'https://legaldocs.pages.dev',
   'https://legaldocs-web.pages.dev',
   'http://localhost:3000',

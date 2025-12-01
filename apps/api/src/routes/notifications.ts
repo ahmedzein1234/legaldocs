@@ -221,7 +221,7 @@ notifications.post(
         .filter((signer: any) => signer.email)
         .map(async (signer: any) => {
           const language = getEmailLanguage(signer.language);
-          const baseUrl = 'https://legaldocs-web.pages.dev';
+          const baseUrl = 'https://www.qannoni.com';
 
           const emailData: DocumentReminderEmailData = {
             signerName: signer.name,

@@ -46,10 +46,10 @@ export function Footer({ className }: FooterProps) {
   ];
 
   const socialLinks = [
-    { href: 'https://twitter.com/legaldocs', icon: Twitter, label: 'Twitter' },
-    { href: 'https://linkedin.com/company/legaldocs', icon: Linkedin, label: 'LinkedIn' },
-    { href: 'https://facebook.com/legaldocs', icon: Facebook, label: 'Facebook' },
-    { href: 'https://instagram.com/legaldocs', icon: Instagram, label: 'Instagram' },
+    { href: 'https://twitter.com/qannoni', icon: Twitter, label: 'Twitter' },
+    { href: 'https://linkedin.com/company/qannoni', icon: Linkedin, label: 'LinkedIn' },
+    { href: 'https://facebook.com/qannoni', icon: Facebook, label: 'Facebook' },
+    { href: 'https://instagram.com/qannoni', icon: Instagram, label: 'Instagram' },
   ];
 
   return (

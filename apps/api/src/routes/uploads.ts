@@ -222,7 +222,7 @@ uploads.post('/extract', rateLimiters.aiGeneration, zValidator('json', uploadSch
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://legaldocs-web.pages.dev',
+        'HTTP-Referer': 'https://www.qannoni.com',
         'X-Title': 'LegalDocs Document Extraction',
       },
       body: JSON.stringify({

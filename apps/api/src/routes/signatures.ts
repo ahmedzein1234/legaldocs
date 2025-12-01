@@ -168,7 +168,7 @@ signatures.post('/request', authMiddleware, zValidator('json', signatureRequestS
   });
 
   // Generate signing URLs
-  const baseUrl = c.env.APP_URL || 'https://legaldocs-web.pages.dev';
+  const baseUrl = c.env.APP_URL || 'https://www.qannoni.com';
   const signingUrls = signers
     .filter(s => s.role !== 'cc')
     .map(s => ({
@@ -341,7 +341,7 @@ signatures.post('/:requestId/remind', authMiddleware, async (c) => {
     (s: any) => s.status === 'pending' || s.status === 'viewed'
   );
 
-  const baseUrl = c.env.APP_URL || 'https://legaldocs-web.pages.dev';
+  const baseUrl = c.env.APP_URL || 'https://www.qannoni.com';
   const daysRemaining = Math.ceil(
     (new Date(request.expiresAt).getTime() - Date.now()) / (1000 * 60 * 60 * 24)
   );

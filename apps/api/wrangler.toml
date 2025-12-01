@@ -9,8 +9,8 @@ port = 4001
 
 # Environment variables (set these in Cloudflare dashboard for production)
 [vars]
-ENVIRONMENT = "development"
-APP_URL = "https://legaldocs-web.pages.dev"
+ENVIRONMENT = "production"
+APP_URL = "https://www.qannoni.com"
 
 # D1 Database (Cloudflare's SQLite)
 [[d1_databases]]

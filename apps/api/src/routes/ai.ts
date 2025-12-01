@@ -167,7 +167,7 @@ ai.post(
     const aiService = createAIService({
       apiKey,
       defaultModel: 'anthropic/claude-sonnet-4',
-      referer: 'https://legaldocs-web.pages.dev',
+      referer: 'https://www.qannoni.com',
       appTitle: 'LegalDocs Document Generation',
     });
 
@@ -285,7 +285,7 @@ ai.post(
     const aiService = createAIService({
       apiKey,
       defaultModel: 'anthropic/claude-sonnet-4',
-      referer: 'https://legaldocs-web.pages.dev',
+      referer: 'https://www.qannoni.com',
       appTitle: 'LegalDocs Negotiation Analysis',
     });
 
@@ -386,7 +386,7 @@ ai.post(
     const aiService = createAIService({
       apiKey,
       defaultModel: 'anthropic/claude-3.5-haiku', // Use Haiku for quick chat
-      referer: 'https://legaldocs-web.pages.dev',
+      referer: 'https://www.qannoni.com',
       appTitle: 'LegalDocs Chat',
     });
 
@@ -558,7 +558,7 @@ ai.post(
     const aiService = createAIService({
       apiKey,
       defaultModel: 'anthropic/claude-sonnet-4',
-      referer: 'https://legaldocs-web.pages.dev',
+      referer: 'https://www.qannoni.com',
       appTitle: 'LegalDocs OCR',
     });
 
@@ -659,7 +659,7 @@ ai.post(
     const aiService = createAIService({
       apiKey,
       defaultModel: 'anthropic/claude-3.5-haiku',
-      referer: 'https://legaldocs-web.pages.dev',
+      referer: 'https://www.qannoni.com',
       appTitle: 'LegalDocs Summarization',
     });
 
@@ -751,7 +751,7 @@ ai.post(
     const aiService = createAIService({
       apiKey,
       defaultModel: 'anthropic/claude-sonnet-4',
-      referer: 'https://legaldocs-web.pages.dev',
+      referer: 'https://www.qannoni.com',
       appTitle: 'LegalDocs Translation',
     });
 

@@ -90,11 +90,13 @@ app.use('*', cors({
     if (origin?.endsWith('.pages.dev')) return origin;
     // Allow custom domains
     const allowedDomains = [
+      'https://www.qannoni.com',
+      'https://qannoni.com',
       'https://legaldocs.pages.dev',
       'https://legaldocs-web.pages.dev',
     ];
     if (allowedDomains.includes(origin || '')) return origin;
-    return 'https://legaldocs-web.pages.dev';
+    return 'https://www.qannoni.com';
   },
   credentials: true,
   allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],

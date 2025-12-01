@@ -1,5 +1,5 @@
 /**
- * Email Templates - Professional multilingual templates for LegalDocs
+ * Email Templates - Professional multilingual templates for Qannoni
  *
  * Provides HTML and plain text versions of all email templates
  * with support for English, Arabic, and Urdu languages.
@@ -71,7 +71,7 @@ const getBaseTemplate = (content: string, language: 'en' | 'ar' | 'ur') => `
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>LegalDocs</title>
+  <title>Qannoni</title>
   <style>
     * {
       margin: 0;
@@ -192,27 +192,27 @@ const getBaseTemplate = (content: string, language: 'en' | 'ar' | 'ur') => `
 <body>
   <div class="container">
     <div class="header">
-      <div class="logo">LegalDocs</div>
+      <div class="logo">Qannoni</div>
       <div class="tagline">${language === 'ar' ? 'منصة الوثائق القانونية الذكية' : language === 'ur' ? 'سمارٹ قانونی دستاویز پلیٹ فارم' : 'Smart Legal Document Platform'}</div>
     </div>
     ${content}
     <div class="footer">
       <div class="footer-text">
         ${language === 'ar'
-          ? 'هذا البريد الإلكتروني مرسل من LegalDocs، منصة إدارة الوثائق القانونية الرائدة في دول الخليج.'
+          ? 'هذا البريد الإلكتروني مرسل من Qannoni، منصة إدارة الوثائق القانونية الرائدة في دول الخليج.'
           : language === 'ur'
-          ? 'یہ ای میل LegalDocs کی جانب سے بھیجی گئی ہے، جو خلیجی ممالک میں قانونی دستاویزات کے انتظام کا سرکردہ پلیٹ فارم ہے۔'
-          : 'This email was sent by LegalDocs, the leading legal document management platform in the GCC.'}
+          ? 'یہ ای میل Qannoni کی جانب سے بھیجی گئی ہے، جو خلیجی ممالک میں قانونی دستاویزات کے انتظام کا سرکردہ پلیٹ فارم ہے۔'
+          : 'This email was sent by Qannoni, the leading legal document management platform in the GCC.'}
       </div>
       <div class="social-links">
-        <a href="https://legaldocs-web.pages.dev">${language === 'ar' ? 'زيارة الموقع' : language === 'ur' ? 'ویب سائٹ دیکھیں' : 'Visit Website'}</a>
+        <a href="https://www.qannoni.com">${language === 'ar' ? 'زيارة الموقع' : language === 'ur' ? 'ویب سائٹ دیکھیں' : 'Visit Website'}</a>
         <span style="color: #d1d5db;">|</span>
-        <a href="https://legaldocs-web.pages.dev/support">${language === 'ar' ? 'الدعم' : language === 'ur' ? 'سپورٹ' : 'Support'}</a>
+        <a href="https://www.qannoni.com/support">${language === 'ar' ? 'الدعم' : language === 'ur' ? 'سپورٹ' : 'Support'}</a>
         <span style="color: #d1d5db;">|</span>
-        <a href="https://legaldocs-web.pages.dev/privacy">${language === 'ar' ? 'الخصوصية' : language === 'ur' ? 'رازداری' : 'Privacy'}</a>
+        <a href="https://www.qannoni.com/privacy">${language === 'ar' ? 'الخصوصية' : language === 'ur' ? 'رازداری' : 'Privacy'}</a>
       </div>
       <div class="copyright">
-        ${new Date().getFullYear()} LegalDocs. ${language === 'ar' ? 'جميع الحقوق محفوظة.' : language === 'ur' ? 'تمام حقوق محفوظ ہیں۔' : 'All rights reserved.'}
+        ${new Date().getFullYear()} Qannoni. ${language === 'ar' ? 'جميع الحقوق محفوظة.' : language === 'ur' ? 'تمام حقوق محفوظ ہیں۔' : 'All rights reserved.'}
       </div>
     </div>
   </div>
@@ -234,17 +234,17 @@ export function getWelcomeEmail(data: WelcomeEmailData) {
       </div>
       <div class="message">
         ${language === 'ar'
-          ? 'مرحباً بك في LegalDocs! نحن سعداء بانضمامك إلى منصتنا.'
+          ? 'مرحباً بك في Qannoni! نحن سعداء بانضمامك إلى منصتنا.'
           : language === 'ur'
-          ? 'LegalDocs میں خوش آمدید! ہمیں آپ کو اپنے پلیٹ فارم پر شامل کر کے خوشی ہے۔'
-          : 'Welcome to LegalDocs! We\'re excited to have you on board.'}
+          ? 'Qannoni میں خوش آمدید! ہمیں آپ کو اپنے پلیٹ فارم پر شامل کر کے خوشی ہے۔'
+          : 'Welcome to Qannoni! We\'re excited to have you on board.'}
       </div>
       <div class="message">
         ${language === 'ar'
-          ? 'LegalDocs هي منصة شاملة لإدارة الوثائق القانونية مصممة خصيصاً لأسواق الإمارات ودول مجلس التعاون الخليجي. مع LegalDocs، يمكنك:'
+          ? 'Qannoni هي منصة شاملة لإدارة الوثائق القانونية مصممة خصيصاً لأسواق الإمارات ودول مجلس التعاون الخليجي. مع Qannoni، يمكنك:'
           : language === 'ur'
-          ? 'LegalDocs ایک جامع قانونی دستاویزات کے انتظام کا پلیٹ فارم ہے جو خاص طور پر متحدہ عرب امارات اور خلیجی ممالک کی مارکیٹوں کے لیے ڈیزائن کیا گیا ہے۔ LegalDocs کے ساتھ، آپ یہ کر سکتے ہیں:'
-          : 'LegalDocs is a comprehensive legal document management platform designed specifically for UAE and GCC markets. With LegalDocs, you can:'}
+          ? 'Qannoni ایک جامع قانونی دستاویزات کے انتظام کا پلیٹ فارم ہے جو خاص طور پر متحدہ عرب امارات اور خلیجی ممالک کی مارکیٹوں کے لیے ڈیزائن کیا گیا ہے۔ Qannoni کے ساتھ، آپ یہ کر سکتے ہیں:'
+          : 'Qannoni is a comprehensive legal document management platform designed specifically for UAE and GCC markets. With Qannoni, you can:'}
       </div>
       <div class="info-box">
         <div class="info-box-text">
@@ -256,7 +256,7 @@ export function getWelcomeEmail(data: WelcomeEmailData) {
         </div>
       </div>
       <div style="text-align: center;">
-        <a href="https://legaldocs-web.pages.dev/dashboard" class="button">
+        <a href="https://www.qannoni.com/dashboard" class="button">
           ${language === 'ar' ? 'انتقل إلى لوحة التحكم' : language === 'ur' ? 'ڈیش بورڈ پر جائیں' : 'Go to Dashboard'}
         </a>
       </div>
@@ -272,13 +272,13 @@ export function getWelcomeEmail(data: WelcomeEmailData) {
   `;
 
   const plainText = language === 'ar'
-    ? `مرحباً ${userName},\n\nمرحباً بك في LegalDocs! نحن سعداء بانضمامك إلى منصتنا.\n\nيمكنك الآن البدء في إنشاء وإدارة وثائقك القانونية بكل سهولة.\n\nانتقل إلى لوحة التحكم: https://legaldocs-web.pages.dev/dashboard\n\nشكراً،\nفريق LegalDocs`
+    ? `مرحباً ${userName},\n\nمرحباً بك في Qannoni! نحن سعداء بانضمامك إلى منصتنا.\n\nيمكنك الآن البدء في إنشاء وإدارة وثائقك القانونية بكل سهولة.\n\nانتقل إلى لوحة التحكم: https://www.qannoni.com/dashboard\n\nشكراً،\nفريق Qannoni`
     : language === 'ur'
-    ? `${userName} خوش آمدید،\n\nLegalDocs میں خوش آمدید! ہمیں آپ کو اپنے پلیٹ فارم پر شامل کر کے خوشی ہے۔\n\nاب آپ آسانی سے اپنی قانونی دستاویزات بنانا اور ان کا انتظام شروع کر سکتے ہیں۔\n\nڈیش بورڈ پر جائیں: https://legaldocs-web.pages.dev/dashboard\n\nشکریہ،\nLegalDocs ٹیم`
-    : `Hello ${userName},\n\nWelcome to LegalDocs! We're excited to have you on board.\n\nYou can now start creating and managing your legal documents with ease.\n\nGo to Dashboard: https://legaldocs-web.pages.dev/dashboard\n\nBest regards,\nThe LegalDocs Team`;
+    ? `${userName} خوش آمدید،\n\nQannoni میں خوش آمدید! ہمیں آپ کو اپنے پلیٹ فارم پر شامل کر کے خوشی ہے۔\n\nاب آپ آسانی سے اپنی قانونی دستاویزات بنانا اور ان کا انتظام شروع کر سکتے ہیں۔\n\nڈیش بورڈ پر جائیں: https://www.qannoni.com/dashboard\n\nشکریہ،\nQannoni ٹیم`
+    : `Hello ${userName},\n\nWelcome to Qannoni! We're excited to have you on board.\n\nYou can now start creating and managing your legal documents with ease.\n\nGo to Dashboard: https://www.qannoni.com/dashboard\n\nBest regards,\nThe Qannoni Team`;
 
   return {
-    subject: language === 'ar' ? 'مرحباً بك في LegalDocs' : language === 'ur' ? 'LegalDocs میں خوش آمدید' : 'Welcome to LegalDocs',
+    subject: language === 'ar' ? 'مرحباً بك في Qannoni' : language === 'ur' ? 'Qannoni میں خوش آمدید' : 'Welcome to Qannoni',
     html: getBaseTemplate(content, language),
     text: plainText,
   };
@@ -298,10 +298,10 @@ export function getPasswordResetEmail(data: PasswordResetEmailData) {
       </div>
       <div class="message">
         ${language === 'ar'
-          ? 'تلقينا طلباً لإعادة تعيين كلمة المرور لحسابك في LegalDocs.'
+          ? 'تلقينا طلباً لإعادة تعيين كلمة المرور لحسابك في Qannoni.'
           : language === 'ur'
-          ? 'ہمیں آپ کے LegalDocs اکاؤنٹ کے لیے پاس ورڈ ری سیٹ کرنے کی درخواست موصول ہوئی ہے۔'
-          : 'We received a request to reset your password for your LegalDocs account.'}
+          ? 'ہمیں آپ کے Qannoni اکاؤنٹ کے لیے پاس ورڈ ری سیٹ کرنے کی درخواست موصول ہوئی ہے۔'
+          : 'We received a request to reset your password for your Qannoni account.'}
       </div>
       <div style="text-align: center;">
         <a href="${resetLink}" class="button">
@@ -334,13 +334,13 @@ export function getPasswordResetEmail(data: PasswordResetEmailData) {
   `;
 
   const plainText = language === 'ar'
-    ? `مرحباً ${userName},\n\nتلقينا طلباً لإعادة تعيين كلمة المرور لحسابك.\n\nانقر على الرابط التالي لإعادة تعيين كلمة المرور:\n${resetLink}\n\nهذا الرابط صالح لمدة ${expiresInHours} ساعة فقط.\n\nإذا لم تطلب إعادة تعيين كلمة المرور، يرجى تجاهل هذا البريد الإلكتروني.\n\nشكراً،\nفريق LegalDocs`
+    ? `مرحباً ${userName},\n\nتلقينا طلباً لإعادة تعيين كلمة المرور لحسابك.\n\nانقر على الرابط التالي لإعادة تعيين كلمة المرور:\n${resetLink}\n\nهذا الرابط صالح لمدة ${expiresInHours} ساعة فقط.\n\nإذا لم تطلب إعادة تعيين كلمة المرور، يرجى تجاهل هذا البريد الإلكتروني.\n\nشكراً،\nفريق Qannoni`
     : language === 'ur'
-    ? `${userName} خوش آمدید،\n\nہمیں آپ کے پاس ورڈ کو ری سیٹ کرنے کی درخواست موصول ہوئی ہے۔\n\nاپنا پاس ورڈ ری سیٹ کرنے کے لیے نیچے دیے گئے لنک پر کلک کریں:\n${resetLink}\n\nیہ لنک صرف ${expiresInHours} گھنٹے کے لیے درست ہے۔\n\nاگر آپ نے پاس ورڈ ری سیٹ کی درخواست نہیں کی، تو براہ کرم اس ای میل کو نظر انداز کریں۔\n\nشکریہ،\nLegalDocs ٹیم`
-    : `Hello ${userName},\n\nWe received a request to reset your password.\n\nClick the link below to reset your password:\n${resetLink}\n\nThis link is valid for ${expiresInHours} hours only.\n\nIf you didn't request a password reset, please ignore this email.\n\nBest regards,\nThe LegalDocs Team`;
+    ? `${userName} خوش آمدید،\n\nہمیں آپ کے پاس ورڈ کو ری سیٹ کرنے کی درخواست موصول ہوئی ہے۔\n\nاپنا پاس ورڈ ری سیٹ کرنے کے لیے نیچے دیے گئے لنک پر کلک کریں:\n${resetLink}\n\nیہ لنک صرف ${expiresInHours} گھنٹے کے لیے درست ہے۔\n\nاگر آپ نے پاس ورڈ ری سیٹ کی درخواست نہیں کی، تو براہ کرم اس ای میل کو نظر انداز کریں۔\n\nشکریہ،\nQannoni ٹیم`
+    : `Hello ${userName},\n\nWe received a request to reset your password.\n\nClick the link below to reset your password:\n${resetLink}\n\nThis link is valid for ${expiresInHours} hours only.\n\nIf you didn't request a password reset, please ignore this email.\n\nBest regards,\nThe Qannoni Team`;
 
   return {
-    subject: language === 'ar' ? 'إعادة تعيين كلمة المرور - LegalDocs' : language === 'ur' ? 'پاس ورڈ ری سیٹ - LegalDocs' : 'Password Reset - LegalDocs',
+    subject: language === 'ar' ? 'إعادة تعيين كلمة المرور - Qannoni' : language === 'ur' ? 'پاس ورڈ ری سیٹ - Qannoni' : 'Password Reset - Qannoni',
     html: getBaseTemplate(content, language),
     text: plainText,
   };
@@ -360,10 +360,10 @@ export function getDocumentSharedEmail(data: DocumentSharedEmailData) {
       </div>
       <div class="message">
         ${language === 'ar'
-          ? `قام ${senderName} بمشاركة وثيقة معك على LegalDocs.`
+          ? `قام ${senderName} بمشاركة وثيقة معك على Qannoni.`
           : language === 'ur'
-          ? `${senderName} نے LegalDocs پر آپ کے ساتھ ایک دستاویز شیئر کی ہے۔`
-          : `${senderName} has shared a document with you on LegalDocs.`}
+          ? `${senderName} نے Qannoni پر آپ کے ساتھ ایک دستاویز شیئر کی ہے۔`
+          : `${senderName} has shared a document with you on Qannoni.`}
       </div>
       <div class="info-box">
         <div class="info-box-title">
@@ -388,19 +388,19 @@ export function getDocumentSharedEmail(data: DocumentSharedEmailData) {
       <div class="divider"></div>
       <div class="message" style="font-size: 13px; color: #6b7280;">
         ${language === 'ar'
-          ? 'يمكنك عرض هذه الوثيقة وتنزيلها من خلال لوحة التحكم في LegalDocs.'
+          ? 'يمكنك عرض هذه الوثيقة وتنزيلها من خلال لوحة التحكم في Qannoni.'
           : language === 'ur'
-          ? 'آپ اپنے LegalDocs ڈیش بورڈ سے اس دستاویز کو دیکھ اور ڈاؤن لوڈ کر سکتے ہیں۔'
-          : 'You can view and download this document from your LegalDocs dashboard.'}
+          ? 'آپ اپنے Qannoni ڈیش بورڈ سے اس دستاویز کو دیکھ اور ڈاؤن لوڈ کر سکتے ہیں۔'
+          : 'You can view and download this document from your Qannoni dashboard.'}
       </div>
     </div>
   `;
 
   const plainText = language === 'ar'
-    ? `مرحباً ${recipientName},\n\nقام ${senderName} بمشاركة وثيقة معك: ${documentName}\nالنوع: ${documentType}\n\n${message ? `رسالة: "${message}"\n\n` : ''}اعرض الوثيقة: ${viewLink}\n\nشكراً،\nفريق LegalDocs`
+    ? `مرحباً ${recipientName},\n\nقام ${senderName} بمشاركة وثيقة معك: ${documentName}\nالنوع: ${documentType}\n\n${message ? `رسالة: "${message}"\n\n` : ''}اعرض الوثيقة: ${viewLink}\n\nشكراً،\nفريق Qannoni`
     : language === 'ur'
-    ? `${recipientName} خوش آمدید،\n\n${senderName} نے آپ کے ساتھ ایک دستاویز شیئر کی ہے: ${documentName}\nقسم: ${documentType}\n\n${message ? `پیغام: "${message}"\n\n` : ''}دستاویز دیکھیں: ${viewLink}\n\nشکریہ،\nLegalDocs ٹیم`
-    : `Hello ${recipientName},\n\n${senderName} has shared a document with you: ${documentName}\nType: ${documentType}\n\n${message ? `Message: "${message}"\n\n` : ''}View Document: ${viewLink}\n\nBest regards,\nThe LegalDocs Team`;
+    ? `${recipientName} خوش آمدید،\n\n${senderName} نے آپ کے ساتھ ایک دستاویز شیئر کی ہے: ${documentName}\nقسم: ${documentType}\n\n${message ? `پیغام: "${message}"\n\n` : ''}دستاویز دیکھیں: ${viewLink}\n\nشکریہ،\nQannoni ٹیم`
+    : `Hello ${recipientName},\n\n${senderName} has shared a document with you: ${documentName}\nType: ${documentType}\n\n${message ? `Message: "${message}"\n\n` : ''}View Document: ${viewLink}\n\nBest regards,\nThe Qannoni Team`;
 
   return {
     subject: language === 'ar'
@@ -454,10 +454,10 @@ export function getSignatureRequestEmail(data: SignatureRequestEmailData) {
       </div>
       <div class="message">
         ${language === 'ar'
-          ? `يطلب منك ${senderName} التوقيع على وثيقة على LegalDocs.`
+          ? `يطلب منك ${senderName} التوقيع على وثيقة على Qannoni.`
           : language === 'ur'
-          ? `${senderName} نے LegalDocs کے ذریعے ایک دستاویز پر آپ کے دستخط کی درخواست کی ہے۔`
-          : `${senderName} has requested your signature on a document via LegalDocs.`}
+          ? `${senderName} نے Qannoni کے ذریعے ایک دستاویز پر آپ کے دستخط کی درخواست کی ہے۔`
+          : `${senderName} has requested your signature on a document via Qannoni.`}
       </div>
       <div class="info-box">
         <div class="info-box-title">
@@ -493,10 +493,10 @@ export function getSignatureRequestEmail(data: SignatureRequestEmailData) {
   `;
 
   const plainText = language === 'ar'
-    ? `مرحباً ${signerName},\n\nيطلب منك ${senderName} التوقيع على وثيقة.\n\nالوثيقة: ${documentName}\nالنوع: ${documentType}\nدورك: ${roleText.ar[role as keyof typeof roleText.ar]}\nتنتهي الصلاحية: ${expiryDate}\n\n${message ? `رسالة: "${message}"\n\n` : ''}مراجعة والتوقيع: ${signingLink}\n\nشكراً،\nفريق LegalDocs`
+    ? `مرحباً ${signerName},\n\nيطلب منك ${senderName} التوقيع على وثيقة.\n\nالوثيقة: ${documentName}\nالنوع: ${documentType}\nدورك: ${roleText.ar[role as keyof typeof roleText.ar]}\nتنتهي الصلاحية: ${expiryDate}\n\n${message ? `رسالة: "${message}"\n\n` : ''}مراجعة والتوقيع: ${signingLink}\n\nشكراً،\nفريق Qannoni`
     : language === 'ur'
-    ? `${signerName} خوش آمدید،\n\n${senderName} نے ایک دستاویز پر آپ کے دستخط کی درخواست کی ہے۔\n\nدستاویز: ${documentName}\nقسم: ${documentType}\nآپ کا کردار: ${roleText.ur[role as keyof typeof roleText.ur]}\nمیعاد ختم: ${expiryDate}\n\n${message ? `پیغام: "${message}"\n\n` : ''}جائزہ لیں اور دستخط کریں: ${signingLink}\n\nشکریہ،\nLegalDocs ٹیم`
-    : `Hello ${signerName},\n\n${senderName} has requested your signature on a document.\n\nDocument: ${documentName}\nType: ${documentType}\nYour Role: ${roleText.en[role as keyof typeof roleText.en]}\nExpires: ${expiryDate}\n\n${message ? `Message: "${message}"\n\n` : ''}Review & Sign: ${signingLink}\n\nBest regards,\nThe LegalDocs Team`;
+    ? `${signerName} خوش آمدید،\n\n${senderName} نے ایک دستاویز پر آپ کے دستخط کی درخواست کی ہے۔\n\nدستاویز: ${documentName}\nقسم: ${documentType}\nآپ کا کردار: ${roleText.ur[role as keyof typeof roleText.ur]}\nمیعاد ختم: ${expiryDate}\n\n${message ? `پیغام: "${message}"\n\n` : ''}جائزہ لیں اور دستخط کریں: ${signingLink}\n\nشکریہ،\nQannoni ٹیم`
+    : `Hello ${signerName},\n\n${senderName} has requested your signature on a document.\n\nDocument: ${documentName}\nType: ${documentType}\nYour Role: ${roleText.en[role as keyof typeof roleText.en]}\nExpires: ${expiryDate}\n\n${message ? `Message: "${message}"\n\n` : ''}Review & Sign: ${signingLink}\n\nBest regards,\nThe Qannoni Team`;
 
   return {
     subject: language === 'ar'
@@ -560,19 +560,19 @@ export function getSignatureCompletedEmail(data: SignatureCompletedEmailData) {
       <div class="divider"></div>
       <div class="message" style="font-size: 13px; color: #6b7280;">
         ${language === 'ar'
-          ? 'يتم تخزين الوثيقة الموقعة بشكل آمن في حسابك على LegalDocs.'
+          ? 'يتم تخزين الوثيقة الموقعة بشكل آمن في حسابك على Qannoni.'
           : language === 'ur'
-          ? 'دستخط شدہ دستاویز آپ کے LegalDocs اکاؤنٹ میں محفوظ طریقے سے محفوظ ہے۔'
-          : 'The signed document is securely stored in your LegalDocs account.'}
+          ? 'دستخط شدہ دستاویز آپ کے Qannoni اکاؤنٹ میں محفوظ طریقے سے محفوظ ہے۔'
+          : 'The signed document is securely stored in your Qannoni account.'}
       </div>
     </div>
   `;
 
   const plainText = language === 'ar'
-    ? `مرحباً ${recipientName},\n\nتم التوقيع على وثيقتك "${documentName}" بنجاح!\n\nالموقّع: ${signerName}\nالتاريخ: ${completedDate}\n\nتنزيل الوثيقة: ${downloadLink}\n\nشكراً،\nفريق LegalDocs`
+    ? `مرحباً ${recipientName},\n\nتم التوقيع على وثيقتك "${documentName}" بنجاح!\n\nالموقّع: ${signerName}\nالتاريخ: ${completedDate}\n\nتنزيل الوثيقة: ${downloadLink}\n\nشكراً،\nفريق Qannoni`
     : language === 'ur'
-    ? `${recipientName} خوش آمدید،\n\nآپ کی دستاویز "${documentName}" پر کامیابی سے دستخط ہو گئے ہیں!\n\nدستخط کنندہ: ${signerName}\nتاریخ: ${completedDate}\n\nدستاویز ڈاؤن لوڈ کریں: ${downloadLink}\n\nشکریہ،\nLegalDocs ٹیم`
-    : `Hello ${recipientName},\n\nYour document "${documentName}" has been successfully signed!\n\nSigned by: ${signerName}\nDate: ${completedDate}\n\nDownload Document: ${downloadLink}\n\nBest regards,\nThe LegalDocs Team`;
+    ? `${recipientName} خوش آمدید،\n\nآپ کی دستاویز "${documentName}" پر کامیابی سے دستخط ہو گئے ہیں!\n\nدستخط کنندہ: ${signerName}\nتاریخ: ${completedDate}\n\nدستاویز ڈاؤن لوڈ کریں: ${downloadLink}\n\nشکریہ،\nQannoni ٹیم`
+    : `Hello ${recipientName},\n\nYour document "${documentName}" has been successfully signed!\n\nSigned by: ${signerName}\nDate: ${completedDate}\n\nDownload Document: ${downloadLink}\n\nBest regards,\nThe Qannoni Team`;
 
   return {
     subject: language === 'ar'
@@ -607,10 +607,10 @@ export function getDocumentReminderEmail(data: DocumentReminderEmailData) {
       </div>
       <div class="message">
         ${language === 'ar'
-          ? 'هذا تذكير بأن لديك وثيقة تنتظر توقيعك على LegalDocs.'
+          ? 'هذا تذكير بأن لديك وثيقة تنتظر توقيعك على Qannoni.'
           : language === 'ur'
-          ? 'یہ ایک یاد دہانی ہے کہ LegalDocs پر آپ کے دستخط کے منتظر ایک دستاویز موجود ہے۔'
-          : 'This is a reminder that you have a document waiting for your signature on LegalDocs.'}
+          ? 'یہ ایک یاد دہانی ہے کہ Qannoni پر آپ کے دستخط کے منتظر ایک دستاویز موجود ہے۔'
+          : 'This is a reminder that you have a document waiting for your signature on Qannoni.'}
       </div>
       <div class="info-box">
         <div class="info-box-title">
@@ -649,10 +649,10 @@ export function getDocumentReminderEmail(data: DocumentReminderEmailData) {
   `;
 
   const plainText = language === 'ar'
-    ? `مرحباً ${signerName},\n\nتذكير: لديك وثيقة تنتظر توقيعك.\n\nالوثيقة: ${documentName}\nتنتهي الصلاحية: ${expiryDate}\n\nالتوقيع الآن: ${signingLink}\n\nشكراً،\nفريق LegalDocs`
+    ? `مرحباً ${signerName},\n\nتذكير: لديك وثيقة تنتظر توقيعك.\n\nالوثيقة: ${documentName}\nتنتهي الصلاحية: ${expiryDate}\n\nالتوقيع الآن: ${signingLink}\n\nشكراً،\nفريق Qannoni`
     : language === 'ur'
-    ? `${signerName} خوش آمدید،\n\nیاد دہانی: آپ کے دستخط کے منتظر ایک دستاویز موجود ہے۔\n\nدستاویز: ${documentName}\nمیعاد ختم: ${expiryDate}\n\nابھی دستخط کریں: ${signingLink}\n\nشکریہ،\nLegalDocs ٹیم`
-    : `Hello ${signerName},\n\nReminder: You have a document waiting for your signature.\n\nDocument: ${documentName}\nExpires: ${expiryDate}\n\nSign Now: ${signingLink}\n\nBest regards,\nThe LegalDocs Team`;
+    ? `${signerName} خوش آمدید،\n\nیاد دہانی: آپ کے دستخط کے منتظر ایک دستاویز موجود ہے۔\n\nدستاویز: ${documentName}\nمیعاد ختم: ${expiryDate}\n\nابھی دستخط کریں: ${signingLink}\n\nشکریہ،\nQannoni ٹیم`
+    : `Hello ${signerName},\n\nReminder: You have a document waiting for your signature.\n\nDocument: ${documentName}\nExpires: ${expiryDate}\n\nSign Now: ${signingLink}\n\nBest regards,\nThe Qannoni Team`;
 
   return {
     subject: language === 'ar'

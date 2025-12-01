@@ -36,11 +36,11 @@ export const ConsultationBooked = ({
   consultationDate,
   consultationTime,
   duration = "30 minutes",
-  meetingUrl = "https://legaldocs.app/consultation",
+  meetingUrl = "https://qannoni.com/consultation",
   consultationType = "video",
   notes,
-  rescheduleUrl = "https://legaldocs.app/reschedule",
-  cancelUrl = "https://legaldocs.app/cancel",
+  rescheduleUrl = "https://qannoni.com/reschedule",
+  cancelUrl = "https://qannoni.com/cancel",
 }: ConsultationBookedProps) => {
   const isRTL = locale === "ar";
 
@@ -81,7 +81,7 @@ export const ConsultationBooked = ({
       rescheduleText: "Need to reschedule or cancel?",
       reschedule: "Reschedule",
       cancel: "Cancel Consultation",
-      footer: "LegalDocs - AI-Powered Legal Document Platform for GCC",
+      footer: "Qannoni - AI-Powered Legal Document Platform for GCC",
       footerAddress: "Building legal solutions across the Middle East",
     },
     ar: {
@@ -107,7 +107,7 @@ export const ConsultationBooked = ({
       rescheduleText: "هل تحتاج إلى إعادة الجدولة أو الإلغاء؟",
       reschedule: "إعادة الجدولة",
       cancel: "إلغاء الاستشارة",
-      footer: "LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
+      footer: "Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
       footerAddress: "بناء الحلول القانونية في جميع أنحاء الشرق الأوسط",
     },
   };
@@ -123,10 +123,10 @@ export const ConsultationBooked = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://legaldocs.app/logo.png"
+              src="https://qannoni.com/logo.png"
               width="150"
               height="50"
-              alt="LegalDocs"
+              alt="Qannoni"
               style={logo}
             />
           </Section>

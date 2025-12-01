@@ -25,7 +25,7 @@ interface LawyerVerificationProps {
 export const LawyerVerification = ({
   lawyerName,
   locale = "en",
-  dashboardUrl = "https://legaldocs.app/lawyer-portal",
+  dashboardUrl = "https://qannoni.com/lawyer-portal",
   licenseNumber,
   specialties = [],
   verificationDate,
@@ -34,11 +34,11 @@ export const LawyerVerification = ({
 
   const content = {
     en: {
-      preview: "Your lawyer account has been verified - Welcome to LegalDocs",
+      preview: "Your lawyer account has been verified - Welcome to Qannoni",
       greeting: `Dear ${lawyerName},`,
       title: "Account Verified!",
       paragraph1:
-        "Congratulations! Your lawyer account has been successfully verified. You can now start offering legal consultations and connecting with clients through the LegalDocs platform.",
+        "Congratulations! Your lawyer account has been successfully verified. You can now start offering legal consultations and connecting with clients through the Qannoni platform.",
       verificationLabel: "Verification Details:",
       licenseLabel: "License Number:",
       specialtiesLabel: "Verified Specialties:",
@@ -56,20 +56,20 @@ export const LawyerVerification = ({
       guideline2: "Respond to consultation requests within 24 hours",
       guideline3: "Provide accurate and professional legal advice",
       guideline4: "Keep your availability calendar up to date",
-      guideline5: "Follow the LegalDocs code of professional conduct",
+      guideline5: "Follow the Qannoni code of professional conduct",
       supportTitle: "Getting Started:",
       supportText:
         "We recommend completing your profile and setting up your availability right away. Check out our lawyer portal guide for tips on maximizing your success on the platform.",
-      helpText: "Questions? Contact our lawyer support team at lawyers@legaldocs.app",
-      footer: "LegalDocs - AI-Powered Legal Document Platform for GCC",
+      helpText: "Questions? Contact our lawyer support team at lawyers@qannoni.com",
+      footer: "Qannoni - AI-Powered Legal Document Platform for GCC",
       footerAddress: "Building legal solutions across the Middle East",
     },
     ar: {
-      preview: "تم التحقق من حساب المحامي الخاص بك - مرحباً بك في LegalDocs",
+      preview: "تم التحقق من حساب المحامي الخاص بك - مرحباً بك في Qannoni",
       greeting: `عزيزي ${lawyerName}،`,
       title: "تم التحقق من الحساب!",
       paragraph1:
-        "تهانينا! تم التحقق من حساب المحامي الخاص بك بنجاح. يمكنك الآن البدء في تقديم الاستشارات القانونية والتواصل مع العملاء من خلال منصة LegalDocs.",
+        "تهانينا! تم التحقق من حساب المحامي الخاص بك بنجاح. يمكنك الآن البدء في تقديم الاستشارات القانونية والتواصل مع العملاء من خلال منصة Qannoni.",
       verificationLabel: "تفاصيل التحقق:",
       licenseLabel: "رقم الترخيص:",
       specialtiesLabel: "التخصصات المعتمدة:",
@@ -87,12 +87,12 @@ export const LawyerVerification = ({
       guideline2: "الرد على طلبات الاستشارة خلال 24 ساعة",
       guideline3: "تقديم مشورة قانونية دقيقة ومهنية",
       guideline4: "حافظ على تحديث تقويم التوفر الخاص بك",
-      guideline5: "اتبع قواعد السلوك المهني في LegalDocs",
+      guideline5: "اتبع قواعد السلوك المهني في Qannoni",
       supportTitle: "البدء:",
       supportText:
         "نوصي بإكمال ملفك الشخصي وإعداد توفرك على الفور. تحقق من دليل بوابة المحامين للحصول على نصائح لتحقيق أقصى نجاح على المنصة.",
-      helpText: "أسئلة؟ اتصل بفريق دعم المحامين لدينا على lawyers@legaldocs.app",
-      footer: "LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
+      helpText: "أسئلة؟ اتصل بفريق دعم المحامين لدينا على lawyers@qannoni.com",
+      footer: "Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
       footerAddress: "بناء الحلول القانونية في جميع أنحاء الشرق الأوسط",
     },
   };
@@ -108,10 +108,10 @@ export const LawyerVerification = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://legaldocs.app/logo.png"
+              src="https://qannoni.com/logo.png"
               width="150"
               height="50"
-              alt="LegalDocs"
+              alt="Qannoni"
               style={logo}
             />
           </Section>

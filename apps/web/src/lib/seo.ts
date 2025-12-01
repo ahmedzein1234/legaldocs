@@ -1,7 +1,7 @@
 import { Metadata } from 'next';
 import { Locale } from '@/i18n';
 
-export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://legaldocs.ae';
+export const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL || 'https://www.qannoni.com';
 
 export interface SEOMetadata {
   title: string;

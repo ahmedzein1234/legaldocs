@@ -24,7 +24,7 @@ interface PasswordResetProps {
 export const PasswordReset = ({
   name,
   locale = "en",
-  resetUrl = "https://legaldocs.app/reset-password",
+  resetUrl = "https://qannoni.com/reset-password",
   ipAddress = "192.168.1.1",
   location = "Unknown",
 }: PasswordResetProps) => {
@@ -32,11 +32,11 @@ export const PasswordReset = ({
 
   const content = {
     en: {
-      preview: "Reset your LegalDocs password",
+      preview: "Reset your Qannoni password",
       greeting: `Hi ${name},`,
       title: "Reset Your Password",
       paragraph1:
-        "We received a request to reset your password for your LegalDocs account. If you made this request, click the button below to reset your password.",
+        "We received a request to reset your password for your Qannoni account. If you made this request, click the button below to reset your password.",
       paragraph2:
         "For your security, this link will expire in 1 hour and can only be used once.",
       cta: "Reset Password",
@@ -48,16 +48,16 @@ export const PasswordReset = ({
       securityTitle: "Didn't Request This?",
       securityText:
         "If you didn't request a password reset, please ignore this email. Your password will remain unchanged. However, if you're concerned about your account security, please contact our support team immediately.",
-      supportText: "Need help? Contact our support team at support@legaldocs.app",
-      footer: "LegalDocs - AI-Powered Legal Document Platform for GCC",
+      supportText: "Need help? Contact our support team at support@qannoni.com",
+      footer: "Qannoni - AI-Powered Legal Document Platform for GCC",
       footerAddress: "Building legal solutions across the Middle East",
     },
     ar: {
-      preview: "إعادة تعيين كلمة مرور LegalDocs الخاصة بك",
+      preview: "إعادة تعيين كلمة مرور Qannoni الخاصة بك",
       greeting: `مرحباً ${name}،`,
       title: "إعادة تعيين كلمة المرور",
       paragraph1:
-        "تلقينا طلباً لإعادة تعيين كلمة المرور لحساب LegalDocs الخاص بك. إذا قمت بهذا الطلب، انقر على الزر أدناه لإعادة تعيين كلمة المرور.",
+        "تلقينا طلباً لإعادة تعيين كلمة المرور لحساب Qannoni الخاص بك. إذا قمت بهذا الطلب، انقر على الزر أدناه لإعادة تعيين كلمة المرور.",
       paragraph2:
         "لأمانك، سينتهي صلاحية هذا الرابط خلال ساعة واحدة ويمكن استخدامه مرة واحدة فقط.",
       cta: "إعادة تعيين كلمة المرور",
@@ -69,8 +69,8 @@ export const PasswordReset = ({
       securityTitle: "لم تطلب هذا؟",
       securityText:
         "إذا لم تطلب إعادة تعيين كلمة المرور، يرجى تجاهل هذا البريد الإلكتروني. ستظل كلمة المرور الخاصة بك دون تغيير. ومع ذلك، إذا كانت لديك مخاوف بشأن أمان حسابك، يرجى الاتصال بفريق الدعم لدينا على الفور.",
-      supportText: "هل تحتاج إلى مساعدة؟ اتصل بفريق الدعم لدينا على support@legaldocs.app",
-      footer: "LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
+      supportText: "هل تحتاج إلى مساعدة؟ اتصل بفريق الدعم لدينا على support@qannoni.com",
+      footer: "Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
       footerAddress: "بناء الحلول القانونية في جميع أنحاء الشرق الأوسط",
     },
   };
@@ -86,10 +86,10 @@ export const PasswordReset = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://legaldocs.app/logo.png"
+              src="https://qannoni.com/logo.png"
               width="150"
               height="50"
-              alt="LegalDocs"
+              alt="Qannoni"
               style={logo}
             />
           </Section>

@@ -30,7 +30,7 @@ export const SignatureRequest = ({
   documentName,
   documentType = "Legal Document",
   locale = "en",
-  signUrl = "https://legaldocs.app/sign",
+  signUrl = "https://qannoni.com/sign",
   dueDate,
   message,
 }: SignatureRequestProps) => {
@@ -52,8 +52,8 @@ export const SignatureRequest = ({
       securityNote:
         "This document is protected with end-to-end encryption. Your signature will be legally binding.",
       helpText:
-        "Need help signing? Visit our help center or contact support@legaldocs.app",
-      footer: "LegalDocs - AI-Powered Legal Document Platform for GCC",
+        "Need help signing? Visit our help center or contact support@qannoni.com",
+      footer: "Qannoni - AI-Powered Legal Document Platform for GCC",
       footerAddress: "Building legal solutions across the Middle East",
     },
     ar: {
@@ -71,8 +71,8 @@ export const SignatureRequest = ({
       securityNote:
         "هذا المستند محمي بالتشفير من طرف إلى طرف. سيكون توقيعك ملزماً قانونياً.",
       helpText:
-        "هل تحتاج إلى مساعدة في التوقيع؟ قم بزيارة مركز المساعدة أو اتصل بـ support@legaldocs.app",
-      footer: "LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
+        "هل تحتاج إلى مساعدة في التوقيع؟ قم بزيارة مركز المساعدة أو اتصل بـ support@qannoni.com",
+      footer: "Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
       footerAddress: "بناء الحلول القانونية في جميع أنحاء الشرق الأوسط",
     },
   };
@@ -87,10 +87,10 @@ export const SignatureRequest = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://legaldocs.app/logo.png"
+              src="https://qannoni.com/logo.png"
               width="150"
               height="50"
-              alt="LegalDocs"
+              alt="Qannoni"
               style={logo}
             />
           </Section>
@@ -102,7 +102,7 @@ export const SignatureRequest = ({
             <Section style={documentSection}>
               <Section style={documentHeader}>
                 <Img
-                  src="https://legaldocs.app/icons/document.png"
+                  src="https://qannoni.com/icons/document.png"
                   width="48"
                   height="48"
                   alt="Document"

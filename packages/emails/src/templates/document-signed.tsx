@@ -27,7 +27,7 @@ export const DocumentSigned = ({
   signerName,
   documentName,
   locale = "en",
-  documentUrl = "https://legaldocs.app/documents",
+  documentUrl = "https://qannoni.com/documents",
   signedAt,
   remainingSigners = [],
 }: DocumentSignedProps) => {
@@ -47,7 +47,7 @@ export const DocumentSigned = ({
       nextSteps: "What's Next?",
       nextStepsText:
         "You will receive another notification once all parties have signed the document. The finalized document will be available in your dashboard.",
-      footer: "LegalDocs - AI-Powered Legal Document Platform for GCC",
+      footer: "Qannoni - AI-Powered Legal Document Platform for GCC",
       footerAddress: "Building legal solutions across the Middle East",
     },
     ar: {
@@ -63,7 +63,7 @@ export const DocumentSigned = ({
       nextSteps: "ما التالي؟",
       nextStepsText:
         "ستتلقى إشعاراً آخر بمجرد أن توقع جميع الأطراف على المستند. سيكون المستند النهائي متاحاً في لوحة التحكم الخاصة بك.",
-      footer: "LegalDocs - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
+      footer: "Qannoni - منصة المستندات القانونية المدعومة بالذكاء الاصطناعي لدول مجلس التعاون الخليجي",
       footerAddress: "بناء الحلول القانونية في جميع أنحاء الشرق الأوسط",
     },
   };
@@ -79,10 +79,10 @@ export const DocumentSigned = ({
         <Container style={container}>
           <Section style={header}>
             <Img
-              src="https://legaldocs.app/logo.png"
+              src="https://qannoni.com/logo.png"
               width="150"
               height="50"
-              alt="LegalDocs"
+              alt="Qannoni"
               style={logo}
             />
           </Section>

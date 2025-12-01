@@ -265,7 +265,7 @@ advisor.post('/consult', rateLimiters.aiGeneration, zValidator('json', consultat
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://legaldocs-web.pages.dev',
+        'HTTP-Referer': 'https://www.qannoni.com',
         'X-Title': 'LegalDocs Advisor',
       },
       body: JSON.stringify({
@@ -331,7 +331,7 @@ advisor.post('/review', rateLimiters.aiGeneration, zValidator('json', reviewSche
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://legaldocs-web.pages.dev',
+        'HTTP-Referer': 'https://www.qannoni.com',
         'X-Title': 'LegalDocs Review',
       },
       body: JSON.stringify({
@@ -406,7 +406,7 @@ advisor.post('/strategy', rateLimiters.aiGeneration, zValidator('json', strategy
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'HTTP-Referer': 'https://legaldocs-web.pages.dev',
+        'HTTP-Referer': 'https://www.qannoni.com',
         'X-Title': 'LegalDocs Strategy',
       },
       body: JSON.stringify({
