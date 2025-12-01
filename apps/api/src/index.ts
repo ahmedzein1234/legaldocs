@@ -36,6 +36,7 @@ import {
   uploads,
   notifications,
   lawyers,
+  cases,
   consultations,
   messaging,
   lawyerDashboard,
@@ -121,6 +122,8 @@ app.get('/', (c) => {
         'Digital Signatures',
         'AI Legal Advisor',
         'Contract Analysis',
+        'Case Management',
+        'Time Tracking & Billing',
         'Multi-language Support (EN/AR/UR)',
         'GCC Compliance',
       ],
@@ -205,6 +208,9 @@ app.route('/api/notifications', notifications);
 
 // Lawyer routes - /api/lawyers/*
 app.route('/api/lawyers', lawyers);
+
+// Case management routes - /api/cases/*
+app.route('/api/cases', cases);
 
 // Lawyer Marketplace routes
 // Consultation booking - /api/consultations/*

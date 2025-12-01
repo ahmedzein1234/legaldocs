@@ -10,6 +10,9 @@ export { uploads } from './uploads.js';
 export { notifications } from './notifications.js';
 export { lawyers } from './lawyers.js';
 
+// Case management routes
+export { cases } from './cases.js';
+
 // Lawyer marketplace routes
 export { consultations } from './lawyer-consultations.js';
 export { messaging } from './lawyer-messaging.js';
