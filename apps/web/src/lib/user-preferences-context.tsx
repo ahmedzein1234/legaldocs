@@ -354,10 +354,33 @@ export function UserPreferencesProvider({ children }: { children: React.ReactNod
   );
 }
 
+// Default context value for when provider is not available
+const defaultContextValue: UserPreferencesContextType = {
+  preferences: defaultPreferences,
+  isLoading: true,
+  setRole: () => {},
+  setInterfaceMode: () => {},
+  toggleInterfaceMode: () => {},
+  completeOnboarding: () => {},
+  resetOnboarding: () => {},
+  markFeatureSeen: () => {},
+  dismissSuggestion: () => {},
+  shouldShowSuggestion: () => true,
+  setQuickActions: () => {},
+  togglePinnedFeature: () => {},
+  incrementUsage: () => {},
+  isProMode: false,
+  isSimpleMode: true,
+  isLegalProfessional: false,
+  shouldShowFeature: () => true,
+  getProgressiveFeatures: () => [],
+};
+
 export function useUserPreferences() {
   const context = useContext(UserPreferencesContext);
+  // Return default context if provider is not available (safer for SSR)
   if (!context) {
-    throw new Error('useUserPreferences must be used within UserPreferencesProvider');
+    return defaultContextValue;
   }
   return context;
 }
