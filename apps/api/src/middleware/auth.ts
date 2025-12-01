@@ -192,3 +192,13 @@ export async function lawyerOnly(c: Context, next: Next) {
 
   await next();
 }
+
+/**
+ * Alias for authMiddleware - for backward compatibility
+ */
+export const requireAuth = authMiddleware;
+
+/**
+ * Alias for adminOnly - for backward compatibility
+ */
+export const requireAdmin = adminOnly;
