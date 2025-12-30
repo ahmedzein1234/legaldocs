@@ -589,6 +589,181 @@ export function getSignatureCompletedEmail(data: SignatureCompletedEmailData) {
 // DOCUMENT REMINDER EMAIL
 // ============================================
 
+// ============================================
+// VERIFICATION EXPIRY EMAIL
+// ============================================
+
+export interface VerificationExpiryEmailData {
+  lawyerName: string;
+  email: string;
+  verificationType: string;
+  daysUntilExpiry: number;
+  renewalLink: string;
+  language: 'en' | 'ar' | 'ur';
+}
+
+export function getVerificationExpiryEmail(data: VerificationExpiryEmailData) {
+  const { lawyerName, verificationType, daysUntilExpiry, renewalLink, language } = data;
+
+  const verificationTypeText = {
+    en: {
+      basic: 'Basic Verification',
+      identity: 'Identity Verification',
+      professional: 'Professional Verification',
+      enhanced: 'Enhanced Verification',
+    },
+    ar: {
+      basic: 'التحقق الأساسي',
+      identity: 'التحقق من الهوية',
+      professional: 'التحقق المهني',
+      enhanced: 'التحقق المعزز',
+    },
+    ur: {
+      basic: 'بنیادی تصدیق',
+      identity: 'شناختی تصدیق',
+      professional: 'پیشہ ورانہ تصدیق',
+      enhanced: 'بہتر تصدیق',
+    },
+  };
+
+  const typeLabel = verificationTypeText[language][verificationType as keyof typeof verificationTypeText.en] || verificationType;
+  const isUrgent = daysUntilExpiry <= 7;
+
+  const content = `
+    <div class="content">
+      <div class="greeting">
+        ${language === 'ar' ? `مرحباً ${lawyerName},` : language === 'ur' ? `${lawyerName} خوش آمدید،` : `Hello ${lawyerName},`}
+      </div>
+      <div class="message">
+        ${language === 'ar'
+          ? `تنبيه: سينتهي ${typeLabel} الخاص بك خلال ${daysUntilExpiry} يوم.`
+          : language === 'ur'
+          ? `انتباہ: آپ کی ${typeLabel} ${daysUntilExpiry} دنوں میں ختم ہو جائے گی۔`
+          : `Alert: Your ${typeLabel} will expire in ${daysUntilExpiry} days.`}
+      </div>
+      <div class="info-box" style="${isUrgent ? 'border-left-color: #dc2626; background: #fef2f2;' : ''}">
+        <div class="info-box-title">
+          ${isUrgent
+            ? language === 'ar' ? '⚠️ إجراء عاجل مطلوب' : language === 'ur' ? '⚠️ فوری کارروائی درکار' : '⚠️ Urgent Action Required'
+            : language === 'ar' ? 'تجديد مطلوب' : language === 'ur' ? 'تجدید درکار' : 'Renewal Required'}
+        </div>
+        <div class="info-box-text">
+          ${language === 'ar'
+            ? `يرجى تجديد التحقق الخاص بك للحفاظ على حالة ملفك الشخصي النشطة والاستمرار في تلقي الاستشارات.`
+            : language === 'ur'
+            ? `براہ کرم اپنی تصدیق کی تجدید کریں تاکہ آپ کی پروفائل کی فعال حیثیت برقرار رہے اور مشاورت حاصل کرنا جاری رکھ سکیں۔`
+            : `Please renew your verification to maintain your active profile status and continue receiving consultations.`}
+        </div>
+      </div>
+      <div style="text-align: center;">
+        <a href="${renewalLink}" class="button" style="${isUrgent ? 'background: #dc2626;' : ''}">
+          ${language === 'ar' ? 'تجديد التحقق' : language === 'ur' ? 'تصدیق کی تجدید کریں' : 'Renew Verification'}
+        </a>
+      </div>
+      <div class="divider"></div>
+      <div class="message" style="font-size: 13px; color: #6b7280;">
+        ${language === 'ar'
+          ? 'إذا انتهت صلاحية التحقق الخاص بك، فسيتم تعليق ملفك الشخصي تلقائياً حتى التجديد.'
+          : language === 'ur'
+          ? 'اگر آپ کی تصدیق کی میعاد ختم ہو جاتی ہے، تو آپ کا پروفائل تجدید تک خود بخود معطل ہو جائے گا۔'
+          : 'If your verification expires, your profile will be automatically suspended until renewal.'}
+      </div>
+    </div>
+  `;
+
+  const plainText = language === 'ar'
+    ? `مرحباً ${lawyerName},\n\nتنبيه: سينتهي ${typeLabel} الخاص بك خلال ${daysUntilExpiry} يوم.\n\nيرجى تجديد التحقق الخاص بك: ${renewalLink}\n\nشكراً،\nفريق Qannoni`
+    : language === 'ur'
+    ? `${lawyerName} خوش آمدید،\n\nانتباہ: آپ کی ${typeLabel} ${daysUntilExpiry} دنوں میں ختم ہو جائے گی۔\n\nبراہ کرم اپنی تصدیق کی تجدید کریں: ${renewalLink}\n\nشکریہ،\nQannoni ٹیم`
+    : `Hello ${lawyerName},\n\nAlert: Your ${typeLabel} will expire in ${daysUntilExpiry} days.\n\nPlease renew your verification: ${renewalLink}\n\nBest regards,\nThe Qannoni Team`;
+
+  return {
+    subject: isUrgent
+      ? language === 'ar' ? `⚠️ عاجل: ${typeLabel} ينتهي قريباً` : language === 'ur' ? `⚠️ فوری: ${typeLabel} جلد ختم ہو رہی ہے` : `⚠️ Urgent: ${typeLabel} Expiring Soon`
+      : language === 'ar' ? `تذكير: ${typeLabel} ينتهي خلال ${daysUntilExpiry} يوم` : language === 'ur' ? `یاد دہانی: ${typeLabel} ${daysUntilExpiry} دنوں میں ختم ہو رہی ہے` : `Reminder: ${typeLabel} Expires in ${daysUntilExpiry} Days`,
+    html: getBaseTemplate(content, language),
+    text: plainText,
+  };
+}
+
+// ============================================
+// LICENSE RENEWAL EMAIL
+// ============================================
+
+export interface LicenseRenewalEmailData {
+  lawyerName: string;
+  email: string;
+  daysUntilExpiry: number;
+  renewalLink: string;
+  language: 'en' | 'ar' | 'ur';
+}
+
+export function getLicenseRenewalEmail(data: LicenseRenewalEmailData) {
+  const { lawyerName, daysUntilExpiry, renewalLink, language } = data;
+
+  const isUrgent = daysUntilExpiry <= 7;
+
+  const content = `
+    <div class="content">
+      <div class="greeting">
+        ${language === 'ar' ? `مرحباً ${lawyerName},` : language === 'ur' ? `${lawyerName} خوش آمدید،` : `Hello ${lawyerName},`}
+      </div>
+      <div class="message">
+        ${language === 'ar'
+          ? `تنبيه: ستنتهي رخصة المحاماة الخاصة بك خلال ${daysUntilExpiry} يوم.`
+          : language === 'ur'
+          ? `انتباہ: آپ کا بار لائسنس ${daysUntilExpiry} دنوں میں ختم ہو جائے گا۔`
+          : `Alert: Your bar license will expire in ${daysUntilExpiry} days.`}
+      </div>
+      <div class="info-box" style="${isUrgent ? 'border-left-color: #dc2626; background: #fef2f2;' : ''}">
+        <div class="info-box-title">
+          ${isUrgent
+            ? language === 'ar' ? '⚠️ إجراء عاجل مطلوب' : language === 'ur' ? '⚠️ فوری کارروائی درکار' : '⚠️ Urgent Action Required'
+            : language === 'ar' ? 'تجديد الرخصة مطلوب' : language === 'ur' ? 'لائسنس کی تجدید درکار' : 'License Renewal Required'}
+        </div>
+        <div class="info-box-text">
+          ${language === 'ar'
+            ? `يرجى تجديد رخصة المحاماة الخاصة بك وتحديث معلوماتك على Qannoni للحفاظ على حالة التحقق الخاصة بك.`
+            : language === 'ur'
+            ? `براہ کرم اپنے بار لائسنس کی تجدید کریں اور اپنی تصدیق کی حیثیت برقرار رکھنے کے لیے Qannoni پر اپنی معلومات اپ ڈیٹ کریں۔`
+            : `Please renew your bar license and update your information on Qannoni to maintain your verified status.`}
+        </div>
+      </div>
+      <div style="text-align: center;">
+        <a href="${renewalLink}" class="button" style="${isUrgent ? 'background: #dc2626;' : ''}">
+          ${language === 'ar' ? 'تحديث الرخصة' : language === 'ur' ? 'لائسنس اپ ڈیٹ کریں' : 'Update License'}
+        </a>
+      </div>
+      <div class="divider"></div>
+      <div class="message" style="font-size: 13px; color: #6b7280;">
+        ${language === 'ar'
+          ? 'رخصة المحاماة السارية مطلوبة للحفاظ على حالة التحقق الخاصة بك على Qannoni.'
+          : language === 'ur'
+          ? 'Qannoni پر اپنی تصدیق شدہ حیثیت برقرار رکھنے کے لیے ایک فعال بار لائسنس درکار ہے۔'
+          : 'A valid bar license is required to maintain your verified status on Qannoni.'}
+      </div>
+    </div>
+  `;
+
+  const plainText = language === 'ar'
+    ? `مرحباً ${lawyerName},\n\nتنبيه: ستنتهي رخصة المحاماة الخاصة بك خلال ${daysUntilExpiry} يوم.\n\nيرجى تحديث رخصتك: ${renewalLink}\n\nشكراً،\nفريق Qannoni`
+    : language === 'ur'
+    ? `${lawyerName} خوش آمدید،\n\nانتباہ: آپ کا بار لائسنس ${daysUntilExpiry} دنوں میں ختم ہو جائے گا۔\n\nبراہ کرم اپنا لائسنس اپ ڈیٹ کریں: ${renewalLink}\n\nشکریہ،\nQannoni ٹیم`
+    : `Hello ${lawyerName},\n\nAlert: Your bar license will expire in ${daysUntilExpiry} days.\n\nPlease update your license: ${renewalLink}\n\nBest regards,\nThe Qannoni Team`;
+
+  return {
+    subject: isUrgent
+      ? language === 'ar' ? '⚠️ عاجل: رخصة المحاماة تنتهي قريباً' : language === 'ur' ? '⚠️ فوری: بار لائسنس جلد ختم ہو رہا ہے' : '⚠️ Urgent: Bar License Expiring Soon'
+      : language === 'ar' ? `تذكير: رخصة المحاماة تنتهي خلال ${daysUntilExpiry} يوم` : language === 'ur' ? `یاد دہانی: بار لائسنس ${daysUntilExpiry} دنوں میں ختم ہو رہا ہے` : `Reminder: Bar License Expires in ${daysUntilExpiry} Days`,
+    html: getBaseTemplate(content, language),
+    text: plainText,
+  };
+}
+
+// ============================================
+// DOCUMENT REMINDER EMAIL
+// ============================================
+
 export function getDocumentReminderEmail(data: DocumentReminderEmailData) {
   const { signerName, documentName, signingLink, expiresAt, language } = data;
 

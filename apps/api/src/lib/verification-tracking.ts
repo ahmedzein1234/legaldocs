@@ -5,6 +5,17 @@
  * license renewals, and notification triggers
  */
 
+import { sendEmail, type EmailEnv } from './email.js';
+import {
+  getVerificationExpiryEmail,
+  getLicenseRenewalEmail,
+  type VerificationExpiryEmailData,
+  type LicenseRenewalEmailData,
+} from './email-templates.js';
+
+// App URL for renewal links
+const APP_URL = 'https://www.qannoni.com';
+
 interface VerificationTrackingConfig {
   // Days before expiry to send notifications
   notificationSchedule: number[]; // e.g., [90, 60, 30, 14, 7, 3, 1]
@@ -37,16 +48,21 @@ const defaultConfig: VerificationTrackingConfig = {
  */
 export async function checkExpiringVerifications(
   db: D1Database,
+  env: EmailEnv,
   config: VerificationTrackingConfig = defaultConfig
 ): Promise<{
   expiringSoon: any[];
   expired: any[];
   notificationsSent: number;
+  emailsSent: number;
+  emailsFailed: number;
 }> {
   const today = new Date();
   const expiringSoon: any[] = [];
   const expired: any[] = [];
   let notificationsSent = 0;
+  let emailsSent = 0;
+  let emailsFailed = 0;
 
   // Get all active verifications with expiry dates
   const verifications = await db
@@ -97,15 +113,24 @@ export async function checkExpiringVerifications(
         daysUntilExpiry,
       });
 
-      // Send notification
-      await sendExpiryNotification(
+      // Send notification email
+      const lawyerName = `${(verification as any).first_name || ''} ${(verification as any).last_name || ''}`.trim() || 'Lawyer';
+      const result = await sendExpiryNotification(
         db,
+        env,
         (verification as any).lawyer_id,
+        lawyerName,
         (verification as any).email,
         (verification as any).verification_type,
         daysUntilExpiry
       );
+
       notificationsSent++;
+      if (result.success) {
+        emailsSent++;
+      } else {
+        emailsFailed++;
+      }
     }
   }
 
@@ -113,6 +138,8 @@ export async function checkExpiringVerifications(
     expiringSoon,
     expired,
     notificationsSent,
+    emailsSent,
+    emailsFailed,
   };
 }
 
@@ -121,14 +148,19 @@ export async function checkExpiringVerifications(
  */
 export async function checkBarLicenseRenewals(
   db: D1Database,
+  env: EmailEnv,
   config: VerificationTrackingConfig = defaultConfig
 ): Promise<{
   renewalsDue: any[];
   notificationsSent: number;
+  emailsSent: number;
+  emailsFailed: number;
 }> {
   const today = new Date();
   const renewalsDue: any[] = [];
   let notificationsSent = 0;
+  let emailsSent = 0;
+  let emailsFailed = 0;
 
   // Get lawyers with bar license expiry dates
   const lawyers = await db
@@ -160,14 +192,23 @@ export async function checkBarLicenseRenewals(
         daysUntilExpiry,
       });
 
-      // Send renewal reminder
-      await sendLicenseRenewalNotification(
+      // Send renewal reminder email
+      const lawyerName = `${(lawyer as any).first_name || ''} ${(lawyer as any).last_name || ''}`.trim() || 'Lawyer';
+      const result = await sendLicenseRenewalNotification(
         db,
+        env,
         (lawyer as any).id,
+        lawyerName,
         (lawyer as any).email,
         daysUntilExpiry
       );
+
       notificationsSent++;
+      if (result.success) {
+        emailsSent++;
+      } else {
+        emailsFailed++;
+      }
     }
 
     // Auto-suspend if expired beyond grace period
@@ -179,6 +220,8 @@ export async function checkBarLicenseRenewals(
   return {
     renewalsDue,
     notificationsSent,
+    emailsSent,
+    emailsFailed,
   };
 }
 
@@ -276,15 +319,38 @@ async function suspendLawyerForExpiredLicense(
  */
 async function sendExpiryNotification(
   db: D1Database,
+  env: EmailEnv,
   lawyerId: string,
+  lawyerName: string,
   email: string,
   verificationType: string,
   daysUntilExpiry: number
-): Promise<void> {
-  // TODO: Integrate with email service (Resend)
-  console.log(`Sending expiry notification to ${email}:`, {
+): Promise<{ success: boolean; error?: string }> {
+  // Generate email content
+  const emailData: VerificationExpiryEmailData = {
+    lawyerName,
+    email,
     verificationType,
     daysUntilExpiry,
+    renewalLink: `${APP_URL}/en/dashboard/lawyer-portal/verification`,
+    language: 'en', // Default to English, could be fetched from lawyer preferences
+  };
+
+  const { subject, html, text } = getVerificationExpiryEmail(emailData);
+
+  // Send email
+  const result = await sendEmail(env, {
+    to: email,
+    subject,
+    html,
+    text,
+  });
+
+  console.log(`Verification expiry notification to ${email}:`, {
+    verificationType,
+    daysUntilExpiry,
+    success: result.success,
+    error: result.error,
   });
 
   // Log notification
@@ -307,9 +373,13 @@ async function sendExpiryNotification(
         verificationType,
         daysUntilExpiry,
         email,
+        emailSent: result.success,
+        emailError: result.error,
       })
     )
     .run();
+
+  return result;
 }
 
 /**
@@ -317,13 +387,35 @@ async function sendExpiryNotification(
  */
 async function sendLicenseRenewalNotification(
   db: D1Database,
+  env: EmailEnv,
   lawyerId: string,
+  lawyerName: string,
   email: string,
   daysUntilExpiry: number
-): Promise<void> {
-  // TODO: Integrate with email service (Resend)
-  console.log(`Sending license renewal notification to ${email}:`, {
+): Promise<{ success: boolean; error?: string }> {
+  // Generate email content
+  const emailData: LicenseRenewalEmailData = {
+    lawyerName,
+    email,
     daysUntilExpiry,
+    renewalLink: `${APP_URL}/en/dashboard/lawyer-portal/verification`,
+    language: 'en', // Default to English, could be fetched from lawyer preferences
+  };
+
+  const { subject, html, text } = getLicenseRenewalEmail(emailData);
+
+  // Send email
+  const result = await sendEmail(env, {
+    to: email,
+    subject,
+    html,
+    text,
+  });
+
+  console.log(`License renewal notification to ${email}:`, {
+    daysUntilExpiry,
+    success: result.success,
+    error: result.error,
   });
 
   // Log notification
@@ -345,9 +437,13 @@ async function sendLicenseRenewalNotification(
       JSON.stringify({
         daysUntilExpiry,
         email,
+        emailSent: result.success,
+        emailError: result.error,
       })
     )
     .run();
+
+  return result;
 }
 
 /**
@@ -438,10 +534,13 @@ export async function getVerificationStats(
  * Generate annual re-verification requests
  */
 export async function generateAnnualReverifications(
-  db: D1Database
+  db: D1Database,
+  env: EmailEnv
 ): Promise<{
   generated: number;
   lawyers: string[];
+  emailsSent: number;
+  emailsFailed: number;
 }> {
   const oneYearAgo = new Date();
   oneYearAgo.setFullYear(oneYearAgo.getFullYear() - 1);
@@ -459,9 +558,13 @@ export async function generateAnnualReverifications(
     .all();
 
   const lawyerIds: string[] = [];
+  let emailsSent = 0;
+  let emailsFailed = 0;
 
   for (const lawyer of lawyers.results || []) {
     const lawyerId = (lawyer as any).id;
+    const lawyerName = `${(lawyer as any).first_name || ''} ${(lawyer as any).last_name || ''}`.trim() || 'Lawyer';
+    const email = (lawyer as any).email;
 
     // Update status to require re-verification
     await db
@@ -473,8 +576,22 @@ export async function generateAnnualReverifications(
       .bind(lawyerId)
       .run();
 
-    // Send re-verification notification
-    // TODO: Integrate with email service
+    // Send re-verification notification email
+    const result = await sendExpiryNotification(
+      db,
+      env,
+      lawyerId,
+      lawyerName,
+      email,
+      'annual_reverification',
+      0 // Expired now
+    );
+
+    if (result.success) {
+      emailsSent++;
+    } else {
+      emailsFailed++;
+    }
 
     lawyerIds.push(lawyerId);
   }
@@ -482,6 +599,8 @@ export async function generateAnnualReverifications(
   return {
     generated: lawyerIds.length,
     lawyers: lawyerIds,
+    emailsSent,
+    emailsFailed,
   };
 }
 
@@ -489,16 +608,19 @@ export async function generateAnnualReverifications(
  * Cron job handler - should run daily
  */
 export async function runDailyVerificationChecks(
-  db: D1Database
+  db: D1Database,
+  env: EmailEnv
 ): Promise<{
   expiringVerifications: number;
   expiredVerifications: number;
   licenseRenewals: number;
   lawyersSuspended: number;
   notificationsSent: number;
+  emailsSent: number;
+  emailsFailed: number;
 }> {
-  const expiringResult = await checkExpiringVerifications(db);
-  const renewalResult = await checkBarLicenseRenewals(db);
+  const expiringResult = await checkExpiringVerifications(db, env);
+  const renewalResult = await checkBarLicenseRenewals(db, env);
 
   return {
     expiringVerifications: expiringResult.expiringSoon.length,
@@ -513,5 +635,7 @@ export async function runDailyVerificationChecks(
       return daysSinceExpiry > defaultConfig.gracePeriodDays;
     }).length,
     notificationsSent: expiringResult.notificationsSent + renewalResult.notificationsSent,
+    emailsSent: expiringResult.emailsSent + renewalResult.emailsSent,
+    emailsFailed: expiringResult.emailsFailed + renewalResult.emailsFailed,
   };
 }

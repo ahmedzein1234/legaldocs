@@ -1,5 +1,5 @@
 /**
- * LegalDocs API - Main Entry Point
+ * Qannoni API - Main Entry Point
  *
  * A comprehensive legal document management API for UAE/GCC markets.
  * Built with Hono for Cloudflare Workers with D1, R2, and KV.
@@ -16,6 +16,8 @@
 import { Hono } from 'hono';
 import { cors } from 'hono/cors';
 import { logger } from 'hono/logger';
+import * as Sentry from '@sentry/cloudflare';
+import { SENTRY_DSN } from './lib/sentry.js';
 
 // Middleware
 import {
@@ -23,6 +25,7 @@ import {
   notFoundHandler,
   requestLogger,
   rateLimiters,
+  securityHeadersMiddleware,
 } from './middleware/index.js';
 
 // Routes
@@ -42,8 +45,13 @@ import {
   lawyerDashboard,
   payments,
   consultationCalls,
+  gdpr,
+  compliance,
+  pdf,
+  analytics,
 } from './routes/index.js';
 import whatsappRoutes from './routes/whatsapp.js';
+import { logoGenerator } from './routes/logo-generator.js';
 
 // ============================================
 // TYPE DEFINITIONS
@@ -59,6 +67,10 @@ type Bindings = {
   TWILIO_ACCOUNT_SID: string;
   TWILIO_AUTH_TOKEN: string;
   TWILIO_WHATSAPP_FROM: string;
+  // Cloudflare Email Workers binding (optional)
+  EMAIL?: {
+    send(message: any): Promise<void>;
+  };
 };
 
 type Variables = {
@@ -106,6 +118,9 @@ app.use('*', cors({
 
 // Global error handling
 app.use('*', errorHandler);
+
+// Security headers (CSP, HSTS, X-Frame-Options, etc.)
+app.use('*', securityHeadersMiddleware);
 
 // ============================================
 // HEALTH & INFO ROUTES
@@ -235,7 +250,26 @@ app.route('/api/consultation-calls', consultationCalls);
 // Includes messaging, webhooks, and session management
 app.route('/api/whatsapp', whatsappRoutes);
 
-// Compliance route
+// Logo generator routes - /api/logo/*
+// AI-powered logo generation using OpenRouter
+app.route('/api/logo', logoGenerator);
+
+// GDPR compliance routes - /api/gdpr/*
+// Data export, account deletion, privacy rights
+app.route('/api/gdpr', gdpr);
+
+// Data residency and compliance transparency - /api/compliance/*
+app.route('/api/compliance', compliance);
+
+// PDF generation routes - /api/pdf/*
+// Professional PDF generation with Cloudflare Browser Rendering
+app.route('/api/pdf', pdf);
+
+// Analytics routes - /api/analytics/*
+// User activity tracking and dashboard metrics
+app.route('/api/analytics', analytics);
+
+// Legacy compliance route for document templates
 app.get('/api/compliance/:country/:documentType', (c) => {
   const { country, documentType } = c.req.param();
   return c.redirect(`/api/templates/compliance/${country}/${documentType}`, 307);
@@ -248,10 +282,18 @@ app.get('/api/compliance/:country/:documentType', (c) => {
 app.notFound(notFoundHandler);
 
 // ============================================
-// EXPORT FOR CLOUDFLARE WORKERS
+// EXPORT FOR CLOUDFLARE WORKERS WITH SENTRY
 // ============================================
 
-export default app;
+export default Sentry.withSentry(
+  (env) => ({
+    dsn: SENTRY_DSN,
+    tracesSampleRate: 1.0,
+    environment: env.ENVIRONMENT || 'production',
+    release: 'qannoni-api@2.0.0',
+  }),
+  app
+);
 
 // Also export for testing
 export { app };

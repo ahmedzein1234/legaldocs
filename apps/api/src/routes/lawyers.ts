@@ -14,6 +14,14 @@ import {
   type MatchPreferences,
   type LawyerProfile,
 } from '../lib/lawyer-matching.js';
+import {
+  calculateTierProgress,
+  getAllTierInfo,
+  getLawyerMetrics,
+  recalculateLawyerTier,
+  TIER_CONFIG,
+  type LawyerTier,
+} from '../lib/lawyer-tiers.js';
 
 type Bindings = {
   DB: D1Database;
@@ -122,11 +130,11 @@ app.get('/', async (c) => {
 
     // Get badges for each lawyer
     const lawyerIds = lawyers.results?.map((l: any) => l.id) || [];
-    let badges = [];
+    let badgesResult: { results?: any[] } = { results: [] };
 
     if (lawyerIds.length > 0) {
       const placeholders = lawyerIds.map(() => '?').join(',');
-      badges = await db
+      badgesResult = await db
         .prepare(`
           SELECT lawyer_id, badge_type, badge_name, badge_name_ar, badge_icon, badge_color
           FROM lawyer_badges
@@ -142,7 +150,7 @@ app.get('/', async (c) => {
       ...lawyer,
       languages: JSON.parse(lawyer.languages || '[]'),
       specializations: JSON.parse(lawyer.specializations || '[]'),
-      badges: badges.results?.filter((b: any) => b.lawyer_id === lawyer.id) || [],
+      badges: (badgesResult.results || []).filter((b: any) => b.lawyer_id === lawyer.id),
     }));
 
     return c.json({
@@ -1349,6 +1357,711 @@ app.post('/:id/reviews/:reviewId/response', requireAuth, async (c) => {
       },
       500
     );
+  }
+});
+
+// ============================================
+// LAWYER "ME" ROUTES - For logged in lawyers
+// ============================================
+
+/**
+ * GET /api/lawyers/me
+ * Get current lawyer's profile (must be a lawyer)
+ */
+app.get('/me', requireAuth, async (c) => {
+  try {
+    const db = c.env.DB;
+    const userId = c.get('userId');
+
+    // Get lawyer profile for this user
+    const lawyer = await db
+      .prepare('SELECT * FROM lawyers WHERE user_id = ?')
+      .bind(userId)
+      .first();
+
+    if (!lawyer) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'LAWYER_NOT_FOUND',
+          message: 'No lawyer profile found. You may need to register as a lawyer first.',
+        },
+      }, 404);
+    }
+
+    // Get badges
+    const badges = await db
+      .prepare(`
+        SELECT * FROM lawyer_badges
+        WHERE lawyer_id = ? AND is_active = 1
+        ORDER BY display_order ASC
+      `)
+      .bind((lawyer as any).id)
+      .all();
+
+    // Get verification history
+    const verifications = await db
+      .prepare(`
+        SELECT * FROM lawyer_verifications
+        WHERE lawyer_id = ?
+        ORDER BY created_at DESC
+      `)
+      .bind((lawyer as any).id)
+      .all();
+
+    return c.json({
+      success: true,
+      data: {
+        lawyer: {
+          ...(lawyer as any),
+          languages: JSON.parse((lawyer as any).languages || '[]'),
+          specializations: JSON.parse((lawyer as any).specializations || '[]'),
+          badges: badges.results || [],
+        },
+        verifications: verifications.results || [],
+      },
+    });
+  } catch (error: any) {
+    console.error('Error fetching lawyer profile:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'FETCH_FAILED',
+        message: 'Failed to fetch lawyer profile',
+      },
+    }, 500);
+  }
+});
+
+/**
+ * GET /api/lawyers/me/verification
+ * Get current verification status and history
+ */
+app.get('/me/verification', requireAuth, async (c) => {
+  try {
+    const db = c.env.DB;
+    const userId = c.get('userId');
+
+    // Get lawyer profile
+    const lawyer = await db
+      .prepare('SELECT id, verification_status, verification_level FROM lawyers WHERE user_id = ?')
+      .bind(userId)
+      .first<{ id: string; verification_status: string; verification_level: string }>();
+
+    if (!lawyer) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'LAWYER_NOT_FOUND',
+          message: 'No lawyer profile found',
+        },
+      }, 404);
+    }
+
+    // Get all verification records
+    const verifications = await db
+      .prepare(`
+        SELECT * FROM lawyer_verifications
+        WHERE lawyer_id = ?
+        ORDER BY created_at DESC
+      `)
+      .bind(lawyer.id)
+      .all();
+
+    // Determine completed verification levels
+    const completedLevels = new Set<string>();
+    for (const v of (verifications.results || []) as any[]) {
+      if (v.status === 'approved') {
+        completedLevels.add(v.verification_type);
+      }
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        currentLevel: lawyer.verification_level || 'none',
+        status: lawyer.verification_status || 'unverified',
+        completedLevels: Array.from(completedLevels),
+        verifications: verifications.results || [],
+      },
+    });
+  } catch (error: any) {
+    console.error('Error fetching verification status:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'FETCH_FAILED',
+        message: 'Failed to fetch verification status',
+      },
+    }, 500);
+  }
+});
+
+/**
+ * POST /api/lawyers/me/verification
+ * Submit verification documents for current lawyer
+ */
+app.post('/me/verification', requireAuth, async (c) => {
+  try {
+    const db = c.env.DB;
+    const userId = c.get('userId');
+    const body = await c.req.json();
+
+    const {
+      verificationType, // basic, identity, professional, enhanced
+      documentUrl,
+      documentBackUrl,
+      emiratesId,
+      emiratesIdExpiry,
+      licenseAuthority,
+      licenseNumber,
+      licenseIssueDate,
+      practicingCertUrl,
+      reference1Name,
+      reference1Contact,
+      reference2Name,
+      reference2Contact,
+    } = body;
+
+    if (!verificationType) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'Verification type is required',
+        },
+      }, 400);
+    }
+
+    // Get lawyer profile
+    const lawyer = await db
+      .prepare('SELECT id, verification_level FROM lawyers WHERE user_id = ?')
+      .bind(userId)
+      .first<{ id: string; verification_level: string }>();
+
+    if (!lawyer) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'LAWYER_NOT_FOUND',
+          message: 'No lawyer profile found. Please create a lawyer profile first.',
+        },
+      }, 404);
+    }
+
+    // Check for existing pending verification of same type
+    const existingPending = await db
+      .prepare(`
+        SELECT id FROM lawyer_verifications
+        WHERE lawyer_id = ? AND verification_type = ? AND status = 'pending'
+      `)
+      .bind(lawyer.id, verificationType)
+      .first();
+
+    if (existingPending) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'ALREADY_PENDING',
+          message: 'You already have a pending verification request for this level',
+        },
+      }, 400);
+    }
+
+    // Build document data based on verification type
+    const documentData: Record<string, any> = {};
+
+    if (verificationType === 'identity') {
+      if (!documentUrl || !emiratesId) {
+        return c.json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'Emirates ID document and number are required for identity verification',
+          },
+        }, 400);
+      }
+      documentData.emiratesId = emiratesId;
+      documentData.emiratesIdExpiry = emiratesIdExpiry;
+      documentData.documentUrl = documentUrl;
+      documentData.documentBackUrl = documentBackUrl;
+    }
+
+    if (verificationType === 'professional') {
+      if (!licenseNumber || !licenseAuthority) {
+        return c.json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'License number and authority are required for professional verification',
+          },
+        }, 400);
+      }
+      documentData.licenseAuthority = licenseAuthority;
+      documentData.licenseNumber = licenseNumber;
+      documentData.licenseIssueDate = licenseIssueDate;
+      documentData.practicingCertUrl = practicingCertUrl;
+    }
+
+    if (verificationType === 'enhanced') {
+      if (!reference1Name || !reference1Contact) {
+        return c.json({
+          success: false,
+          error: {
+            code: 'VALIDATION_ERROR',
+            message: 'At least one professional reference is required for enhanced verification',
+          },
+        }, 400);
+      }
+      documentData.reference1Name = reference1Name;
+      documentData.reference1Contact = reference1Contact;
+      documentData.reference2Name = reference2Name;
+      documentData.reference2Contact = reference2Contact;
+    }
+
+    // Create verification record
+    const verificationId = crypto.randomUUID();
+    await db
+      .prepare(`
+        INSERT INTO lawyer_verifications (
+          id, lawyer_id, verification_type, status,
+          document_data, submitted_at, created_at, updated_at
+        ) VALUES (?, ?, ?, 'pending', ?, datetime('now'), datetime('now'), datetime('now'))
+      `)
+      .bind(
+        verificationId,
+        lawyer.id,
+        verificationType,
+        JSON.stringify(documentData)
+      )
+      .run();
+
+    // Update lawyer verification status to 'in_review'
+    await db
+      .prepare(`
+        UPDATE lawyers
+        SET verification_status = 'in_review', updated_at = datetime('now')
+        WHERE id = ?
+      `)
+      .bind(lawyer.id)
+      .run();
+
+    return c.json({
+      success: true,
+      data: {
+        verificationId,
+        message: 'Verification request submitted successfully. Our team will review your documents.',
+      },
+    }, 201);
+  } catch (error: any) {
+    console.error('Error submitting verification:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'SUBMIT_FAILED',
+        message: 'Failed to submit verification request',
+      },
+    }, 500);
+  }
+});
+
+/**
+ * PATCH /api/lawyers/me
+ * Update current lawyer's profile
+ */
+app.patch('/me', requireAuth, async (c) => {
+  try {
+    const db = c.env.DB;
+    const userId = c.get('userId');
+    const body = await c.req.json();
+
+    // Get lawyer profile
+    const lawyer = await db
+      .prepare('SELECT id FROM lawyers WHERE user_id = ?')
+      .bind(userId)
+      .first<{ id: string }>();
+
+    if (!lawyer) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'LAWYER_NOT_FOUND',
+          message: 'No lawyer profile found',
+        },
+      }, 404);
+    }
+
+    // Build update query
+    const updates: string[] = [];
+    const values: any[] = [];
+
+    const allowedFields: Record<string, string> = {
+      firstName: 'first_name',
+      lastName: 'last_name',
+      firstNameAr: 'first_name_ar',
+      lastNameAr: 'last_name_ar',
+      title: 'title',
+      titleAr: 'title_ar',
+      bio: 'bio',
+      bioAr: 'bio_ar',
+      avatarUrl: 'avatar_url',
+      emirate: 'emirate',
+      city: 'city',
+      yearsExperience: 'years_experience',
+      barAssociation: 'bar_association',
+      consultationFee: 'consultation_fee',
+      hourlyRate: 'hourly_rate',
+      currency: 'currency',
+      isAvailable: 'is_available',
+      responseTimeHours: 'response_time_hours',
+      acceptingNewClients: 'accepting_new_clients',
+      maxConcurrentCases: 'max_concurrent_cases',
+    };
+
+    for (const [key, column] of Object.entries(allowedFields)) {
+      if (body[key] !== undefined) {
+        updates.push(`${column} = ?`);
+        values.push(body[key]);
+      }
+    }
+
+    // Handle JSON fields
+    if (body.languages !== undefined) {
+      updates.push('languages = ?');
+      values.push(JSON.stringify(body.languages));
+    }
+
+    if (body.specializations !== undefined) {
+      updates.push('specializations = ?');
+      values.push(JSON.stringify(body.specializations));
+    }
+
+    if (updates.length === 0) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'VALIDATION_ERROR',
+          message: 'No valid fields to update',
+        },
+      }, 400);
+    }
+
+    updates.push("updated_at = datetime('now')");
+    values.push(lawyer.id);
+
+    await db
+      .prepare(`UPDATE lawyers SET ${updates.join(', ')} WHERE id = ?`)
+      .bind(...values)
+      .run();
+
+    // Fetch updated profile
+    const updated = await db
+      .prepare('SELECT * FROM lawyers WHERE id = ?')
+      .bind(lawyer.id)
+      .first();
+
+    return c.json({
+      success: true,
+      data: {
+        lawyer: {
+          ...(updated as any),
+          languages: JSON.parse((updated as any).languages || '[]'),
+          specializations: JSON.parse((updated as any).specializations || '[]'),
+        },
+      },
+    });
+  } catch (error: any) {
+    console.error('Error updating lawyer profile:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'UPDATE_FAILED',
+        message: 'Failed to update profile',
+      },
+    }, 500);
+  }
+});
+
+// ============================================
+// TIER SYSTEM ROUTES
+// ============================================
+
+/**
+ * GET /api/lawyers/tiers
+ * Get all tier information (public)
+ */
+app.get('/tiers', async (c) => {
+  try {
+    const tiers = getAllTierInfo();
+
+    return c.json({
+      success: true,
+      data: {
+        tiers,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error fetching tiers:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'FETCH_TIERS_FAILED',
+        message: 'Failed to fetch tier information',
+      },
+    }, 500);
+  }
+});
+
+/**
+ * GET /api/lawyers/me/tier
+ * Get current lawyer's tier status and progress
+ */
+app.get('/me/tier', requireAuth, async (c) => {
+  try {
+    const db = c.env.DB;
+    const userId = c.get('userId');
+
+    // Get lawyer profile
+    const lawyer = await db
+      .prepare('SELECT id, first_name, last_name FROM lawyers WHERE user_id = ?')
+      .bind(userId)
+      .first<{ id: string; first_name: string; last_name: string }>();
+
+    if (!lawyer) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'LAWYER_NOT_FOUND',
+          message: 'No lawyer profile found',
+        },
+      }, 404);
+    }
+
+    // Get metrics and calculate tier
+    const metrics = await getLawyerMetrics(db, lawyer.id);
+    if (!metrics) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'METRICS_NOT_FOUND',
+          message: 'Unable to retrieve lawyer metrics',
+        },
+      }, 500);
+    }
+
+    const tierProgress = calculateTierProgress(metrics);
+    const tierConfig = TIER_CONFIG[tierProgress.currentTier];
+    const nextTierConfig = tierProgress.nextTier ? TIER_CONFIG[tierProgress.nextTier] : null;
+
+    return c.json({
+      success: true,
+      data: {
+        lawyer: {
+          id: lawyer.id,
+          name: `${lawyer.first_name} ${lawyer.last_name}`,
+        },
+        tier: {
+          current: tierProgress.currentTier,
+          config: tierConfig,
+          next: tierProgress.nextTier,
+          nextConfig: nextTierConfig,
+        },
+        progress: tierProgress.progress,
+        overallProgress: tierProgress.overallProgress,
+        benefits: tierProgress.tierBenefits,
+        metrics,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error fetching tier status:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'FETCH_TIER_FAILED',
+        message: 'Failed to fetch tier status',
+      },
+    }, 500);
+  }
+});
+
+/**
+ * GET /api/lawyers/:id/tier
+ * Get tier information for a specific lawyer (public)
+ */
+app.get('/:id/tier', async (c) => {
+  try {
+    const db = c.env.DB;
+    const { id } = c.req.param();
+
+    // Verify lawyer exists and is active
+    const lawyer = await db
+      .prepare('SELECT id, first_name, last_name, is_active FROM lawyers WHERE id = ?')
+      .bind(id)
+      .first<{ id: string; first_name: string; last_name: string; is_active: number }>();
+
+    if (!lawyer || !lawyer.is_active) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'LAWYER_NOT_FOUND',
+          message: 'Lawyer not found',
+        },
+      }, 404);
+    }
+
+    // Get metrics and calculate tier
+    const metrics = await getLawyerMetrics(db, lawyer.id);
+    if (!metrics) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'METRICS_NOT_FOUND',
+          message: 'Unable to retrieve lawyer metrics',
+        },
+      }, 500);
+    }
+
+    const tierProgress = calculateTierProgress(metrics);
+    const tierConfig = TIER_CONFIG[tierProgress.currentTier];
+
+    // For public view, only return basic tier info (not detailed progress)
+    return c.json({
+      success: true,
+      data: {
+        lawyer: {
+          id: lawyer.id,
+          name: `${lawyer.first_name} ${lawyer.last_name}`,
+        },
+        tier: {
+          level: tierProgress.currentTier,
+          name: tierConfig.name,
+          nameAr: tierConfig.nameAr,
+          icon: tierConfig.icon,
+          color: tierConfig.color,
+        },
+        benefits: tierProgress.tierBenefits,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error fetching lawyer tier:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'FETCH_TIER_FAILED',
+        message: 'Failed to fetch lawyer tier',
+      },
+    }, 500);
+  }
+});
+
+/**
+ * POST /api/lawyers/admin/:id/recalculate-tier
+ * Admin: Recalculate and update tier for a lawyer
+ */
+app.post('/admin/:id/recalculate-tier', requireAdmin, async (c) => {
+  try {
+    const db = c.env.DB;
+    const { id } = c.req.param();
+
+    // Verify lawyer exists
+    const lawyer = await db
+      .prepare('SELECT id, first_name, last_name FROM lawyers WHERE id = ?')
+      .bind(id)
+      .first<{ id: string; first_name: string; last_name: string }>();
+
+    if (!lawyer) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'LAWYER_NOT_FOUND',
+          message: 'Lawyer not found',
+        },
+      }, 404);
+    }
+
+    // Recalculate tier (this also updates the badge if needed)
+    const tierProgress = await recalculateLawyerTier(db, lawyer.id);
+    if (!tierProgress) {
+      return c.json({
+        success: false,
+        error: {
+          code: 'RECALCULATE_FAILED',
+          message: 'Failed to recalculate tier',
+        },
+      }, 500);
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        lawyer: {
+          id: lawyer.id,
+          name: `${lawyer.first_name} ${lawyer.last_name}`,
+        },
+        tier: tierProgress.currentTier,
+        progress: tierProgress.progress,
+        message: `Tier recalculated successfully: ${tierProgress.currentTier}`,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error recalculating tier:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'RECALCULATE_FAILED',
+        message: 'Failed to recalculate tier',
+      },
+    }, 500);
+  }
+});
+
+/**
+ * POST /api/lawyers/admin/recalculate-all-tiers
+ * Admin: Recalculate tiers for all active lawyers
+ */
+app.post('/admin/recalculate-all-tiers', requireAdmin, async (c) => {
+  try {
+    const db = c.env.DB;
+
+    // Get all active lawyers
+    const lawyersResult = await db
+      .prepare('SELECT id FROM lawyers WHERE is_active = 1')
+      .all();
+
+    const lawyers = (lawyersResult.results || []) as { id: string }[];
+    const results = {
+      total: lawyers.length,
+      updated: 0,
+      errors: 0,
+    };
+
+    // Recalculate tier for each lawyer
+    for (const lawyer of lawyers) {
+      try {
+        await recalculateLawyerTier(db, lawyer.id);
+        results.updated++;
+      } catch (err) {
+        console.error(`Error recalculating tier for ${lawyer.id}:`, err);
+        results.errors++;
+      }
+    }
+
+    return c.json({
+      success: true,
+      data: {
+        message: 'Tier recalculation complete',
+        results,
+      },
+    });
+  } catch (error: any) {
+    console.error('Error recalculating all tiers:', error);
+    return c.json({
+      success: false,
+      error: {
+        code: 'RECALCULATE_ALL_FAILED',
+        message: 'Failed to recalculate tiers',
+      },
+    }, 500);
   }
 });
 

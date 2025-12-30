@@ -3,6 +3,13 @@ import { zValidator } from '@hono/zod-validator';
 import { z } from 'zod';
 import { Errors } from '../lib/errors.js';
 import { authMiddleware } from '../middleware/index.js';
+import { createAnalyticsService } from '../lib/analytics.js';
+import {
+  getPersonalizedRecommendations,
+  getPopularDocuments,
+  getDocumentSuggestions,
+  getRelatedDocuments,
+} from '../lib/document-recommendations.js';
 
 // Types for Cloudflare bindings
 type Bindings = {
@@ -17,8 +24,7 @@ type Variables = {
 
 const documents = new Hono<{ Bindings: Bindings; Variables: Variables }>();
 
-// Apply auth middleware to all routes
-documents.use('*', authMiddleware);
+// Note: Auth middleware is applied selectively - some routes are public
 
 // ============================================
 // VALIDATION SCHEMAS
@@ -71,6 +77,12 @@ const paginationSchema = z.object({
   status: z.string().optional(),
   type: z.string().optional(),
   search: z.string().optional(),
+  // Advanced filters
+  dateFrom: z.string().optional(), // ISO date string
+  dateTo: z.string().optional(), // ISO date string
+  hasSigned: z.enum(['true', 'false']).optional(), // Filter by signature status
+  sortBy: z.enum(['created_at', 'updated_at', 'title', 'status']).default('created_at'),
+  sortOrder: z.enum(['asc', 'desc']).default('desc'),
 });
 
 // ============================================
@@ -95,47 +107,241 @@ function generateSigningToken(): string {
 // ROUTES
 // ============================================
 
+// ============================================
+// RECOMMENDATIONS ROUTES (before auth middleware)
+// ============================================
+
+/**
+ * GET /api/documents/recommendations
+ * Get personalized document recommendations for authenticated users
+ */
+documents.get('/recommendations', authMiddleware, async (c) => {
+  const userId = c.get('userId');
+  const db = c.env.DB;
+
+  const limit = parseInt(c.req.query('limit') || '6');
+  const userRole = c.req.query('role') || 'default';
+
+  try {
+    const recommendations = await getPersonalizedRecommendations(db, userId, {
+      limit,
+      userRole,
+    });
+
+    // Track recommendation view (non-blocking)
+    const analytics = createAnalyticsService(db, {
+      userId,
+      userAgent: c.req.header('User-Agent'),
+      ipAddress: c.req.header('CF-Connecting-IP'),
+      country: c.req.header('CF-IPCountry'),
+    });
+    analytics.track({
+      eventType: 'recommendations_viewed',
+      userId,
+      properties: {
+        recommendationCount: recommendations.length,
+        userRole,
+      },
+    }).catch(err => console.error('Analytics error:', err));
+
+    return c.json({
+      success: true,
+      data: {
+        recommendations,
+        personalized: true,
+      },
+    });
+  } catch (error) {
+    console.error('Failed to get recommendations:', error);
+    return c.json(Errors.internal('Failed to get recommendations').toJSON(), 500);
+  }
+});
+
+/**
+ * GET /api/documents/popular
+ * Get popular documents (public endpoint)
+ */
+documents.get('/popular', async (c) => {
+  const db = c.env.DB;
+  const limit = parseInt(c.req.query('limit') || '6');
+
+  try {
+    const recommendations = await getPopularDocuments(db, limit);
+
+    return c.json({
+      success: true,
+      data: {
+        recommendations,
+        personalized: false,
+      },
+    });
+  } catch (error) {
+    console.error('Failed to get popular documents:', error);
+    return c.json(Errors.internal('Failed to get popular documents').toJSON(), 500);
+  }
+});
+
+/**
+ * GET /api/documents/:id/suggestions
+ * Get related document suggestions based on a specific document
+ */
+documents.get('/:id/suggestions', authMiddleware, async (c) => {
+  const { id } = c.req.param();
+  const userId = c.get('userId');
+  const db = c.env.DB;
+
+  // Verify user owns the document
+  const doc = await db
+    .prepare('SELECT created_by FROM documents WHERE id = ?')
+    .bind(id)
+    .first<{ created_by: string }>();
+
+  if (!doc) {
+    return c.json(Errors.notFound('Document').toJSON(), 404);
+  }
+
+  if (doc.created_by !== userId) {
+    return c.json(Errors.forbidden().toJSON(), 403);
+  }
+
+  try {
+    const suggestions = await getDocumentSuggestions(db, id);
+
+    return c.json({
+      success: true,
+      data: {
+        suggestions,
+        documentId: id,
+      },
+    });
+  } catch (error) {
+    console.error('Failed to get document suggestions:', error);
+    return c.json(Errors.internal('Failed to get suggestions').toJSON(), 500);
+  }
+});
+
+/**
+ * GET /api/documents/related/:type
+ * Get related documents for a document type (public)
+ */
+documents.get('/related/:type', async (c) => {
+  const { type } = c.req.param();
+
+  try {
+    const related = getRelatedDocuments(type);
+
+    return c.json({
+      success: true,
+      data: {
+        documentType: type,
+        related,
+      },
+    });
+  } catch (error) {
+    console.error('Failed to get related documents:', error);
+    return c.json(Errors.internal('Failed to get related documents').toJSON(), 500);
+  }
+});
+
+// Apply auth middleware to remaining routes
+documents.use('*', authMiddleware);
+
 /**
  * GET /api/documents
- * List user's documents with pagination and filters
+ * List user's documents with pagination, search, and advanced filters
+ *
+ * Search supports:
+ * - Multi-language titles (English, Arabic, Urdu)
+ * - Document number
+ * - Document type
+ *
+ * Advanced filters:
+ * - status: Filter by document status
+ * - type: Filter by document type
+ * - dateFrom/dateTo: Filter by creation date range
+ * - hasSigned: Filter documents with/without signatures
+ * - sortBy/sortOrder: Sort results
  */
 documents.get('/', zValidator('query', paginationSchema), async (c) => {
   const userId = c.get('userId');
-  const { page, limit, status, type, search } = c.req.valid('query');
+  const {
+    page,
+    limit,
+    status,
+    type,
+    search,
+    dateFrom,
+    dateTo,
+    hasSigned,
+    sortBy,
+    sortOrder,
+  } = c.req.valid('query');
   const db = c.env.DB;
 
   const offset = (page - 1) * limit;
 
   // Build WHERE clause
-  const conditions: string[] = ['created_by = ?'];
+  const conditions: string[] = ['d.created_by = ?'];
   const params: any[] = [userId];
 
+  // Status filter
   if (status) {
-    conditions.push('status = ?');
+    conditions.push('d.status = ?');
     params.push(status);
   }
 
+  // Document type filter
   if (type) {
-    conditions.push('document_type = ?');
+    conditions.push('d.document_type = ?');
     params.push(type);
   }
 
+  // Enhanced search: multi-language titles, document number, document type
   if (search) {
-    conditions.push('(title LIKE ? OR document_number LIKE ?)');
-    params.push(`%${search}%`, `%${search}%`);
+    const searchTerm = `%${search}%`;
+    conditions.push(`(
+      d.title LIKE ? OR
+      d.title_ar LIKE ? OR
+      d.title_ur LIKE ? OR
+      d.document_number LIKE ? OR
+      d.document_type LIKE ?
+    )`);
+    params.push(searchTerm, searchTerm, searchTerm, searchTerm, searchTerm);
+  }
+
+  // Date range filters
+  if (dateFrom) {
+    conditions.push('d.created_at >= ?');
+    params.push(dateFrom);
+  }
+  if (dateTo) {
+    conditions.push('d.created_at <= ?');
+    params.push(dateTo);
+  }
+
+  // Filter by signature status
+  if (hasSigned === 'true') {
+    conditions.push('EXISTS (SELECT 1 FROM document_signers WHERE document_id = d.id AND status = \'signed\')');
+  } else if (hasSigned === 'false') {
+    conditions.push('NOT EXISTS (SELECT 1 FROM document_signers WHERE document_id = d.id AND status = \'signed\')');
   }
 
   const whereClause = conditions.join(' AND ');
 
+  // Validate sort column to prevent SQL injection
+  const validSortColumns = ['created_at', 'updated_at', 'title', 'status'];
+  const sortColumn = validSortColumns.includes(sortBy) ? `d.${sortBy}` : 'd.created_at';
+  const orderDirection = sortOrder === 'asc' ? 'ASC' : 'DESC';
+
   // Get total count
   const countResult = await db
-    .prepare(`SELECT COUNT(*) as count FROM documents WHERE ${whereClause}`)
+    .prepare(`SELECT COUNT(*) as count FROM documents d WHERE ${whereClause}`)
     .bind(...params)
     .first<{ count: number }>();
 
   const total = countResult?.count || 0;
 
-  // Get documents
+  // Get documents with signer counts
   const result = await db
     .prepare(
       `SELECT d.*,
@@ -143,7 +349,7 @@ documents.get('/', zValidator('query', paginationSchema), async (c) => {
               (SELECT COUNT(*) FROM document_signers WHERE document_id = d.id AND status = 'signed') as signed_count
        FROM documents d
        WHERE ${whereClause}
-       ORDER BY d.created_at DESC
+       ORDER BY ${sortColumn} ${orderDirection}
        LIMIT ? OFFSET ?`
     )
     .bind(...params, limit, offset)
@@ -153,6 +359,155 @@ documents.get('/', zValidator('query', paginationSchema), async (c) => {
     success: true,
     data: {
       documents: result.results,
+      meta: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit),
+        filters: {
+          status,
+          type,
+          search,
+          dateFrom,
+          dateTo,
+          hasSigned,
+          sortBy,
+          sortOrder,
+        },
+      },
+    },
+  });
+});
+
+/**
+ * GET /api/documents/search
+ * Full-text search across documents including content
+ *
+ * This is a more comprehensive search than the list endpoint,
+ * as it also searches within document content (JSON fields).
+ */
+const searchSchema = z.object({
+  q: z.string().min(1, 'Search query is required').max(200),
+  page: z.coerce.number().int().min(1).default(1),
+  limit: z.coerce.number().int().min(1).max(50).default(20),
+  includeContent: z.enum(['true', 'false']).default('false'),
+});
+
+documents.get('/search', zValidator('query', searchSchema), async (c) => {
+  const userId = c.get('userId');
+  const { q: query, page, limit, includeContent } = c.req.valid('query');
+  const db = c.env.DB;
+
+  const offset = (page - 1) * limit;
+  const searchTerm = `%${query}%`;
+
+  // Build search query with relevance scoring
+  // SQLite doesn't have native full-text search without FTS extension,
+  // so we use LIKE with multiple fields and add relevance hints
+  const searchConditions = `
+    (
+      d.title LIKE ? OR
+      d.title_ar LIKE ? OR
+      d.title_ur LIKE ? OR
+      d.document_number LIKE ? OR
+      d.document_type LIKE ? OR
+      d.content_en LIKE ? OR
+      d.content_ar LIKE ?
+    )
+  `;
+
+  // Get total count
+  const countResult = await db
+    .prepare(`
+      SELECT COUNT(*) as count
+      FROM documents d
+      WHERE d.created_by = ? AND ${searchConditions}
+    `)
+    .bind(userId, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm)
+    .first<{ count: number }>();
+
+  const total = countResult?.count || 0;
+
+  // Get matching documents with relevance scoring
+  // We calculate a simple relevance score based on which fields match
+  const selectFields = includeContent === 'true'
+    ? 'd.*'
+    : `d.id, d.document_number, d.title, d.title_ar, d.title_ur, d.document_type, d.status, d.created_at, d.updated_at`;
+
+  const result = await db
+    .prepare(`
+      SELECT ${selectFields},
+             (SELECT COUNT(*) FROM document_signers WHERE document_id = d.id) as signer_count,
+             (SELECT COUNT(*) FROM document_signers WHERE document_id = d.id AND status = 'signed') as signed_count,
+             -- Relevance scoring: title matches score higher than content matches
+             CASE
+               WHEN d.title LIKE ? THEN 100
+               WHEN d.title_ar LIKE ? THEN 90
+               WHEN d.title_ur LIKE ? THEN 90
+               WHEN d.document_number LIKE ? THEN 80
+               WHEN d.document_type LIKE ? THEN 50
+               WHEN d.content_en LIKE ? THEN 30
+               WHEN d.content_ar LIKE ? THEN 30
+               ELSE 0
+             END as relevance
+      FROM documents d
+      WHERE d.created_by = ? AND ${searchConditions}
+      ORDER BY relevance DESC, d.updated_at DESC
+      LIMIT ? OFFSET ?
+    `)
+    .bind(
+      // For relevance scoring
+      searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm,
+      // For WHERE clause
+      userId, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm, searchTerm,
+      // For pagination
+      limit, offset
+    )
+    .all();
+
+  // Highlight search matches in results (simple version)
+  const highlightMatches = (text: string | null, query: string): string | null => {
+    if (!text) return null;
+    const regex = new RegExp(`(${query.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')})`, 'gi');
+    return text.replace(regex, '**$1**');
+  };
+
+  const documents = (result.results || []).map((doc: any) => ({
+    ...doc,
+    // Add highlighted snippets for search results
+    highlights: {
+      title: doc.title?.toLowerCase().includes(query.toLowerCase())
+        ? highlightMatches(doc.title, query)
+        : null,
+      titleAr: doc.title_ar?.toLowerCase().includes(query.toLowerCase())
+        ? highlightMatches(doc.title_ar, query)
+        : null,
+    },
+  }));
+
+  // Track search analytics (non-blocking)
+  const analytics = createAnalyticsService(db, {
+    userId,
+    userAgent: c.req.header('User-Agent'),
+    ipAddress: c.req.header('CF-Connecting-IP'),
+    country: c.req.header('CF-IPCountry'),
+  });
+  analytics.track({
+    eventType: 'document_searched',
+    userId,
+    properties: {
+      query,
+      resultsCount: total,
+      page,
+      includeContent: includeContent === 'true',
+    },
+  }).catch(err => console.error('Analytics error:', err));
+
+  return c.json({
+    success: true,
+    data: {
+      query,
+      documents,
       meta: {
         page,
         limit,
@@ -208,6 +563,71 @@ documents.get('/:id', async (c) => {
         signers: signers.results,
         activities: activities.results,
       },
+    },
+  });
+});
+
+/**
+ * GET /api/documents/:id/download
+ * Get document data formatted for PDF generation
+ */
+documents.get('/:id/download', async (c) => {
+  const { id } = c.req.param();
+  const userId = c.get('userId');
+  const db = c.env.DB;
+
+  const document = await db
+    .prepare('SELECT * FROM documents WHERE id = ?')
+    .bind(id)
+    .first();
+
+  if (!document) {
+    return c.json(Errors.notFound('Document').toJSON(), 404);
+  }
+
+  if ((document as any).created_by !== userId) {
+    return c.json(Errors.forbidden().toJSON(), 403);
+  }
+
+  // Get signers
+  const signers = await db
+    .prepare('SELECT * FROM document_signers WHERE document_id = ? ORDER BY "order"')
+    .bind(id)
+    .all();
+
+  // Get user info for owner
+  const owner = await db
+    .prepare('SELECT full_name, email FROM users WHERE id = ?')
+    .bind(userId)
+    .first<{ full_name: string; email: string }>();
+
+  // Parse content
+  const contentEn = (document as any).content_en ? JSON.parse((document as any).content_en) : null;
+  const contentAr = (document as any).content_ar ? JSON.parse((document as any).content_ar) : null;
+
+  return c.json({
+    success: true,
+    data: {
+      documentId: id,
+      documentNumber: (document as any).document_number,
+      title: (document as any).title,
+      titleAr: (document as any).title_ar,
+      documentType: (document as any).document_type,
+      status: (document as any).status,
+      contentEn,
+      contentAr,
+      languages: JSON.parse((document as any).languages || '["en"]'),
+      bindingLanguage: (document as any).binding_language,
+      owner: owner?.full_name || owner?.email || 'Unknown',
+      signers: signers.results.map((s: any) => ({
+        name: s.name,
+        email: s.email,
+        role: s.role,
+        status: s.status,
+        signedAt: s.signed_at,
+      })),
+      createdAt: (document as any).created_at,
+      updatedAt: (document as any).updated_at,
     },
   });
 });

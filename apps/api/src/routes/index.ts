@@ -19,3 +19,15 @@ export { messaging } from './lawyer-messaging.js';
 export { lawyerDashboard } from './lawyer-dashboard.js';
 export { payments } from './payments.js';
 export { consultationCalls } from './consultation-calls.js';
+
+// GDPR compliance routes
+export { gdpr } from './gdpr.js';
+
+// Data residency and compliance transparency
+export { compliance } from './compliance.js';
+
+// PDF generation routes
+export { pdf } from './pdf.js';
+
+// Analytics routes
+export { analytics } from './analytics.js';

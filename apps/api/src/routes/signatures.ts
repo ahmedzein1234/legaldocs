@@ -15,6 +15,12 @@ import {
   type SignatureCompletedData,
 } from '../lib/whatsapp-templates.js';
 import { Language } from '../lib/error-messages.js';
+import {
+  sendEmail,
+  sendDocumentReminderEmail,
+  sendSignatureRequestEmail,
+  type EmailEnv,
+} from '../lib/email.js';
 
 // Types for Cloudflare bindings
 type Bindings = {
@@ -180,24 +186,25 @@ signatures.post('/request', authMiddleware, zValidator('json', signatureRequestS
       phone: s.phone,
     }));
 
-  // Send signature request notifications via WhatsApp
+  // Send signature request notifications via WhatsApp and Email
   const notificationResults: { name: string; method: string; success: boolean; error?: string }[] = [];
 
+  // Get sender info
+  let senderName = 'Qannoni User';
+  try {
+    const user = await c.env.DB.prepare(
+      'SELECT full_name FROM users WHERE id = ?'
+    ).bind(userId).first<{ full_name: string }>();
+    if (user?.full_name) {
+      senderName = user.full_name;
+    }
+  } catch (error) {
+    console.error('Failed to get user name:', error);
+  }
+
+  // Send WhatsApp notifications
   if (isWhatsAppConfigured(c.env)) {
     const whatsapp = createWhatsAppService(c.env);
-
-    // Get sender info
-    let senderName = 'LegalDocs User';
-    try {
-      const user = await c.env.DB.prepare(
-        'SELECT full_name FROM users WHERE id = ?'
-      ).bind(userId).first<{ full_name: string }>();
-      if (user?.full_name) {
-        senderName = user.full_name;
-      }
-    } catch (error) {
-      console.error('Failed to get user name:', error);
-    }
 
     for (const signer of signingUrls) {
       if (
@@ -224,6 +231,41 @@ signatures.post('/request', authMiddleware, zValidator('json', signatureRequestS
         // Small delay between messages
         await new Promise(resolve => setTimeout(resolve, 100));
       }
+    }
+  }
+
+  // Send email notifications
+  for (const signer of signingUrls) {
+    if (
+      (signer.deliveryMethod === 'email' || signer.deliveryMethod === 'both') &&
+      signer.email
+    ) {
+      // Find the signer's role from the original signers array
+      const signerInfo = signers.find(s => s.id === signer.signerId);
+      const result = await sendSignatureRequestEmail(
+        c.env as EmailEnv,
+        signer.email,
+        {
+          signerName: signer.name,
+          senderName,
+          documentName: body.documentName,
+          documentType: body.documentType,
+          signingLink: signer.signingUrl,
+          message: body.message,
+          expiresAt: expiresAt.toISOString(),
+          role: signerInfo?.role || 'signer',
+          language: 'en',
+        }
+      );
+      notificationResults.push({
+        name: signer.name,
+        method: 'email',
+        success: result.success,
+        error: result.error,
+      });
+
+      // Small delay between emails
+      await new Promise(resolve => setTimeout(resolve, 100));
     }
   }
 
@@ -377,7 +419,32 @@ signatures.post('/:requestId/remind', authMiddleware, async (c) => {
     }
   }
 
-  // TODO: Also send email reminders for email/both delivery methods
+  // Send email reminders for email/both delivery methods
+  for (const signer of pendingSigners) {
+    if (
+      (signer.deliveryMethod === 'email' || signer.deliveryMethod === 'both') &&
+      signer.email
+    ) {
+      const signingUrl = `${baseUrl}/en/sign/${signer.signingToken}`;
+      const result = await sendDocumentReminderEmail(
+        c.env as EmailEnv,
+        signer.email,
+        {
+          signerName: signer.name,
+          documentName: request.documentName,
+          signingLink: signingUrl,
+          expiresAt: request.expiresAt,
+          language: 'en',
+        }
+      );
+      reminderResults.push({
+        name: signer.name,
+        method: 'email',
+        success: result.success,
+        error: result.error,
+      });
+    }
+  }
 
   request.auditTrail.push({
     id: crypto.randomUUID(),
@@ -596,6 +663,98 @@ signatures.post('/public/:token', zValidator('json', submitSignatureSchema), asy
       message: 'Signature submitted successfully',
       status: request.status,
       allSigned,
+    },
+  });
+});
+
+/**
+ * GET /api/signatures/public/:token/download
+ * Get document data for PDF generation (public route)
+ */
+signatures.get('/public/:token/download', async (c) => {
+  const { token } = c.req.param();
+  const cache = c.env.CACHE;
+  const db = c.env.DB;
+
+  const decoded = decodeSigningToken(token);
+  if (!decoded) {
+    return c.json(Errors.badRequest('Invalid signing link').toJSON(), 400);
+  }
+
+  const { requestId, signerIndex } = decoded;
+
+  const cached = await cache.get(`signature:${requestId}`);
+  if (!cached) {
+    return c.json(Errors.notFound('Signature request not found or expired').toJSON(), 404);
+  }
+
+  const request = JSON.parse(cached);
+  const signer = request.signers[signerIndex];
+
+  if (!signer || signer.status !== 'signed') {
+    return c.json(Errors.badRequest('Document must be signed before downloading').toJSON(), 400);
+  }
+
+  // Get document content from database
+  let documentContent = null;
+  if (request.documentId) {
+    const doc = await db.prepare(
+      'SELECT content_en, content_ar, title, title_ar, document_type FROM documents WHERE id = ?'
+    ).bind(request.documentId).first();
+    if (doc) {
+      documentContent = {
+        contentEn: doc.content_en ? JSON.parse(doc.content_en as string) : null,
+        contentAr: doc.content_ar ? JSON.parse(doc.content_ar as string) : null,
+        title: doc.title,
+        titleAr: doc.title_ar,
+        documentType: doc.document_type,
+      };
+    }
+  }
+
+  // Build signers info for PDF (excluding signature data URLs for security)
+  const signersInfo = request.signers.map((s: any) => ({
+    name: s.name,
+    role: s.role,
+    status: s.status,
+    signedAt: s.signedAt,
+    signatureType: s.signatureType,
+  }));
+
+  // Get owner info
+  let ownerName = 'Document Owner';
+  try {
+    const user = await db.prepare(
+      'SELECT full_name, email FROM users WHERE id = ?'
+    ).bind(request.userId).first<{ full_name: string; email: string }>();
+    if (user) {
+      ownerName = user.full_name || user.email;
+    }
+  } catch (error) {
+    console.error('Failed to get owner name:', error);
+  }
+
+  return c.json({
+    success: true,
+    data: {
+      requestId,
+      documentName: request.documentName,
+      documentType: request.documentType,
+      title: request.title,
+      content: documentContent,
+      status: request.status,
+      signers: signersInfo,
+      owner: ownerName,
+      createdAt: request.createdAt,
+      completedAt: request.completedAt,
+      auditTrail: request.auditTrail,
+      // Include current signer's signature for PDF
+      signature: {
+        signerName: signer.name,
+        signatureData: signer.signatureData,
+        signatureType: signer.signatureType,
+        signedAt: signer.signedAt,
+      },
     },
   });
 });

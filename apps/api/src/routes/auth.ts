@@ -4,14 +4,26 @@ import { z } from 'zod';
 import { hashPassword, verifyPassword, needsRehash } from '../lib/password.js';
 import { generateTokenPair, verifyToken, TokenError } from '../lib/jwt.js';
 import { Errors } from '../lib/errors.js';
-import { authMiddleware, rateLimiters } from '../middleware/index.js';
-import { sendWelcomeEmail, getEmailLanguage } from '../lib/email.js';
+import { authMiddleware, rateLimiters, getCSRFToken } from '../middleware/index.js';
+import { sendWelcomeEmail } from '../services/email/index.js';
+import { getEmailLanguage } from '../lib/email.js';
+import {
+  setAuthCookies,
+  clearAuthCookies,
+  getRefreshToken,
+  updateAccessToken,
+} from '../lib/cookies.js';
+import { createAnalyticsService } from '../lib/analytics.js';
 
 // Types for Cloudflare bindings
 type Bindings = {
   DB: D1Database;
   JWT_SECRET: string;
-  RESEND_API_KEY: string;
+  RESEND_API_KEY?: string;
+  // Cloudflare Email Workers binding (optional)
+  EMAIL?: {
+    send(message: any): Promise<void>;
+  };
 };
 
 type Variables = {
@@ -120,9 +132,13 @@ auth.post('/register', rateLimiters.auth, zValidator('json', registerSchema), as
     c.env.JWT_SECRET
   );
 
+  // Set httpOnly cookies for tokens
+  setAuthCookies(c, accessToken, refreshToken);
+
   // Send welcome email (non-blocking - don't wait for result)
+  // Uses Cloudflare Email Workers if available, falls back to Resend
   const emailLanguage = getEmailLanguage('en'); // Default to 'en', could be from user preference
-  sendWelcomeEmail(c.env.RESEND_API_KEY, {
+  sendWelcomeEmail(c.env, {
     userName: body.fullName,
     userEmail: body.email.toLowerCase(),
     language: emailLanguage,
@@ -130,6 +146,18 @@ auth.post('/register', rateLimiters.auth, zValidator('json', registerSchema), as
     // Log error but don't fail registration
     console.error('Failed to send welcome email:', error);
   });
+
+  // Track user registration (non-blocking)
+  const analytics = createAnalyticsService(c.env.DB, {
+    userId: id,
+    userAgent: c.req.header('User-Agent'),
+    ipAddress: c.req.header('CF-Connecting-IP'),
+    country: c.req.header('CF-IPCountry'),
+  });
+  analytics.trackUserRegistered(id, {
+    hasPhone: !!body.phone,
+    hasArabicName: !!body.fullNameAr,
+  }).catch(err => console.error('Analytics error:', err));
 
   return c.json({
     success: true,
@@ -142,6 +170,8 @@ auth.post('/register', rateLimiters.auth, zValidator('json', registerSchema), as
         role: 'user',
         uiLanguage: 'en',
       },
+      // Still include tokens in response for backward compatibility
+      // Clients should migrate to using cookies
       accessToken,
       refreshToken,
       expiresAt,
@@ -205,6 +235,21 @@ auth.post('/login', rateLimiters.auth, zValidator('json', loginSchema), async (c
     c.env.JWT_SECRET
   );
 
+  // Set httpOnly cookies for tokens
+  setAuthCookies(c, accessToken, refreshToken);
+
+  // Track user login (non-blocking)
+  const analytics = createAnalyticsService(c.env.DB, {
+    userId: user.id,
+    userAgent: c.req.header('User-Agent'),
+    ipAddress: c.req.header('CF-Connecting-IP'),
+    country: c.req.header('CF-IPCountry'),
+  });
+  analytics.trackUserLoggedIn(user.id, {
+    role: user.role,
+    hasPhone: !!user.phone,
+  }).catch(err => console.error('Analytics error:', err));
+
   return c.json({
     success: true,
     data: {
@@ -220,6 +265,7 @@ auth.post('/login', rateLimiters.auth, zValidator('json', loginSchema), async (c
           ? JSON.parse(user.preferred_doc_languages)
           : ['en'],
       },
+      // Still include tokens in response for backward compatibility
       accessToken,
       refreshToken,
       expiresAt,
@@ -230,9 +276,25 @@ auth.post('/login', rateLimiters.auth, zValidator('json', loginSchema), async (c
 /**
  * POST /api/auth/refresh
  * Refresh access token using refresh token
+ * Supports both cookie-based and body-based refresh tokens
  */
-auth.post('/refresh', zValidator('json', refreshTokenSchema), async (c) => {
-  const { refreshToken: token } = c.req.valid('json');
+auth.post('/refresh', async (c) => {
+  // Try to get refresh token from cookie first, then from body
+  let token = getRefreshToken(c);
+
+  if (!token) {
+    // Fall back to body for backward compatibility
+    try {
+      const body = await c.req.json();
+      token = body.refreshToken;
+    } catch {
+      // No body provided
+    }
+  }
+
+  if (!token) {
+    return c.json(Errors.invalidToken().toJSON(), 401);
+  }
 
   try {
     const payload = await verifyToken(token, c.env.JWT_SECRET);
@@ -247,9 +309,13 @@ auth.post('/refresh', zValidator('json', refreshTokenSchema), async (c) => {
       c.env.JWT_SECRET
     );
 
+    // Set new cookies
+    setAuthCookies(c, accessToken, refreshToken);
+
     return c.json({
       success: true,
       data: {
+        // Still include tokens in response for backward compatibility
         accessToken,
         refreshToken,
         expiresAt,
@@ -398,18 +464,29 @@ auth.post(
 
 /**
  * POST /api/auth/logout
- * Logout (for future token blacklist implementation)
+ * Logout and clear authentication cookies
  */
 auth.post('/logout', authMiddleware, async (c) => {
-  // In a production system, you would:
+  // Clear httpOnly cookies
+  clearAuthCookies(c);
+
+  // In a production system, you would also:
   // 1. Add the refresh token to a blacklist
   // 2. Invalidate any active sessions
-  // For now, we just return success and let the client clear tokens
 
   return c.json({
     success: true,
     data: { message: 'Logged out successfully' },
   });
+});
+
+/**
+ * GET /api/auth/csrf-token
+ * Get a CSRF token for the current session
+ * Required for state-changing operations (POST, PUT, PATCH, DELETE)
+ */
+auth.get('/csrf-token', authMiddleware, async (c) => {
+  return getCSRFToken(c);
 });
 
 export { auth };
