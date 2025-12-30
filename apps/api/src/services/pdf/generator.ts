@@ -116,8 +116,11 @@ export class PDFGenerator {
    * Generate PDF using Puppeteer (Cloudflare Browser Rendering)
    */
   private async generateWithPuppeteer(html: string, options: PDFGenerationOptions): Promise<ArrayBuffer> {
-    // Dynamic import for Puppeteer
-    const puppeteer = await import('@cloudflare/puppeteer');
+    // Dynamic import for Puppeteer - handle missing module gracefully
+    // @ts-ignore - Module is provided by Cloudflare at runtime when Browser binding is enabled
+    const puppeteer = await import('@cloudflare/puppeteer').catch(() => {
+      throw new Error('Puppeteer not available. Enable Browser Rendering in wrangler.toml');
+    });
 
     const browser = await puppeteer.default.launch(this.env.BROWSER);
 
@@ -304,7 +307,11 @@ export async function generatePDFFromHTML(
     let pdfBuffer: ArrayBuffer;
 
     if (env.BROWSER) {
-      const puppeteer = await import('@cloudflare/puppeteer');
+      // @ts-ignore - Module is provided by Cloudflare at runtime when Browser binding is enabled
+      const puppeteer = await import('@cloudflare/puppeteer').catch(() => null);
+      if (!puppeteer) {
+        throw new Error('Puppeteer not available');
+      }
       const browser = await puppeteer.default.launch(env.BROWSER);
 
       try {
