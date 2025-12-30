@@ -1,8 +1,11 @@
 /**
- * Email Service - Resend API wrapper for LegalDocs
+ * Email Service - Unified Email API for LegalDocs
  *
- * Provides typed email sending functions using the Resend API.
- * Compatible with Cloudflare Workers (uses fetch, not Node.js modules).
+ * Provides typed email sending functions using:
+ * 1. Cloudflare Email Workers (primary) - No API keys needed
+ * 2. Resend API (fallback) - For production reliability
+ *
+ * Compatible with Cloudflare Workers.
  */
 
 import {
@@ -12,12 +15,16 @@ import {
   getSignatureRequestEmail,
   getSignatureCompletedEmail,
   getDocumentReminderEmail,
+  getVerificationExpiryEmail,
+  getLicenseRenewalEmail,
   type WelcomeEmailData,
   type PasswordResetEmailData,
   type DocumentSharedEmailData,
   type SignatureRequestEmailData,
   type SignatureCompletedEmailData,
   type DocumentReminderEmailData,
+  type VerificationExpiryEmailData,
+  type LicenseRenewalEmailData,
 } from './email-templates.js';
 
 // Re-export types for convenience
@@ -28,6 +35,14 @@ export type {
   SignatureRequestEmailData,
   SignatureCompletedEmailData,
   DocumentReminderEmailData,
+  VerificationExpiryEmailData,
+  LicenseRenewalEmailData,
+};
+
+// Re-export template functions
+export {
+  getVerificationExpiryEmail,
+  getLicenseRenewalEmail,
 };
 
 // ============================================
@@ -48,7 +63,17 @@ export interface EmailOptions {
 export interface SendEmailResult {
   success: boolean;
   messageId?: string;
+  provider?: 'cloudflare' | 'resend';
   error?: string;
+}
+
+export interface EmailEnv {
+  // Cloudflare Email binding
+  EMAIL?: {
+    send(message: any): Promise<void>;
+  };
+  // Resend API key (fallback)
+  RESEND_API_KEY?: string;
 }
 
 // ============================================
@@ -58,45 +83,118 @@ export interface SendEmailResult {
 const RESEND_API_URL = 'https://api.resend.com/emails';
 const DEFAULT_FROM_EMAIL = 'Qannoni <noreply@qannoni.com>';
 const DEFAULT_REPLY_TO = 'support@qannoni.com';
+const SENDER_DOMAIN = 'qannoni.com';
 
 // ============================================
-// CORE EMAIL SENDING FUNCTION
+// MIME MESSAGE BUILDER
+// ============================================
+
+function buildMimeMessage(options: EmailOptions): string {
+  const from = options.from || DEFAULT_FROM_EMAIL;
+  const to = Array.isArray(options.to) ? options.to.join(', ') : options.to;
+  const subject = options.subject;
+  const boundary = `----=_Part_${Date.now()}_${Math.random().toString(36).substring(2)}`;
+
+  const headers = [
+    `From: ${from}`,
+    `To: ${to}`,
+    `Subject: =?UTF-8?B?${btoa(unescape(encodeURIComponent(subject)))}?=`,
+    `MIME-Version: 1.0`,
+    `Date: ${new Date().toUTCString()}`,
+    `Message-ID: <${Date.now()}.${Math.random().toString(36)}@${SENDER_DOMAIN}>`,
+  ];
+
+  if (options.cc) {
+    const cc = Array.isArray(options.cc) ? options.cc.join(', ') : options.cc;
+    headers.push(`Cc: ${cc}`);
+  }
+
+  if (options.replyTo) {
+    headers.push(`Reply-To: ${options.replyTo}`);
+  }
+
+  // Build multipart message
+  if (options.html && options.text) {
+    headers.push(`Content-Type: multipart/alternative; boundary="${boundary}"`);
+
+    const body = [
+      `--${boundary}`,
+      `Content-Type: text/plain; charset=UTF-8`,
+      `Content-Transfer-Encoding: base64`,
+      ``,
+      btoa(unescape(encodeURIComponent(options.text))),
+      ``,
+      `--${boundary}`,
+      `Content-Type: text/html; charset=UTF-8`,
+      `Content-Transfer-Encoding: base64`,
+      ``,
+      btoa(unescape(encodeURIComponent(options.html))),
+      ``,
+      `--${boundary}--`,
+    ].join('\r\n');
+
+    return headers.join('\r\n') + '\r\n\r\n' + body;
+  }
+
+  // HTML only
+  headers.push(`Content-Type: text/html; charset=UTF-8`);
+  headers.push(`Content-Transfer-Encoding: base64`);
+  return headers.join('\r\n') + '\r\n\r\n' + btoa(unescape(encodeURIComponent(options.html)));
+}
+
+// ============================================
+// EMAIL PROVIDERS
 // ============================================
 
 /**
- * Send an email using Resend API
- * @param apiKey - Resend API key
- * @param options - Email options
- * @returns Result with success status and message ID or error
+ * Send email using Cloudflare Email Workers
  */
-export async function sendEmail(
-  apiKey: string,
-  options: EmailOptions
-): Promise<SendEmailResult> {
+async function sendWithCloudflare(env: EmailEnv, options: EmailOptions): Promise<SendEmailResult> {
   try {
-    // Validate inputs
-    if (!apiKey) {
-      return {
-        success: false,
-        error: 'RESEND_API_KEY is not configured',
+    if (!env.EMAIL) {
+      return { success: false, error: 'Cloudflare Email binding not available' };
+    }
+
+    const mimeMessage = buildMimeMessage(options);
+    const from = options.from || DEFAULT_FROM_EMAIL;
+    const fromEmail = from.match(/<(.+)>/)?.[1] || from;
+    const to = Array.isArray(options.to) ? options.to[0] : options.to;
+
+    // Dynamic import for cloudflare:email module
+    let EmailMessage: any;
+    try {
+      const emailModule = await import('cloudflare:email');
+      EmailMessage = emailModule.EmailMessage;
+    } catch {
+      // Create compatible class if module not available
+      EmailMessage = class {
+        constructor(public from: string, public to: string, public raw: string) {}
       };
     }
 
-    if (!options.to || (Array.isArray(options.to) && options.to.length === 0)) {
-      return {
-        success: false,
-        error: 'Email recipient is required',
-      };
-    }
+    const message = new EmailMessage(fromEmail, to, mimeMessage);
+    await env.EMAIL.send(message);
 
-    if (!options.subject || !options.html) {
-      return {
-        success: false,
-        error: 'Email subject and HTML content are required',
-      };
-    }
+    return {
+      success: true,
+      provider: 'cloudflare',
+      messageId: `cf_${Date.now()}_${Math.random().toString(36).substring(2, 10)}`,
+    };
+  } catch (error) {
+    console.error('Cloudflare email error:', error);
+    return {
+      success: false,
+      provider: 'cloudflare',
+      error: error instanceof Error ? error.message : 'Unknown Cloudflare email error',
+    };
+  }
+}
 
-    // Prepare request payload
+/**
+ * Send email using Resend API
+ */
+async function sendWithResend(apiKey: string, options: EmailOptions): Promise<SendEmailResult> {
+  try {
     const payload = {
       from: options.from || DEFAULT_FROM_EMAIL,
       to: Array.isArray(options.to) ? options.to : [options.to],
@@ -108,35 +206,103 @@ export async function sendEmail(
       ...(options.bcc && { bcc: Array.isArray(options.bcc) ? options.bcc : [options.bcc] }),
     };
 
-    // Send request to Resend API
     const response = await fetch(RESEND_API_URL, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        Authorization: `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify(payload),
     });
 
-    const data = await response.json() as any;
+    const data = (await response.json()) as any;
 
     if (!response.ok) {
       return {
         success: false,
+        provider: 'resend',
         error: data.message || `Resend API error: ${response.status}`,
       };
     }
 
     return {
       success: true,
+      provider: 'resend',
       messageId: data.id,
     };
   } catch (error) {
     return {
       success: false,
-      error: error instanceof Error ? error.message : 'Unknown error sending email',
+      provider: 'resend',
+      error: error instanceof Error ? error.message : 'Unknown Resend error',
     };
   }
+}
+
+// ============================================
+// CORE EMAIL SENDING FUNCTION
+// ============================================
+
+/**
+ * Send an email using the best available provider
+ *
+ * Priority:
+ * 1. Cloudflare Email Workers (if EMAIL binding available)
+ * 2. Resend API (if RESEND_API_KEY available)
+ *
+ * @param envOrApiKey - Environment object with bindings OR Resend API key (legacy)
+ * @param options - Email options
+ */
+export async function sendEmail(
+  envOrApiKey: EmailEnv | string,
+  options: EmailOptions
+): Promise<SendEmailResult> {
+  // Validate inputs
+  if (!options.to || (Array.isArray(options.to) && options.to.length === 0)) {
+    return { success: false, error: 'Email recipient is required' };
+  }
+
+  if (!options.subject || !options.html) {
+    return { success: false, error: 'Email subject and HTML content are required' };
+  }
+
+  // Handle legacy API key format
+  if (typeof envOrApiKey === 'string') {
+    if (!envOrApiKey) {
+      return { success: false, error: 'API key is required' };
+    }
+    return sendWithResend(envOrApiKey, options);
+  }
+
+  const env = envOrApiKey;
+
+  // Try Cloudflare Email first
+  if (env.EMAIL) {
+    const result = await sendWithCloudflare(env, options);
+
+    // If successful, return
+    if (result.success) {
+      return result;
+    }
+
+    // If failed and Resend available, try fallback
+    if (env.RESEND_API_KEY) {
+      console.warn('Cloudflare email failed, trying Resend fallback:', result.error);
+      return sendWithResend(env.RESEND_API_KEY, options);
+    }
+
+    return result;
+  }
+
+  // Try Resend
+  if (env.RESEND_API_KEY) {
+    return sendWithResend(env.RESEND_API_KEY, options);
+  }
+
+  return {
+    success: false,
+    error: 'No email provider configured. Set up Cloudflare Email or RESEND_API_KEY.',
+  };
 }
 
 // ============================================
@@ -147,12 +313,12 @@ export async function sendEmail(
  * Send welcome email to new user
  */
 export async function sendWelcomeEmail(
-  apiKey: string,
+  envOrApiKey: EmailEnv | string,
   data: WelcomeEmailData
 ): Promise<SendEmailResult> {
   const { subject, html, text } = getWelcomeEmail(data);
 
-  return sendEmail(apiKey, {
+  return sendEmail(envOrApiKey, {
     to: data.userEmail,
     subject,
     html,
@@ -164,13 +330,13 @@ export async function sendWelcomeEmail(
  * Send password reset email
  */
 export async function sendPasswordResetEmail(
-  apiKey: string,
+  envOrApiKey: EmailEnv | string,
   to: string,
   data: PasswordResetEmailData
 ): Promise<SendEmailResult> {
   const { subject, html, text } = getPasswordResetEmail(data);
 
-  return sendEmail(apiKey, {
+  return sendEmail(envOrApiKey, {
     to,
     subject,
     html,
@@ -182,13 +348,13 @@ export async function sendPasswordResetEmail(
  * Send document shared notification email
  */
 export async function sendDocumentSharedEmail(
-  apiKey: string,
+  envOrApiKey: EmailEnv | string,
   to: string,
   data: DocumentSharedEmailData
 ): Promise<SendEmailResult> {
   const { subject, html, text } = getDocumentSharedEmail(data);
 
-  return sendEmail(apiKey, {
+  return sendEmail(envOrApiKey, {
     to,
     subject,
     html,
@@ -200,13 +366,13 @@ export async function sendDocumentSharedEmail(
  * Send signature request email
  */
 export async function sendSignatureRequestEmail(
-  apiKey: string,
+  envOrApiKey: EmailEnv | string,
   to: string,
   data: SignatureRequestEmailData
 ): Promise<SendEmailResult> {
   const { subject, html, text } = getSignatureRequestEmail(data);
 
-  return sendEmail(apiKey, {
+  return sendEmail(envOrApiKey, {
     to,
     subject,
     html,
@@ -218,13 +384,13 @@ export async function sendSignatureRequestEmail(
  * Send signature completed notification email
  */
 export async function sendSignatureCompletedEmail(
-  apiKey: string,
+  envOrApiKey: EmailEnv | string,
   to: string,
   data: SignatureCompletedEmailData
 ): Promise<SendEmailResult> {
   const { subject, html, text } = getSignatureCompletedEmail(data);
 
-  return sendEmail(apiKey, {
+  return sendEmail(envOrApiKey, {
     to,
     subject,
     html,
@@ -236,13 +402,13 @@ export async function sendSignatureCompletedEmail(
  * Send document reminder email
  */
 export async function sendDocumentReminderEmail(
-  apiKey: string,
+  envOrApiKey: EmailEnv | string,
   to: string,
   data: DocumentReminderEmailData
 ): Promise<SendEmailResult> {
   const { subject, html, text } = getDocumentReminderEmail(data);
 
-  return sendEmail(apiKey, {
+  return sendEmail(envOrApiKey, {
     to,
     subject,
     html,
@@ -255,21 +421,21 @@ export async function sendDocumentReminderEmail(
 // ============================================
 
 /**
- * Send emails to multiple recipients (sequentially to avoid rate limits)
+ * Send emails to multiple recipients (sequentially)
  */
 export async function sendBatchEmails(
-  apiKey: string,
+  envOrApiKey: EmailEnv | string,
   emails: EmailOptions[]
 ): Promise<SendEmailResult[]> {
   const results: SendEmailResult[] = [];
 
   for (const email of emails) {
-    const result = await sendEmail(apiKey, email);
+    const result = await sendEmail(envOrApiKey, email);
     results.push(result);
 
-    // Add a small delay between emails to avoid rate limiting
+    // Add delay between emails
     if (emails.length > 1) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 
@@ -280,18 +446,17 @@ export async function sendBatchEmails(
  * Send signature requests to multiple signers
  */
 export async function sendSignatureRequestBatch(
-  apiKey: string,
+  envOrApiKey: EmailEnv | string,
   requests: Array<{ email: string; data: SignatureRequestEmailData }>
 ): Promise<SendEmailResult[]> {
   const results: SendEmailResult[] = [];
 
   for (const request of requests) {
-    const result = await sendSignatureRequestEmail(apiKey, request.email, request.data);
+    const result = await sendSignatureRequestEmail(envOrApiKey, request.email, request.data);
     results.push(result);
 
-    // Add a small delay between emails
     if (requests.length > 1) {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      await new Promise((resolve) => setTimeout(resolve, 100));
     }
   }
 
@@ -328,6 +493,22 @@ export function formatEmailRecipient(email: string, name?: string): string {
     return `${name} <${email}>`;
   }
   return email;
+}
+
+/**
+ * Check if email provider is available
+ */
+export function isEmailAvailable(env: EmailEnv): boolean {
+  return !!env.EMAIL || !!env.RESEND_API_KEY;
+}
+
+/**
+ * Get current email provider
+ */
+export function getEmailProvider(env: EmailEnv): 'cloudflare' | 'resend' | 'none' {
+  if (env.EMAIL) return 'cloudflare';
+  if (env.RESEND_API_KEY) return 'resend';
+  return 'none';
 }
 
 // ============================================

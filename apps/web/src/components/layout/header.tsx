@@ -4,7 +4,8 @@ import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
-import { Menu, Bell, FileText, Search, Command, User, Settings, LogOut, Shield, CreditCard, Zap, Briefcase, ChevronDown } from 'lucide-react';
+import { Menu, Bell, Search, Command, User, Settings, LogOut, Shield, CreditCard, Zap, Briefcase, ChevronDown } from 'lucide-react';
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Badge } from '@/components/ui/badge';
@@ -74,10 +75,15 @@ export function Header({ onMenuClick }: HeaderProps) {
 
           {/* Logo */}
           <Link href={`/${locale}/dashboard`} className="flex items-center gap-2 font-semibold">
-            <div className="flex items-center justify-center h-9 w-9 rounded-lg bg-primary text-primary-foreground">
-              <FileText className="h-5 w-5" />
-            </div>
-            <span className="hidden sm:inline-block text-lg">LegalDocs</span>
+            <Image
+              src="/logo.jpg"
+              alt="Qannoni"
+              width={36}
+              height={36}
+              className="h-9 w-9 rounded-lg object-contain"
+              priority
+            />
+            <span className="hidden sm:inline-block text-lg">Qannoni</span>
           </Link>
 
           {/* Search / Command Palette Trigger */}

@@ -14,11 +14,11 @@ export async function generateMetadata({ params }: PageProps) {
 
   const meta = {
     en: {
-      title: 'LegalDocs - Smart Legal Documents for UAE & GCC',
+      title: 'Qannoni - Smart Legal Documents for UAE & GCC',
       description: 'Create legally-binding documents in minutes. AI-powered contract generation, digital signatures, and expert legal consultations for UAE businesses.',
     },
     ar: {
-      title: 'LegalDocs - وثائق قانونية ذكية للإمارات والخليج',
+      title: 'Qannoni - وثائق قانونية ذكية للإمارات والخليج',
       description: 'أنشئ مستندات ملزمة قانونياً في دقائق. توليد عقود بالذكاء الاصطناعي، توقيعات رقمية، واستشارات قانونية متخصصة.',
     },
   };

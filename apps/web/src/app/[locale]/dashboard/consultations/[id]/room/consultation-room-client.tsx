@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import {
   Video,
@@ -13,22 +13,20 @@ import {
   MessageSquare,
   FileText,
   Clock,
-  Users,
   Settings,
   ChevronLeft,
   AlertCircle,
   CheckCircle,
   Loader2,
   Volume2,
-  VolumeX,
   Maximize,
   Minimize,
   Copy,
   ExternalLink,
   Camera,
 } from 'lucide-react';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://legaldocs-api.a-m-zein.workers.dev';
+import { apiClient } from '@/lib/api-client';
+import { captureError } from '@/lib/error-tracking';
 
 interface ConsultationRoomClientProps {
   locale: string;
@@ -229,40 +227,28 @@ export function ConsultationRoomClient({ locale, consultationId }: ConsultationR
     async function fetchConsultation() {
       try {
         setLoading(true);
-        const token = localStorage.getItem('auth_token');
-        const response = await fetch(`${API_URL}/api/consultations/${consultationId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
 
-        if (!response.ok) throw new Error('Failed to fetch consultation');
-
-        const data = await response.json();
+        const data = await apiClient.get<{ data: Consultation }>(`/api/consultations/${consultationId}`);
         setConsultation(data.data);
 
         // Fetch checklist
-        const checklistRes = await fetch(
-          `${API_URL}/api/consultation-calls/${consultationId}/checklist?type=${data.data.consultation_type}&language=${locale}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (checklistRes.ok) {
-          const checklistData = await checklistRes.json();
+        try {
+          const checklistData = await apiClient.get<{ data: { items: Array<{ id: string; text: string; required: boolean }> } }>(
+            `/api/consultation-calls/${consultationId}/checklist?type=${data.data.consultation_type}&language=${locale}`
+          );
           setChecklist(
-            checklistData.data.items.map((item: any) => ({
+            checklistData.data.items.map((item) => ({
               ...item,
               completed: false,
             }))
           );
+        } catch {
+          // Checklist is optional, don't fail if not available
         }
 
         setConnectionStatus('connected');
       } catch (err) {
+        captureError(err, { component: 'ConsultationRoom', action: 'fetchConsultation' });
         setError(err instanceof Error ? err.message : 'Unknown error');
         setConnectionStatus('disconnected');
       } finally {
@@ -303,30 +289,23 @@ export function ConsultationRoomClient({ locale, consultationId }: ConsultationR
   const joinVideoCall = async () => {
     try {
       setJoining(true);
-      const token = localStorage.getItem('auth_token');
 
       // Create/join video room
-      const response = await fetch(`${API_URL}/api/consultation-calls/video/${consultationId}/room`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
+      const data = await apiClient.post<{ data: { room: VideoRoom } }>(
+        `/api/consultation-calls/video/${consultationId}/room`,
+        {
           config: {
             enableRecording: recordingConsent,
             language: locale,
           },
-        }),
-      });
+        }
+      );
 
-      if (!response.ok) throw new Error('Failed to create video room');
-
-      const data = await response.json();
       setVideoRoom(data.data.room);
       setInCall(true);
       setShowChecklist(false);
     } catch (err) {
+      captureError(err, { component: 'ConsultationRoom', action: 'joinVideoCall' });
       setError(err instanceof Error ? err.message : 'Failed to join call');
     } finally {
       setJoining(false);
@@ -336,13 +315,7 @@ export function ConsultationRoomClient({ locale, consultationId }: ConsultationR
   // End call
   const endCall = async () => {
     try {
-      const token = localStorage.getItem('auth_token');
-      await fetch(`${API_URL}/api/consultation-calls/video/${consultationId}/end`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+      await apiClient.post(`/api/consultation-calls/video/${consultationId}/end`, {});
 
       setInCall(false);
       setVideoRoom(null);
@@ -353,7 +326,7 @@ export function ConsultationRoomClient({ locale, consultationId }: ConsultationR
       // Redirect to summary page
       router.push(`/${locale}/dashboard/consultations/${consultationId}/summary`);
     } catch (err) {
-      console.error('Failed to end call:', err);
+      captureError(err, { component: 'ConsultationRoom', action: 'endCall' });
     }
   };
 

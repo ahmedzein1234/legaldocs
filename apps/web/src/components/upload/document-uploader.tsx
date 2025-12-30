@@ -12,6 +12,8 @@ import {
   type UploadStatus,
   type DocumentExtraction,
 } from '@/lib/document-upload';
+import { apiClient } from '@/lib/api-client';
+import { captureError } from '@/lib/error-tracking';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -132,60 +134,52 @@ export function DocumentUploader({
       setProgress(30);
       setStatus('processing');
 
-      // Call API
-      const response = await fetch('https://legaldocs-api.a-m-zein.workers.dev/api/upload/extract', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('legaldocs_token') || ''}`,
-        },
-        body: JSON.stringify({
-          fileName: file.name,
-          mimeType: file.type,
-          fileData: base64Data,
-          purpose,
-          language: language === 'ar' ? 'ar' : 'en',
-          extractClauses: true,
-          extractParties: true,
-          extractFinancials: true,
-        }),
+      // Call API using the centralized client (uses env var for URL, cookies for auth)
+      const result = await apiClient.post<{
+        success: boolean;
+        uploadId: string;
+        extraction?: Partial<DocumentExtraction>;
+      }>('/api/uploads/extract', {
+        fileName: file.name,
+        mimeType: file.type,
+        fileData: base64Data,
+        purpose,
+        language: language === 'ar' ? 'ar' : 'en',
+        extractClauses: true,
+        extractParties: true,
+        extractFinancials: true,
       });
 
       setProgress(70);
       setStatus('analyzing');
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'Upload failed');
-      }
-
       setProgress(100);
       setStatus('completed');
 
-      // Create extraction object
+      // Create extraction object with proper defaults
+      const ext = result.extraction || {};
       const extraction: DocumentExtraction = {
         id: result.uploadId,
         fileName: file.name,
         fileType: getFileCategory(file.type) || 'text',
         fileSize: file.size,
         uploadedAt: new Date(),
-        documentType: result.extraction?.documentType || 'unknown',
-        documentTypeConfidence: result.extraction?.documentTypeConfidence || 0,
-        language: result.extraction?.language || 'unknown',
-        jurisdiction: result.extraction?.jurisdiction,
-        rawText: result.extraction?.rawText || '',
-        pageCount: result.extraction?.pageCount,
-        parties: result.extraction?.parties || [],
-        financials: result.extraction?.financials || { amounts: [] },
-        dates: result.extraction?.dates || { customDates: [] },
-        clauses: result.extraction?.clauses || [],
-        property: result.extraction?.property,
-        summary: result.extraction?.summary || '',
-        summaryAr: result.extraction?.summaryAr,
-        keyTerms: result.extraction?.keyTerms || [],
-        warnings: result.extraction?.warnings || [],
-        notes: result.extraction?.notes || [],
+        documentType: ext.documentType || 'unknown',
+        documentTypeConfidence: ext.documentTypeConfidence || 0,
+        language: (ext.language as 'en' | 'ar' | 'mixed' | 'unknown') || 'unknown',
+        jurisdiction: ext.jurisdiction,
+        rawText: ext.rawText || '',
+        pageCount: ext.pageCount,
+        parties: ext.parties || [],
+        financials: ext.financials || { amounts: [] },
+        dates: ext.dates || { customDates: [] },
+        clauses: ext.clauses || [],
+        property: ext.property,
+        summary: ext.summary || '',
+        summaryAr: ext.summaryAr,
+        keyTerms: ext.keyTerms || [],
+        warnings: ext.warnings || [],
+        notes: ext.notes || [],
         processingTime: 0,
         extractionModel: 'claude-sonnet-4',
         status: 'completed',
@@ -193,7 +187,8 @@ export function DocumentUploader({
 
       onExtracted(extraction);
     } catch (err) {
-      console.error('Upload error:', err);
+      // Send error to Sentry instead of console.error
+      captureError(err, { component: 'DocumentUploader', action: 'uploadAndExtract' });
       setStatus('error');
       const errorMessage = err instanceof Error ? err.message : 'Failed to process document';
       setError(errorMessage);

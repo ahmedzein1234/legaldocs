@@ -145,12 +145,12 @@ export function DocumentFooter({
         <div className="pt-3 border-t">
           <p className="text-xs text-muted-foreground text-center">
             {t('footer.generatedBy')}{' '}
-            <span className="font-semibold">LegalDocs</span> •{' '}
+            <span className="font-semibold">Qannoni</span> •{' '}
             {t('footer.softwarePlatform')} •{' '}
             <span className="font-medium">{t('footer.notLegalAdvice')}</span>
           </p>
           <p className="text-xs text-muted-foreground text-center mt-1">
-            {t('footer.website')}: www.legaldocs.ae • {t('footer.email')}: support@legaldocs.ae
+            {t('footer.website')}: www.qannoni.com • {t('footer.email')}: support@qannoni.com
           </p>
         </div>
       </div>
@@ -197,7 +197,7 @@ export function MinimalDocumentFooter({
       </div>
 
       <p className="text-xs text-muted-foreground">
-        {t('footer.generatedBy')} <span className="font-semibold">LegalDocs</span> •{' '}
+        {t('footer.generatedBy')} <span className="font-semibold">Qannoni</span> •{' '}
         {t('footer.softwarePlatform')}
         {documentId && (
           <>

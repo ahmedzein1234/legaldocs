@@ -14,6 +14,7 @@ import { TableHeader } from '@tiptap/extension-table-header';
 import { TextStyle } from '@tiptap/extension-text-style';
 import { Color } from '@tiptap/extension-color';
 import { Extension } from '@tiptap/core';
+import { sanitizeHtml } from '@/lib/sanitize';
 import {
   Bold,
   Italic,
@@ -168,7 +169,8 @@ export function TiptapEditor({
       const text = editor.getText();
       const html = editor.getHTML();
       onChange(text);
-      onHtmlChange?.(html);
+      // Sanitize HTML output to prevent XSS attacks
+      onHtmlChange?.(sanitizeHtml(html));
     },
   });
 

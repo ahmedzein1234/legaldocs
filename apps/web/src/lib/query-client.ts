@@ -1,4 +1,5 @@
 import { QueryClient } from '@tanstack/react-query';
+import { captureError } from './error-tracking';
 
 /**
  * Creates and configures a new QueryClient instance with sensible defaults
@@ -33,10 +34,9 @@ export function createQueryClient() {
         // Retry mutations once on failure
         retry: 1,
 
-        // Show error notifications by default
+        // Send errors to Sentry
         onError: (error) => {
-          console.error('Mutation error:', error);
-          // You can add toast notifications here
+          captureError(error, { type: 'mutation_error' });
         },
       },
     },

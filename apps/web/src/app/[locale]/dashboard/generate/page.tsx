@@ -249,7 +249,7 @@ function GeneratePageContent() {
   const locale = useLocale() as 'en' | 'ar' | 'ur';
   const searchParams = useSearchParams();
   const router = useRouter();
-  const { token } = useAuth();
+  const { isAuthenticated } = useAuth();
 
   // Get URL params for pre-selection from templates page
   const preSelectedType = searchParams.get('type') || '';
@@ -543,10 +543,10 @@ What would you like to create today?`
   // Save document as draft
   const handleSaveAsDraft = async () => {
     if (typeof window !== 'undefined') {
-      console.log('[Save Draft] Starting save, token:', token ? 'present' : 'missing');
+      console.log('[Save Draft] Starting save, authenticated:', isAuthenticated ? 'yes' : 'no');
     }
 
-    if (!token) {
+    if (!isAuthenticated) {
       setSaveError(t('errors.loginRequired') || 'Please log in to save documents');
       return;
     }
@@ -597,7 +597,7 @@ What would you like to create today?`
         console.log('[Save Draft] Payload:', JSON.stringify(payload, null, 2));
       }
 
-      const { document } = await documentsApi.create(payload, token);
+      const { document } = await documentsApi.create(payload);
 
       if (typeof window !== 'undefined') {
         console.log('[Save Draft] Success, document ID:', document.id);
@@ -628,10 +628,10 @@ What would you like to create today?`
   // Send for signature (saves first, then navigates to signing flow)
   const handleSendForSignature = async () => {
     if (typeof window !== 'undefined') {
-      console.log('[Send for Signature] Starting, token:', token ? 'present' : 'missing');
+      console.log('[Send for Signature] Starting, authenticated:', isAuthenticated ? 'yes' : 'no');
     }
 
-    if (!token) {
+    if (!isAuthenticated) {
       setSaveError(t('errors.loginRequired') || 'Please log in to send documents');
       return;
     }
@@ -680,7 +680,7 @@ What would you like to create today?`
         console.log('[Send for Signature] Payload:', JSON.stringify(payload, null, 2));
       }
 
-      const { document } = await documentsApi.create(payload, token);
+      const { document } = await documentsApi.create(payload);
 
       if (typeof window !== 'undefined') {
         console.log('[Send for Signature] Success, document ID:', document.id);
@@ -2425,7 +2425,7 @@ Please provide the COMPLETE updated document with the requested changes applied.
                       variant="outline"
                       className="gap-2"
                       onClick={handleSaveAsDraft}
-                      disabled={isSaving || !token}
+                      disabled={isSaving || !isAuthenticated}
                     >
                       {isSaving ? (
                         <>
@@ -2442,7 +2442,7 @@ Please provide the COMPLETE updated document with the requested changes applied.
                     <Button
                       className="gap-2"
                       onClick={openSendDialog}
-                      disabled={isSaving || !token}
+                      disabled={isSaving || !isAuthenticated}
                     >
                       <Send className="h-4 w-4" />
                       {t('editor.sendForSignature') || 'Send for Signature'}
@@ -2451,7 +2451,7 @@ Please provide the COMPLETE updated document with the requested changes applied.
                 </div>
 
                 {/* Login prompt if not authenticated */}
-                {!token && (
+                {!isAuthenticated && (
                   <div className="text-center text-sm text-muted-foreground">
                     <Link
                       href={`/${locale}/auth/login`}

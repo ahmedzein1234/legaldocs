@@ -92,19 +92,12 @@ export function useAuthMutation() {
  * Returns null if not authenticated
  */
 export function useCurrentUser() {
-  const token = typeof window !== 'undefined' ? localStorage.getItem('legaldocs_token') : null;
-
   return useQuery({
     queryKey: ['auth', 'user'],
     queryFn: async () => {
-      if (!token) return null;
-
-      const response = await apiRequest<{ user: User }>('/api/auth/me', {
-        token,
-      });
+      const response = await apiRequest<{ user: User }>('/api/auth/me');
       return response.user;
     },
-    enabled: !!token, // Only run query if token exists
     staleTime: 1000 * 60 * 5, // Consider data fresh for 5 minutes
     retry: false, // Don't retry on auth failures
   });

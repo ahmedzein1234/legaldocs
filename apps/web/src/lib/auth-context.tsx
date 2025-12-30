@@ -2,14 +2,20 @@
 
 import { createContext, useContext, useState, useEffect, useCallback, ReactNode } from 'react';
 import { authApi, User } from './api';
+import { initErrorTracking, setUser as setErrorTrackingUser } from './error-tracking';
 
-const TOKEN_KEY = 'legaldocs_token';
-const REFRESH_TOKEN_KEY = 'legaldocs_refresh_token';
-const TOKEN_EXPIRY_KEY = 'legaldocs_token_expiry';
+/**
+ * Auth Context - Secure Cookie-Based Authentication
+ *
+ * SECURITY: This implementation uses httpOnly cookies for JWT storage.
+ * Tokens are set by the backend via Set-Cookie headers and automatically
+ * included in requests via credentials: 'include'.
+ *
+ * This prevents XSS attacks from accessing tokens via JavaScript.
+ */
 
 interface AuthContextType {
   user: User | null;
-  token: string | null;
   isLoading: boolean;
   isMounted: boolean;
   isAuthenticated: boolean;
@@ -17,129 +23,124 @@ interface AuthContextType {
   register: (email: string, password: string, fullName: string, phone?: string) => Promise<void>;
   logout: () => Promise<void>;
   updateUser: (userData: Partial<User>) => void;
+  refreshAuth: () => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
-  const [token, setToken] = useState<string | null>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMounted, setIsMounted] = useState(false);
 
   const clearAuth = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
-    localStorage.removeItem(REFRESH_TOKEN_KEY);
-    localStorage.removeItem(TOKEN_EXPIRY_KEY);
-    setToken(null);
     setUser(null);
   }, []);
 
-  const saveTokens = useCallback((accessToken: string, refreshToken?: string, expiresAt?: number) => {
-    localStorage.setItem(TOKEN_KEY, accessToken);
-    if (refreshToken) {
-      localStorage.setItem(REFRESH_TOKEN_KEY, refreshToken);
-    }
-    if (expiresAt) {
-      localStorage.setItem(TOKEN_EXPIRY_KEY, expiresAt.toString());
-    }
-    setToken(accessToken);
-  }, []);
-
-  const refreshAccessToken = useCallback(async () => {
-    const refreshToken = localStorage.getItem(REFRESH_TOKEN_KEY);
-    if (!refreshToken) {
-      clearAuth();
-      return false;
-    }
-
+  /**
+   * Refresh authentication by calling the refresh endpoint.
+   * The refresh token is sent automatically via httpOnly cookie.
+   */
+  const refreshAuth = useCallback(async (): Promise<boolean> => {
     try {
-      const { accessToken, refreshToken: newRefreshToken, expiresAt } = await authApi.refreshToken(refreshToken);
-      saveTokens(accessToken, newRefreshToken, expiresAt);
+      // Call refresh endpoint - cookies are sent automatically
+      await authApi.refreshToken();
       return true;
     } catch {
       clearAuth();
       return false;
     }
-  }, [clearAuth, saveTokens]);
+  }, [clearAuth]);
+
+  /**
+   * Verify current session by fetching user profile.
+   * If the access token is expired, attempt to refresh it.
+   */
+  const verifySession = useCallback(async () => {
+    try {
+      // Try to get current user - cookies sent automatically
+      const { user } = await authApi.me();
+      setUser(user);
+      setErrorTrackingUser({ id: user.id, email: user.email, name: user.fullName });
+      return true;
+    } catch (error) {
+      // If unauthorized, try to refresh the token
+      const refreshed = await refreshAuth();
+      if (refreshed) {
+        try {
+          const { user } = await authApi.me();
+          setUser(user);
+          setErrorTrackingUser({ id: user.id, email: user.email, name: user.fullName });
+          return true;
+        } catch {
+          clearAuth();
+          return false;
+        }
+      }
+      clearAuth();
+      return false;
+    }
+  }, [clearAuth, refreshAuth]);
 
   useEffect(() => {
     // Mark as mounted (client-side only)
     setIsMounted(true);
 
-    // Check for stored token on mount
-    const storedToken = localStorage.getItem(TOKEN_KEY);
-    if (storedToken) {
-      setToken(storedToken);
-      // Verify token and get user
-      authApi.me(storedToken)
-        .then(({ user }) => {
-          setUser(user);
-        })
-        .catch(async () => {
-          // Try to refresh token
-          const refreshed = await refreshAccessToken();
-          if (refreshed) {
-            const newToken = localStorage.getItem(TOKEN_KEY);
-            if (newToken) {
-              try {
-                const { user } = await authApi.me(newToken);
-                setUser(user);
-              } catch {
-                clearAuth();
-              }
-            }
-          }
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    } else {
+    // Initialize error tracking
+    initErrorTracking();
+
+    // Verify session on mount - no localStorage needed
+    // Cookies are automatically sent with requests
+    verifySession().finally(() => {
       setIsLoading(false);
-    }
-  }, [clearAuth, refreshAccessToken]);
+    });
+  }, [verifySession]);
 
   const login = async (email: string, password: string) => {
-    const { user, token, refreshToken, expiresAt } = await authApi.login({ email, password });
-    saveTokens(token, refreshToken, expiresAt);
+    // Login endpoint sets httpOnly cookies via Set-Cookie header
+    const { user } = await authApi.login({ email, password });
     setUser(user);
+    // Set user context for error tracking
+    setErrorTrackingUser({ id: user.id, email: user.email, name: user.fullName });
   };
 
   const register = async (email: string, password: string, fullName: string, phone?: string) => {
-    const { user, token, refreshToken, expiresAt } = await authApi.register({ email, password, fullName, phone });
-    saveTokens(token, refreshToken, expiresAt);
+    // Register endpoint sets httpOnly cookies via Set-Cookie header
+    const { user } = await authApi.register({ email, password, fullName, phone });
     setUser(user);
+    // Set user context for error tracking
+    setErrorTrackingUser({ id: user.id, email: user.email, name: user.fullName });
   };
 
   const logout = async () => {
-    const currentToken = localStorage.getItem(TOKEN_KEY);
-    if (currentToken) {
-      try {
-        await authApi.logout(currentToken);
-      } catch {
-        // Ignore logout API errors - still clear local state
-      }
+    try {
+      // Logout endpoint clears httpOnly cookies
+      await authApi.logout();
+    } catch {
+      // Ignore logout API errors - still clear local state
     }
     clearAuth();
+    // Clear user context for error tracking
+    setErrorTrackingUser(null);
   };
 
   const updateUser = (userData: Partial<User>) => {
     setUser(prev => prev ? { ...prev, ...userData } : null);
   };
 
-  const isAuthenticated = !!user && !!token;
+  const isAuthenticated = !!user;
 
   return (
     <AuthContext.Provider value={{
       user,
-      token,
       isLoading,
       isMounted,
       isAuthenticated,
       login,
       register,
       logout,
-      updateUser
+      updateUser,
+      refreshAuth,
     }}>
       {children}
     </AuthContext.Provider>

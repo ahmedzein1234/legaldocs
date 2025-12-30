@@ -11,7 +11,6 @@ import {
   Clock,
   ChevronRight,
   Search,
-  Filter,
   Plus,
   AlertCircle,
   CheckCircle,
@@ -21,8 +20,8 @@ import {
   Star,
   Bell,
 } from 'lucide-react';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://legaldocs-api.a-m-zein.workers.dev';
+import { apiClient } from '@/lib/api-client';
+import { captureError } from '@/lib/error-tracking';
 
 interface ConsultationsListClientProps {
   locale: string;
@@ -140,7 +139,6 @@ export function ConsultationsListClient({ locale }: ConsultationsListClientProps
     async function fetchConsultations() {
       try {
         setLoading(true);
-        const token = localStorage.getItem('auth_token');
 
         const params = new URLSearchParams();
         if (activeTab === 'upcoming') {
@@ -153,20 +151,12 @@ export function ConsultationsListClient({ locale }: ConsultationsListClientProps
           params.append('search', searchQuery);
         }
 
-        const response = await fetch(
-          `${API_URL}/api/consultations?${params.toString()}`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+        const data = await apiClient.get<{ data: Consultation[] }>(
+          `/api/consultations?${params.toString()}`
         );
-
-        if (!response.ok) throw new Error('Failed to fetch consultations');
-
-        const data = await response.json();
         setConsultations(data.data || []);
       } catch (err) {
+        captureError(err, { component: 'ConsultationsList', action: 'fetch' });
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setLoading(false);

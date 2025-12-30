@@ -317,7 +317,7 @@ export default function PrivacyPolicyPage() {
           <Alert className="mt-4">
             <Mail className="h-4 w-4" />
             <AlertDescription>
-              {t('rights.exercise')}: <a href="mailto:privacy@legaldocs.ae" className="text-primary hover:underline">privacy@legaldocs.ae</a>
+              {t('rights.exercise')}: <a href="mailto:privacy@qannoni.com" className="text-primary hover:underline">privacy@qannoni.com</a>
             </AlertDescription>
           </Alert>
         </CardContent>
@@ -393,9 +393,9 @@ export default function PrivacyPolicyPage() {
         <CardContent className="space-y-3">
           <p>{t('contact.description')}</p>
           <div className="bg-muted p-4 rounded-lg space-y-2">
-            <p className="font-semibold">LegalDocs Data Protection Officer</p>
-            <p className="text-sm">{t('contact.email')}: <a href="mailto:privacy@legaldocs.ae" className="text-primary hover:underline">privacy@legaldocs.ae</a></p>
-            <p className="text-sm">{t('contact.support')}: <a href="mailto:support@legaldocs.ae" className="text-primary hover:underline">support@legaldocs.ae</a></p>
+            <p className="font-semibold">Qannoni Data Protection Officer</p>
+            <p className="text-sm">{t('contact.email')}: <a href="mailto:privacy@qannoni.com" className="text-primary hover:underline">privacy@qannoni.com</a></p>
+            <p className="text-sm">{t('contact.support')}: <a href="mailto:support@qannoni.com" className="text-primary hover:underline">support@qannoni.com</a></p>
             <p className="text-sm">{t('contact.address')}: Dubai, United Arab Emirates</p>
           </div>
         </CardContent>

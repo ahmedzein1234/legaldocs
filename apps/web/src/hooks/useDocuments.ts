@@ -1,7 +1,8 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiRequest, getStoredToken } from '@/lib/api-client';
+import { apiRequest } from '@/lib/api-client';
+import { useAuth } from '@/lib/auth-context';
 import { Document, CreateDocumentInput, GeneratedContent } from '@/lib/api';
 
 // API response types
@@ -27,56 +28,53 @@ interface GenerateDocumentResponse {
 
 /**
  * Hook to fetch all documents for the authenticated user
+ * Authentication is handled via httpOnly cookies
  */
 export function useDocuments() {
-  const token = getStoredToken();
+  const { isAuthenticated } = useAuth();
 
   return useQuery({
     queryKey: ['documents'],
     queryFn: async () => {
-      const response = await apiRequest<DocumentsResponse>('/api/documents', {
-        token,
-      });
+      const response = await apiRequest<DocumentsResponse>('/api/documents');
       return response.documents;
     },
-    enabled: !!token,
+    enabled: isAuthenticated,
     staleTime: 1000 * 30, // 30 seconds
   });
 }
 
 /**
  * Hook to fetch a single document by ID
+ * Authentication is handled via httpOnly cookies
  */
 export function useDocument(id: string | null) {
-  const token = getStoredToken();
+  const { isAuthenticated } = useAuth();
 
   return useQuery({
     queryKey: ['documents', id],
     queryFn: async () => {
       if (!id) return null;
-      const response = await apiRequest<DocumentResponse>(`/api/documents/${id}`, {
-        token,
-      });
+      const response = await apiRequest<DocumentResponse>(`/api/documents/${id}`);
       return response.document;
     },
-    enabled: !!token && !!id,
+    enabled: isAuthenticated && !!id,
     staleTime: 1000 * 60, // 1 minute
   });
 }
 
 /**
  * Hook for document mutations (create, update, delete, generate)
+ * Authentication is handled via httpOnly cookies
  */
 export function useDocumentMutations() {
   const queryClient = useQueryClient();
-  const token = getStoredToken();
 
   const createDocument = useMutation({
     mutationFn: async (data: CreateDocumentInput) => {
       const response = await apiRequest<DocumentResponse>('/api/documents', {
         method: 'POST',
         body: data,
-        token,
       });
       return response.document;
     },
@@ -97,7 +95,6 @@ export function useDocumentMutations() {
       const response = await apiRequest<DocumentResponse>(`/api/documents/${id}`, {
         method: 'PATCH',
         body: data,
-        token,
       });
       return response.document;
     },
@@ -120,7 +117,6 @@ export function useDocumentMutations() {
     mutationFn: async (id: string) => {
       await apiRequest<{ success: boolean }>(`/api/documents/${id}`, {
         method: 'DELETE',
-        token,
       });
       return id;
     },
@@ -141,7 +137,6 @@ export function useDocumentMutations() {
       const response = await apiRequest<GenerateDocumentResponse>('/api/documents/generate', {
         method: 'POST',
         body: data,
-        token,
       });
       return response;
     },

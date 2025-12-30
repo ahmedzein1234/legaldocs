@@ -129,7 +129,7 @@ export function OnboardingModal({ open, onComplete }: OnboardingModalProps) {
 
                 <div>
                   <h2 className="text-2xl font-bold mb-2">
-                    {locale === 'ar' ? 'مرحباً بك في LegalDocs' : 'Welcome to LegalDocs'}
+                    {locale === 'ar' ? 'مرحباً بك في Qannoni' : 'Welcome to Qannoni'}
                   </h2>
                   <p className="text-muted-foreground">
                     {locale === 'ar'

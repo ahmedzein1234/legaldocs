@@ -35,7 +35,7 @@ const defaultTestimonials: Testimonial[] = [
     role: 'Real Estate Developer',
     company: 'Emaar Properties',
     rating: 5,
-    content: 'LegalDocs has revolutionized how we handle rental agreements and property contracts. The AI-powered generation saves us hours of work, and the bilingual support is perfect for our diverse clientele.',
+    content: 'Qannoni has revolutionized how we handle rental agreements and property contracts. The AI-powered generation saves us hours of work, and the bilingual support is perfect for our diverse clientele.',
     avatar: '/avatars/ahmed.jpg',
   },
   {
@@ -53,7 +53,7 @@ const defaultTestimonials: Testimonial[] = [
     role: 'Business Owner',
     company: 'Hassan Trading LLC',
     rating: 5,
-    content: 'As a small business owner, I needed an affordable way to create NDAs and employment contracts. LegalDocs provides professional templates that are legally sound and easy to customize.',
+    content: 'As a small business owner, I needed an affordable way to create NDAs and employment contracts. Qannoni provides professional templates that are legally sound and easy to customize.',
     avatar: '/avatars/mohammed.jpg',
   },
   {
@@ -80,7 +80,7 @@ const defaultTestimonials: Testimonial[] = [
     role: 'Property Manager',
     company: 'Dubai Properties',
     rating: 5,
-    content: 'Managing hundreds of rental agreements was a nightmare before LegalDocs. Now we can generate, track, and renew contracts efficiently. The ROI has been tremendous.',
+    content: 'Managing hundreds of rental agreements was a nightmare before Qannoni. Now we can generate, track, and renew contracts efficiently. The ROI has been tremendous.',
     avatar: '/avatars/laila.jpg',
   },
 ];
@@ -140,7 +140,7 @@ function TestimonialCard({ testimonial, isActive = false }: { testimonial: Testi
 export function TestimonialsCarousel({
   testimonials = defaultTestimonials,
   title = 'What Our Clients Say',
-  subtitle = 'Join thousands of satisfied users who trust LegalDocs for their legal document needs',
+  subtitle = 'Join thousands of satisfied users who trust Qannoni for their legal document needs',
   className,
   autoPlay = true,
   interval = 5000,

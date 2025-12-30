@@ -8,6 +8,7 @@ import { ClientOnly } from '@/components/ui/client-only';
 import { QueryProvider } from '@/providers/query-provider';
 import { generateMetadata as genMeta, getHomeMetadata, SITE_URL } from '@/lib/seo';
 import { GlobalSchemas } from '@/components/seo/structured-data';
+import { CookieConsent } from '@/components/cookie-consent';
 import '@/styles/globals.css';
 
 export function generateStaticParams() {
@@ -48,6 +49,8 @@ export default async function LocaleLayout({
     <html lang={locale} dir={direction} suppressHydrationWarning>
       <head>
         <GlobalSchemas />
+        <link rel="icon" href="/logo.jpg" type="image/jpeg" />
+        <link rel="apple-touch-icon" href="/logo.jpg" />
       </head>
       <body className={direction === 'rtl' ? 'font-arabic' : 'font-sans'} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
@@ -61,6 +64,7 @@ export default async function LocaleLayout({
             >
               <UserPreferencesProvider>
                 <AuthProvider>{children}</AuthProvider>
+                <CookieConsent />
               </UserPreferencesProvider>
             </ClientOnly>
           </QueryProvider>

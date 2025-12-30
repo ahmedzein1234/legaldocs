@@ -1,8 +1,9 @@
 'use client';
 
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import { apiRequest, getStoredToken } from '@/lib/api-client';
+import { apiRequest } from '@/lib/api-client';
 import { DocumentSigner } from '@/lib/api';
+import { useAuth } from './useAuth';
 
 // Signature request types
 interface SignatureRequest {
@@ -54,17 +55,15 @@ interface SignDocumentResponse {
  * Hook to fetch signature requests for the authenticated user
  */
 export function useSignatureRequests() {
-  const token = getStoredToken();
+  const { isAuthenticated } = useAuth();
 
   return useQuery({
     queryKey: ['signatures', 'requests'],
     queryFn: async () => {
-      const response = await apiRequest<SignatureRequestsResponse>('/api/signatures/requests', {
-        token,
-      });
+      const response = await apiRequest<SignatureRequestsResponse>('/api/signatures/requests');
       return response.requests;
     },
-    enabled: !!token,
+    enabled: isAuthenticated,
     staleTime: 1000 * 30, // 30 seconds
   });
 }
@@ -91,19 +90,18 @@ export function useSignatureRequest(requestToken: string | null) {
  * Hook to fetch signature status for a document
  */
 export function useDocumentSignatures(documentId: string | null) {
-  const token = getStoredToken();
+  const { isAuthenticated } = useAuth();
 
   return useQuery({
     queryKey: ['signatures', 'document', documentId],
     queryFn: async () => {
       if (!documentId) return null;
       const response = await apiRequest<{ signers: DocumentSigner[] }>(
-        `/api/documents/${documentId}/signatures`,
-        { token }
+        `/api/documents/${documentId}/signatures`
       );
       return response.signers;
     },
-    enabled: !!token && !!documentId,
+    enabled: isAuthenticated && !!documentId,
     staleTime: 1000 * 30,
   });
 }
@@ -113,7 +111,6 @@ export function useDocumentSignatures(documentId: string | null) {
  */
 export function useSignatureMutations() {
   const queryClient = useQueryClient();
-  const token = getStoredToken();
 
   const createSignatureRequest = useMutation({
     mutationFn: async (data: CreateSignatureRequestInput) => {
@@ -122,7 +119,6 @@ export function useSignatureMutations() {
         {
           method: 'POST',
           body: data,
-          token,
         }
       );
       return response.request;
@@ -172,7 +168,6 @@ export function useSignatureMutations() {
     mutationFn: async (requestId: string) => {
       await apiRequest<{ success: boolean }>(`/api/signatures/request/${requestId}`, {
         method: 'DELETE',
-        token,
       });
       return requestId;
     },
@@ -188,7 +183,6 @@ export function useSignatureMutations() {
         `/api/signatures/request/${requestId}/resend/${signerId}`,
         {
           method: 'POST',
-          token,
         }
       );
     },

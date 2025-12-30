@@ -187,12 +187,22 @@ export default function LawyerVerificationPage() {
   };
 
   useEffect(() => {
-    // Fetch current verification status and history
     fetchVerificationStatus();
   }, []);
 
   const fetchVerificationStatus = async () => {
-    // TODO: Implement API call to get current lawyer verification status
+    try {
+      const response = await fetch('/api/lawyers/me/verification', {
+        credentials: 'include',
+      });
+      const data = await response.json();
+      if (data.success) {
+        setCurrentLevel(data.data.currentLevel || 'none');
+        setVerifications(data.data.verifications || []);
+      }
+    } catch (error) {
+      console.error('Error fetching verification status:', error);
+    }
   };
 
   const openVerificationDialog = (level: VerificationLevel) => {
@@ -205,17 +215,15 @@ export default function LawyerVerificationPage() {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    // TODO: Implement file upload to R2/S3
-    const formData = new FormData();
-    formData.append('file', file);
+    const uploadFormData = new FormData();
+    uploadFormData.append('file', file);
+    uploadFormData.append('type', 'verification');
 
     try {
-      const response = await fetch('/api/uploads/document', {
+      const response = await fetch('/api/uploads', {
         method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
-        },
-        body: formData,
+        credentials: 'include',
+        body: uploadFormData,
       });
 
       const data = await response.json();
@@ -238,9 +246,9 @@ export default function LawyerVerificationPage() {
 
       const response = await fetch('/api/lawyers/me/verification', {
         method: 'POST',
+        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`,
         },
         body: JSON.stringify({
           verificationType: selectedLevel.id,
@@ -252,9 +260,12 @@ export default function LawyerVerificationPage() {
       if (data.success) {
         setDialogOpen(false);
         fetchVerificationStatus();
+      } else {
+        alert(data.error?.message || 'Failed to submit verification');
       }
     } catch (error) {
       console.error('Error submitting verification:', error);
+      alert('Failed to submit verification. Please try again.');
     } finally {
       setSubmitting(false);
     }
@@ -315,7 +326,12 @@ export default function LawyerVerificationPage() {
       <div className="grid gap-4 md:grid-cols-2">
         {verificationLevels.map((level) => {
           const Icon = getLevelIcon(level.icon);
-          const isCompleted = false; // TODO: Check if level is completed
+          const isCompleted = verifications.some(
+            (v: any) => v.verification_type === level.id && v.status === 'approved'
+          );
+          const isPending = verifications.some(
+            (v: any) => v.verification_type === level.id && v.status === 'pending'
+          );
 
           return (
             <Card
@@ -399,12 +415,18 @@ export default function LawyerVerificationPage() {
                 <Button
                   className="w-full"
                   onClick={() => openVerificationDialog(level)}
-                  disabled={isCompleted}
+                  disabled={isCompleted || isPending}
+                  variant={isPending ? 'outline' : 'default'}
                 >
                   {isCompleted ? (
                     <>
                       <CheckCircle2 className="h-4 w-4 me-2" />
-                      Verified
+                      {isArabic ? 'تم التحقق' : 'Verified'}
+                    </>
+                  ) : isPending ? (
+                    <>
+                      <Clock className="h-4 w-4 me-2" />
+                      {translations.pending}
                     </>
                   ) : (
                     <>

@@ -1,7 +1,7 @@
 'use client';
 
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { apiRequest, getStoredToken } from '@/lib/api-client';
+import { apiRequest } from '@/lib/api-client';
 import { User } from '@/lib/api';
 
 // User update input types
@@ -27,14 +27,12 @@ interface ChangePasswordInput {
  */
 export function useUserMutations() {
   const queryClient = useQueryClient();
-  const token = getStoredToken();
 
   const updateProfile = useMutation({
     mutationFn: async (data: UpdateUserInput) => {
       const response = await apiRequest<UpdateUserResponse>('/api/user/profile', {
         method: 'PATCH',
         body: data,
-        token,
       });
       return response.user;
     },
@@ -52,7 +50,6 @@ export function useUserMutations() {
       await apiRequest<{ success: boolean }>('/api/user/password', {
         method: 'POST',
         body: data,
-        token,
       });
     },
   });
@@ -65,9 +62,7 @@ export function useUserMutations() {
       // Note: This uses fetch directly since we need FormData
       const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/user/avatar`, {
         method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
+        credentials: 'include',
         body: formData,
       });
 
@@ -92,7 +87,6 @@ export function useUserMutations() {
       await apiRequest<{ success: boolean }>('/api/user/account', {
         method: 'DELETE',
         body: { password },
-        token,
       });
     },
     onSuccess: () => {

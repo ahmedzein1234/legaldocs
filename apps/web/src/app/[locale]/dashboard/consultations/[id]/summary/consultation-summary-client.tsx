@@ -10,7 +10,6 @@ import {
   Star,
   MessageSquare,
   Download,
-  Share2,
   ChevronLeft,
   AlertCircle,
   Loader2,
@@ -23,8 +22,8 @@ import {
   ThumbsDown,
   Send,
 } from 'lucide-react';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'https://legaldocs-api.a-m-zein.workers.dev';
+import { apiClient } from '@/lib/api-client';
+import { captureError } from '@/lib/error-tracking';
 
 interface ConsultationSummaryClientProps {
   locale: string;
@@ -216,35 +215,22 @@ export function ConsultationSummaryClient({ locale, consultationId }: Consultati
     async function fetchSummary() {
       try {
         setLoading(true);
-        const token = localStorage.getItem('auth_token');
 
         // Fetch consultation details
-        const response = await fetch(`${API_URL}/api/consultations/${consultationId}`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
-
-        if (!response.ok) throw new Error('Failed to fetch consultation');
-
-        const data = await response.json();
+        const data = await apiClient.get<{ data: Consultation }>(`/api/consultations/${consultationId}`);
         setConsultation(data.data);
 
         // Fetch action items
-        const actionsRes = await fetch(
-          `${API_URL}/api/consultation-calls/${consultationId}/action-items`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
-
-        if (actionsRes.ok) {
-          const actionsData = await actionsRes.json();
+        try {
+          const actionsData = await apiClient.get<{ data: ActionItem[] }>(
+            `/api/consultation-calls/${consultationId}/action-items`
+          );
           setActionItems(actionsData.data || []);
+        } catch {
+          // Action items are optional
         }
       } catch (err) {
+        captureError(err, { component: 'ConsultationSummary', action: 'fetchSummary' });
         setError(err instanceof Error ? err.message : 'Unknown error');
       } finally {
         setLoading(false);
@@ -257,23 +243,13 @@ export function ConsultationSummaryClient({ locale, consultationId }: Consultati
   const submitFeedback = async () => {
     try {
       setSubmittingFeedback(true);
-      const token = localStorage.getItem('auth_token');
 
-      const response = await fetch(`${API_URL}/api/consultation-calls/${consultationId}/feedback`, {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(feedback),
-      });
-
-      if (!response.ok) throw new Error('Failed to submit feedback');
+      await apiClient.post(`/api/consultation-calls/${consultationId}/feedback`, feedback);
 
       setFeedbackSubmitted(true);
       setShowFeedbackForm(false);
     } catch (err) {
-      console.error('Failed to submit feedback:', err);
+      captureError(err, { component: 'ConsultationSummary', action: 'submitFeedback' });
     } finally {
       setSubmittingFeedback(false);
     }
@@ -281,15 +257,8 @@ export function ConsultationSummaryClient({ locale, consultationId }: Consultati
 
   const markActionItemComplete = async (itemId: string) => {
     try {
-      const token = localStorage.getItem('auth_token');
-
-      await fetch(`${API_URL}/api/consultation-calls/${consultationId}/action-items/${itemId}`, {
-        method: 'PATCH',
-        headers: {
-          Authorization: `Bearer ${token}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ status: 'completed' }),
+      await apiClient.patch(`/api/consultation-calls/${consultationId}/action-items/${itemId}`, {
+        status: 'completed',
       });
 
       setActionItems((prev) =>
@@ -298,7 +267,7 @@ export function ConsultationSummaryClient({ locale, consultationId }: Consultati
         )
       );
     } catch (err) {
-      console.error('Failed to update action item:', err);
+      captureError(err, { component: 'ConsultationSummary', action: 'markComplete' });
     }
   };
 

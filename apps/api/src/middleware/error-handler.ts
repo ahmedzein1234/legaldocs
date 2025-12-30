@@ -2,16 +2,51 @@ import { Context, Next } from 'hono';
 import { ContentfulStatusCode } from 'hono/utils/http-status';
 import { ApiError, isApiError, Errors, formatZodError } from '../lib/errors.js';
 import { ZodError } from 'zod';
+import { captureError, setUser, addBreadcrumb } from '../lib/sentry.js';
 
 /**
  * Global error handling middleware
  * Catches all errors and returns consistent error responses
+ * Integrates with Sentry for error tracking
  */
 export async function errorHandler(c: Context, next: Next) {
+  // Set user context if available
+  const userId = c.get('userId');
+  const userEmail = c.get('userEmail');
+  if (userId) {
+    setUser({ id: userId, email: userEmail });
+  }
+
+  // Add request breadcrumb
+  addBreadcrumb({
+    category: 'http',
+    message: `${c.req.method} ${c.req.path}`,
+    level: 'info',
+    data: {
+      method: c.req.method,
+      url: c.req.url,
+    },
+  });
+
   try {
     await next();
   } catch (error) {
     console.error('Error caught by handler:', error);
+
+    // Capture error in Sentry for 5xx errors
+    if (error instanceof Error && !isApiError(error)) {
+      captureError(error, {
+        method: c.req.method,
+        path: c.req.path,
+        userId,
+      });
+    } else if (isApiError(error) && (error as ApiError).statusCode >= 500) {
+      captureError(error, {
+        method: c.req.method,
+        path: c.req.path,
+        userId,
+      });
+    }
 
     // Handle our custom API errors
     if (isApiError(error)) {

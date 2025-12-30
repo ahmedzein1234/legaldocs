@@ -1,0 +1,137 @@
+# Artillery Load Test Configuration for Qannoni API
+#
+# Usage:
+#   npm install -g artillery
+#   artillery run artillery.yml
+#   artillery run artillery.yml --target http://localhost:4001
+#   artillery run artillery.yml --target https://legaldocs-api.a-m-zein.workers.dev
+#
+# Generate report:
+#   artillery run artillery.yml --output results.json
+#   artillery report results.json --output report.html
+
+config:
+  target: "http://localhost:4001"
+  phases:
+    # Warm-up: Gradual start
+    - duration: 30
+      arrivalRate: 5
+      name: "Warm-up"
+
+    # Ramp-up: Increase load gradually
+    - duration: 60
+      arrivalRate: 10
+      rampTo: 50
+      name: "Ramp-up"
+
+    # Sustained load: Maintain steady load
+    - duration: 120
+      arrivalRate: 50
+      name: "Sustained load"
+
+    # Spike: Test sudden traffic spike
+    - duration: 30
+      arrivalRate: 100
+      name: "Spike test"
+
+    # Cool-down: Gradual decrease
+    - duration: 30
+      arrivalRate: 10
+      name: "Cool-down"
+
+  defaults:
+    headers:
+      Content-Type: "application/json"
+      Accept-Language: "en"
+
+  # Performance thresholds
+  ensure:
+    p95: 500  # 95th percentile response time < 500ms
+    p99: 1000 # 99th percentile response time < 1000ms
+    maxErrorRate: 1 # Max 1% error rate
+
+  plugins:
+    expect: {}
+
+scenarios:
+  # Health Check - Most critical, should always work
+  - name: "Health Check"
+    weight: 5
+    flow:
+      - get:
+          url: "/health"
+          expect:
+            - statusCode: 200
+            - contentType: application/json
+
+  # API Root - Basic info endpoint
+  - name: "API Info"
+    weight: 3
+    flow:
+      - get:
+          url: "/"
+          expect:
+            - statusCode: 200
+
+  # Template Categories - Common public endpoint
+  - name: "Template Categories"
+    weight: 10
+    flow:
+      - get:
+          url: "/api/templates/categories"
+          expect:
+            - statusCode: 200
+
+  # GDPR Rights - Public compliance endpoint
+  - name: "GDPR Rights Info"
+    weight: 2
+    flow:
+      - get:
+          url: "/api/gdpr/rights"
+          expect:
+            - statusCode: 200
+
+  # Data Residency - Compliance info
+  - name: "Data Residency Info"
+    weight: 2
+    flow:
+      - get:
+          url: "/api/compliance/data-residency"
+          expect:
+            - statusCode: 200
+
+  # Login attempt (invalid credentials)
+  - name: "Login Flow"
+    weight: 5
+    flow:
+      - post:
+          url: "/api/auth/login"
+          json:
+            email: "loadtest-{{ $randomString(8) }}@test.com"
+            password: "TestPassword123!"
+          expect:
+            - statusCode:
+                - 400
+                - 401
+
+  # Register validation (invalid data)
+  - name: "Register Validation"
+    weight: 3
+    flow:
+      - post:
+          url: "/api/auth/register"
+          json:
+            email: "invalid"
+            password: "123"
+            fullName: "T"
+          expect:
+            - statusCode: 400
+
+  # 404 handling
+  - name: "Not Found Handling"
+    weight: 2
+    flow:
+      - get:
+          url: "/api/nonexistent-{{ $randomString(10) }}"
+          expect:
+            - statusCode: 404

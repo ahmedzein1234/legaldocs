@@ -43,7 +43,8 @@ import {
   statusLabels as statusLabelsData,
 } from '@/lib/templates-data';
 import { useDocumentsWithMutations } from '@/hooks/useDocuments';
-import type { Document } from '@/lib/api';
+import { documentsApi, type Document } from '@/lib/api';
+import { generateDocumentPdf } from '@/lib/document-pdf-generator';
 
 export default function DocumentsPage() {
   const t = useTranslations();
@@ -52,9 +53,26 @@ export default function DocumentsPage() {
   const [statusFilter, setStatusFilter] = React.useState<string>('all');
   const [typeFilter, setTypeFilter] = React.useState<string>('all');
   const [activeTab, setActiveTab] = React.useState('all');
+  const [downloadingId, setDownloadingId] = React.useState<string | null>(null);
 
   // Fetch documents with React Query
   const { documents, isLoading, error, deleteDocument } = useDocumentsWithMutations();
+
+  // Download document as PDF
+  const handleDownloadPdf = async (docId: string) => {
+    setDownloadingId(docId);
+    try {
+      const response = await documentsApi.download(docId);
+      if (response.success) {
+        await generateDocumentPdf(response.data, locale === 'ar' ? 'ar' : 'en');
+      }
+    } catch (err) {
+      console.error('Download error:', err);
+      alert(t('documents.downloadError') || 'Failed to download document');
+    } finally {
+      setDownloadingId(null);
+    }
+  };
 
   // Get localized labels
   const getStatusLabel = (status: string) => {
@@ -177,8 +195,15 @@ export default function DocumentsPage() {
                 {t('documents.actions.sendForSigning')}
               </DropdownMenuItem>
             )}
-            <DropdownMenuItem>
-              <Download className="h-4 w-4 me-2" />
+            <DropdownMenuItem
+              onClick={() => handleDownloadPdf(doc.id)}
+              disabled={downloadingId === doc.id}
+            >
+              {downloadingId === doc.id ? (
+                <Loader2 className="h-4 w-4 me-2 animate-spin" />
+              ) : (
+                <Download className="h-4 w-4 me-2" />
+              )}
               {t('documents.actions.downloadPdf')}
             </DropdownMenuItem>
             <DropdownMenuSeparator />

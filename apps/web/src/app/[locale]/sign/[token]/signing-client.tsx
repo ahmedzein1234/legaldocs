@@ -38,6 +38,7 @@ import {
   DialogTitle,
   DialogFooter,
 } from '@/components/ui/dialog';
+import { generateSignedPdf, type SignedDocumentData } from '@/lib/signed-pdf-generator';
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL || 'https://legaldocs-api.a-m-zein.workers.dev';
 
@@ -297,9 +298,37 @@ export default function SigningClient() {
     setIsSubmitting(false);
   };
 
+  const [isDownloading, setIsDownloading] = React.useState(false);
+
   const handleDownload = async () => {
-    // TODO: Implement actual PDF download
-    alert('Download functionality coming soon');
+    if (!token) return;
+
+    setIsDownloading(true);
+    setError('');
+
+    try {
+      const response = await fetch(`${API_BASE}/api/signatures/public/${token}/download`, {
+        headers: {
+          'Accept-Language': locale,
+        },
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error?.message || 'Failed to fetch document data');
+      }
+
+      const result = await response.json();
+      const pdfData: SignedDocumentData = result.data;
+
+      // Generate and download PDF
+      await generateSignedPdf(pdfData, locale === 'ar' ? 'ar' : 'en');
+    } catch (err) {
+      console.error('Download error:', err);
+      setError(err instanceof Error ? err.message : 'Failed to download PDF');
+    } finally {
+      setIsDownloading(false);
+    }
   };
 
   // Get translations for signature pad
@@ -419,7 +448,7 @@ export default function SigningClient() {
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <FileText className="h-6 w-6 text-primary" />
-              <span className="font-bold text-lg">LegalDocs</span>
+              <span className="font-bold text-lg">Qannoni</span>
             </div>
             <div className="flex items-center gap-2 text-sm text-muted-foreground">
               <Shield className="h-4 w-4 text-success" />
@@ -620,8 +649,12 @@ export default function SigningClient() {
                     <Eye className="h-4 w-4" />
                     {t('signing.documentPreview')}
                   </Label>
-                  <Button variant="ghost" size="sm" onClick={handleDownload}>
-                    <Download className="h-4 w-4 me-2" />
+                  <Button variant="ghost" size="sm" onClick={handleDownload} disabled={isDownloading}>
+                    {isDownloading ? (
+                      <Loader2 className="h-4 w-4 me-2 animate-spin" />
+                    ) : (
+                      <Download className="h-4 w-4 me-2" />
+                    )}
                     {t('documents.actions.downloadPdf')}
                   </Button>
                 </div>
@@ -780,9 +813,13 @@ export default function SigningClient() {
               )}
 
               <div className="flex flex-col sm:flex-row gap-3 justify-center pt-4">
-                <Button variant="outline" className="gap-2" onClick={handleDownload}>
-                  <Download className="h-4 w-4" />
-                  {t('signing.downloadSignedCopy')}
+                <Button variant="outline" className="gap-2" onClick={handleDownload} disabled={isDownloading}>
+                  {isDownloading ? (
+                    <Loader2 className="h-4 w-4 animate-spin" />
+                  ) : (
+                    <Download className="h-4 w-4" />
+                  )}
+                  {isDownloading ? t('common.loading') : t('signing.downloadSignedCopy')}
                 </Button>
               </div>
 

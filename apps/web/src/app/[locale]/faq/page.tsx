@@ -41,8 +41,8 @@ export default async function FaqPage({ params }: { params: Promise<{ locale: st
       icon: <HelpCircle className="h-4 w-4" />,
       items: [
         {
-          question: t('general.whatIsLegalDocs.question'),
-          answer: t('general.whatIsLegalDocs.answer'),
+          question: t('general.whatIsQannoni.question'),
+          answer: t('general.whatIsQannoni.answer'),
           keywords: ['platform', 'service', 'about'],
         },
         {

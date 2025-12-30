@@ -45,3 +45,11 @@ export {
   useDocumentSignatures,
   useSignatureMutations,
 } from './useSignatures';
+
+// PDF generation hooks
+export {
+  usePdfGenerator,
+  type PdfGeneratorOptions,
+  type PdfPreviewOptions,
+  type UsePdfGeneratorResult,
+} from './usePdfGenerator';

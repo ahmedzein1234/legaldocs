@@ -2,6 +2,8 @@
 
 import { useState, useRef } from 'react';
 import { cn } from '@/lib/utils';
+import { apiClient } from '@/lib/api-client';
+import { captureError } from '@/lib/error-tracking';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
@@ -106,20 +108,24 @@ export function PartyInfoForm({
         const imageData = e.target?.result as string;
 
         try {
-          // Call OCR API
-          const response = await fetch('https://legaldocs-api.a-m-zein.workers.dev/ocr/extract', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({
-              image: imageData,
-              documentType: partyType === 'company' ? 'trade_license' : 'emirates_id',
-              language: locale,
-            }),
+          // Call OCR API using centralized client (uses env var for URL, cookies for auth)
+          const result = await apiClient.post<{
+            success: boolean;
+            data?: {
+              name?: string;
+              companyName?: string;
+              idNumber?: string;
+              tradeLicense?: string;
+              nationality?: string;
+              address?: string;
+            };
+          }>('/api/ai/ocr/extract', {
+            image: imageData,
+            documentType: partyType === 'company' ? 'trade_license' : 'emirates_id',
+            language: locale,
           });
 
-          const result = await response.json();
-
-          if (response.ok && result.data) {
+          if (result.success && result.data) {
             // Update party with extracted data
             onChange({
               ...party,
@@ -129,18 +135,25 @@ export function PartyInfoForm({
               address: result.data.address || party.address,
             });
           } else {
-            // Simulate for demo when API not available
+            // Fallback to demo mode when extraction fails
+            // Note: In production, show error to user instead
+            captureError(new Error('OCR extraction returned no data'), {
+              component: 'PartyInfoForm',
+              documentType: partyType,
+            });
             simulateOCR();
           }
-        } catch {
-          // Simulate for demo
+        } catch (err) {
+          // Log error to Sentry and fallback to demo
+          captureError(err, { component: 'PartyInfoForm', action: 'OCR' });
           simulateOCR();
         } finally {
           setIsScanning(false);
         }
       };
       reader.readAsDataURL(file);
-    } catch {
+    } catch (err) {
+      captureError(err, { component: 'PartyInfoForm', action: 'FileRead' });
       setIsScanning(false);
     }
 

@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { useLocale } from 'next-intl';
 import Link from 'next/link';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import {
   ArrowLeft,
   Briefcase,
@@ -23,6 +23,7 @@ import {
   Mail,
   Timer,
   Target,
+  Loader2,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -55,75 +56,126 @@ import {
   SelectValue,
 } from '@/components/ui/select';
 import { Checkbox } from '@/components/ui/checkbox';
-
-// Mock data
-const mockCase = {
-  id: '1',
-  case_number: 'CASE-2025-ABC123',
-  title: 'Al Maktoum Holdings vs. Emirates Trading Co.',
-  description: 'Commercial dispute regarding breach of contract for supply of construction materials.',
-  case_type: 'litigation',
-  practice_area: 'commercial',
-  jurisdiction: 'AE',
-  court: 'Dubai Courts - Commercial Division',
-  status: 'active',
-  priority: 'high',
-  client_name: 'Al Maktoum Holdings LLC',
-  client_email: 'legal@almaktoum.ae',
-  client_phone: '+971 4 123 4567',
-  opposing_party: 'Emirates Trading Co.',
-  opposing_counsel: 'Smith & Partners LLP',
-  case_value: 5000000,
-  currency: 'AED',
-  billing_type: 'hourly',
-  hourly_rate: 1500,
-  total_billed: 45000,
-  total_paid: 30000,
-  court_case_number: 'DC-COM-2025-1234',
-  date_opened: '2025-10-01',
-  statute_of_limitations: '2028-10-01',
-  next_deadline: '2025-12-15',
-  next_hearing_date: '2025-12-20',
-  tags: ['commercial', 'breach-of-contract'],
-  created_at: '2025-10-01',
-  updated_at: '2025-11-28',
-};
-
-const mockTasks = [
-  { id: '1', title: 'File response to defendant motion', task_type: 'filing', priority: 'urgent', status: 'pending', due_date: '2025-12-05', is_court_deadline: true },
-  { id: '2', title: 'Review discovery documents', task_type: 'review', priority: 'high', status: 'in_progress', due_date: '2025-12-10', is_court_deadline: false },
-  { id: '3', title: 'Prepare witness statements', task_type: 'drafting', priority: 'medium', status: 'pending', due_date: '2025-12-15', is_court_deadline: false },
-  { id: '4', title: 'Initial case assessment', task_type: 'review', priority: 'high', status: 'completed', due_date: '2025-10-15', is_court_deadline: false },
-];
-
-const mockNotes = [
-  { id: '1', content: 'Client meeting held. Discussed settlement options.', note_type: 'communication', created_at: '2025-11-25', author_name: 'Ahmed Hassan', is_pinned: true },
-  { id: '2', content: 'Received discovery documents from opposing counsel.', note_type: 'update', created_at: '2025-11-20', author_name: 'Ahmed Hassan', is_pinned: false },
-];
-
-const mockDocuments = [
-  { id: '1', title: 'Statement of Claim', document_number: 'DR-2025-SOC001', document_type: 'pleading', status: 'signed', created_at: '2025-10-05' },
-  { id: '2', title: 'Contract Agreement - Original', document_number: 'DR-2025-CON001', document_type: 'evidence', status: 'certified', created_at: '2025-10-03' },
-];
-
-const mockTimeEntries = [
-  { id: '1', description: 'Draft statement of claim', activity_type: 'drafting', date: '2025-10-05', duration_minutes: 180, amount: 4500, is_billable: true },
-  { id: '2', description: 'Client meeting - case strategy', activity_type: 'meeting', date: '2025-11-25', duration_minutes: 60, amount: 1500, is_billable: true },
-];
+import { useCaseDetail, CaseNote, CaseDocument, TimeEntry } from '@/hooks/useCases';
+import { CaseTask } from '@/lib/api';
+import { captureError } from '@/lib/error-tracking';
 
 export default function CaseDetailClient() {
   const locale = useLocale() as 'en' | 'ar' | 'ur';
   const params = useParams();
+  const router = useRouter();
+  const caseId = params.id as string;
+
+  const {
+    caseData,
+    isLoading,
+    error,
+    refetch,
+    deleteCase,
+    createTask,
+    updateTask,
+    addNote,
+    logTime,
+  } = useCaseDetail(caseId);
+
   const [activeTab, setActiveTab] = React.useState('overview');
   const [isAddTaskOpen, setIsAddTaskOpen] = React.useState(false);
   const [isAddNoteOpen, setIsAddNoteOpen] = React.useState(false);
   const [isLogTimeOpen, setIsLogTimeOpen] = React.useState(false);
+  const [isDeleting, setIsDeleting] = React.useState(false);
 
-  const caseData = mockCase;
-  const tasks = mockTasks;
-  const notes = mockNotes;
-  const documents = mockDocuments;
-  const timeEntries = mockTimeEntries;
+  // Form states for dialogs
+  const [newTask, setNewTask] = React.useState({ title: '', taskType: 'task', priority: 'medium', dueDate: '', isCourtDeadline: false });
+  const [newNote, setNewNote] = React.useState({ content: '', noteType: 'note', isPinned: false });
+  const [newTime, setNewTime] = React.useState({ description: '', date: new Date().toISOString().split('T')[0], durationMinutes: 60, activityType: 'other', isBillable: true });
+
+  // Reset form states when dialogs close
+  const resetTaskForm = () => setNewTask({ title: '', taskType: 'task', priority: 'medium', dueDate: '', isCourtDeadline: false });
+  const resetNoteForm = () => setNewNote({ content: '', noteType: 'note', isPinned: false });
+  const resetTimeForm = () => setNewTime({ description: '', date: new Date().toISOString().split('T')[0], durationMinutes: 60, activityType: 'other', isBillable: true });
+
+  // Extract related data from case
+  const tasks = caseData?.tasks || [];
+  const notes = (caseData?.notes || []) as CaseNote[];
+  const documents = (caseData?.documents || []) as CaseDocument[];
+  const timeEntries = (caseData?.timeEntries || []) as TimeEntry[];
+
+  // Handle task creation
+  const handleCreateTask = async () => {
+    if (!newTask.title || !newTask.dueDate) return;
+    try {
+      await createTask.mutateAsync({
+        title: newTask.title,
+        taskType: newTask.taskType,
+        priority: newTask.priority,
+        dueDate: newTask.dueDate,
+      });
+      setIsAddTaskOpen(false);
+      resetTaskForm();
+    } catch (err) {
+      captureError(err, { component: 'CaseDetailClient', action: 'createTask' });
+    }
+  };
+
+  // Handle task status toggle
+  const handleTaskToggle = async (task: CaseTask) => {
+    const newStatus = task.status === 'completed' ? 'pending' : 'completed';
+    try {
+      await updateTask.mutateAsync({
+        taskId: task.id,
+        data: { status: newStatus },
+      });
+    } catch (err) {
+      captureError(err, { component: 'CaseDetailClient', action: 'updateTask' });
+    }
+  };
+
+  // Handle note creation
+  const handleAddNote = async () => {
+    if (!newNote.content) return;
+    try {
+      await addNote.mutateAsync({
+        content: newNote.content,
+        noteType: newNote.noteType,
+        isPrivate: false,
+      });
+      setIsAddNoteOpen(false);
+      resetNoteForm();
+    } catch (err) {
+      captureError(err, { component: 'CaseDetailClient', action: 'addNote' });
+    }
+  };
+
+  // Handle time logging
+  const handleLogTime = async () => {
+    if (!newTime.description || !newTime.durationMinutes) return;
+    try {
+      await logTime.mutateAsync({
+        description: newTime.description,
+        date: newTime.date,
+        durationMinutes: newTime.durationMinutes,
+        activityType: newTime.activityType,
+        isBillable: newTime.isBillable,
+      });
+      setIsLogTimeOpen(false);
+      resetTimeForm();
+    } catch (err) {
+      captureError(err, { component: 'CaseDetailClient', action: 'logTime' });
+    }
+  };
+
+  // Handle case deletion
+  const handleDeleteCase = async () => {
+    if (!confirm(locale === 'ar' ? 'هل أنت متأكد من حذف هذه القضية؟' : 'Are you sure you want to delete this case?')) return;
+    setIsDeleting(true);
+    try {
+      await deleteCase.mutateAsync(caseId);
+      router.push(`/${locale}/dashboard/cases`);
+    } catch (err) {
+      captureError(err, { component: 'CaseDetailClient', action: 'deleteCase' });
+      setIsDeleting(false);
+    }
+  };
 
   const statusLabels: Record<string, Record<string, string>> = {
     open: { en: 'Open', ar: 'مفتوحة' },
@@ -155,12 +207,12 @@ export default function CaseDetailClient() {
   const taskStats = React.useMemo(() => {
     const total = tasks.length;
     const completed = tasks.filter(t => t.status === 'completed').length;
-    const overdue = tasks.filter(t => t.status === 'pending' && new Date(t.due_date) < new Date()).length;
+    const overdue = tasks.filter(t => t.status === 'pending' && new Date(t.dueDate) < new Date()).length;
     return { total, completed, overdue, progress: total > 0 ? (completed / total) * 100 : 0 };
   }, [tasks]);
 
   const timeStats = React.useMemo(() => {
-    const totalMinutes = timeEntries.reduce((acc, e) => acc + e.duration_minutes, 0);
+    const totalMinutes = timeEntries.reduce((acc, e) => acc + e.durationMinutes, 0);
     const totalAmount = timeEntries.reduce((acc, e) => acc + (e.amount || 0), 0);
     return { totalMinutes, totalAmount, hours: Math.floor(totalMinutes / 60), minutes: totalMinutes % 60 };
   }, [timeEntries]);
@@ -174,6 +226,46 @@ export default function CaseDetailClient() {
       default: return '';
     }
   };
+
+  // Loading state
+  if (isLoading) {
+    return (
+      <div className="space-y-6">
+        <Link href={`/${locale}/dashboard/cases`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground w-fit">
+          <ArrowLeft className="h-4 w-4" />
+          {locale === 'ar' ? 'العودة للقضايا' : 'Back to Cases'}
+        </Link>
+        <div className="flex items-center justify-center py-20">
+          <Loader2 className="h-8 w-8 animate-spin text-primary" />
+          <span className="ms-2 text-muted-foreground">{locale === 'ar' ? 'جاري التحميل...' : 'Loading case details...'}</span>
+        </div>
+      </div>
+    );
+  }
+
+  // Error state
+  if (error || !caseData) {
+    return (
+      <div className="space-y-6">
+        <Link href={`/${locale}/dashboard/cases`} className="flex items-center gap-1 text-muted-foreground hover:text-foreground w-fit">
+          <ArrowLeft className="h-4 w-4" />
+          {locale === 'ar' ? 'العودة للقضايا' : 'Back to Cases'}
+        </Link>
+        <Card className="border-destructive">
+          <CardContent className="flex flex-col items-center justify-center py-12">
+            <AlertTriangle className="h-12 w-12 text-destructive mb-4" />
+            <h2 className="text-lg font-semibold mb-2">{locale === 'ar' ? 'خطأ في تحميل القضية' : 'Error Loading Case'}</h2>
+            <p className="text-muted-foreground mb-4">
+              {error?.message || (locale === 'ar' ? 'القضية غير موجودة' : 'Case not found')}
+            </p>
+            <Button onClick={() => refetch()}>
+              {locale === 'ar' ? 'إعادة المحاولة' : 'Try Again'}
+            </Button>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-6">
@@ -192,7 +284,7 @@ export default function CaseDetailClient() {
               </div>
               <div>
                 <h1 className="text-2xl font-bold">{caseData.title}</h1>
-                <p className="text-muted-foreground">{caseData.case_number}</p>
+                <p className="text-muted-foreground">{caseData.caseNumber}</p>
               </div>
             </div>
             <div className="flex flex-wrap items-center gap-2">
@@ -202,7 +294,7 @@ export default function CaseDetailClient() {
               <Badge className={getPriorityColor(caseData.priority)}>
                 {priorityLabels[caseData.priority]?.[locale] || caseData.priority}
               </Badge>
-              {caseData.tags?.map(tag => (
+              {caseData.tags?.map((tag: string) => (
                 <Badge key={tag} variant="outline">{tag}</Badge>
               ))}
             </div>
@@ -215,8 +307,8 @@ export default function CaseDetailClient() {
             </Button>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <Button variant="outline" size="sm">
-                  <MoreHorizontal className="h-4 w-4" />
+                <Button variant="outline" size="sm" disabled={isDeleting}>
+                  {isDeleting ? <Loader2 className="h-4 w-4 animate-spin" /> : <MoreHorizontal className="h-4 w-4" />}
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent align="end">
@@ -225,7 +317,7 @@ export default function CaseDetailClient() {
                   {locale === 'ar' ? 'تصدير التقرير' : 'Export Report'}
                 </DropdownMenuItem>
                 <DropdownMenuSeparator />
-                <DropdownMenuItem className="text-destructive">
+                <DropdownMenuItem className="text-destructive" onClick={handleDeleteCase}>
                   <Trash2 className="h-4 w-4 me-2" />
                   {locale === 'ar' ? 'حذف القضية' : 'Delete Case'}
                 </DropdownMenuItem>
@@ -273,7 +365,7 @@ export default function CaseDetailClient() {
               <DollarSign className="h-5 w-5 text-muted-foreground" />
               <div>
                 <p className="text-sm text-muted-foreground">{locale === 'ar' ? 'المبلغ المفوتر' : 'Amount Billed'}</p>
-                <p className="text-xl font-bold">{caseData.currency} {caseData.total_billed.toLocaleString()}</p>
+                <p className="text-xl font-bold">{caseData.currency} {(caseData.totalBilled || 0).toLocaleString()}</p>
               </div>
             </div>
           </CardContent>
@@ -286,7 +378,7 @@ export default function CaseDetailClient() {
               <div>
                 <p className="text-sm text-muted-foreground">{locale === 'ar' ? 'الموعد التالي' : 'Next Deadline'}</p>
                 <p className="text-xl font-bold">
-                  {caseData.next_deadline ? new Date(caseData.next_deadline).toLocaleDateString(locale) : '-'}
+                  {caseData.nextDeadline ? new Date(caseData.nextDeadline).toLocaleDateString(locale) : '-'}
                 </p>
               </div>
             </div>
@@ -326,15 +418,15 @@ export default function CaseDetailClient() {
                   </div>
                   <div>
                     <p className="text-muted-foreground">{locale === 'ar' ? 'رقم القضية' : 'Court Case #'}</p>
-                    <p className="font-medium">{caseData.court_case_number || '-'}</p>
+                    <p className="font-medium">{caseData.courtCaseNumber || '-'}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{locale === 'ar' ? 'تاريخ الافتتاح' : 'Date Opened'}</p>
-                    <p className="font-medium">{new Date(caseData.date_opened).toLocaleDateString(locale)}</p>
+                    <p className="font-medium">{caseData.dateOpened ? new Date(caseData.dateOpened).toLocaleDateString(locale) : '-'}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{locale === 'ar' ? 'الجلسة القادمة' : 'Next Hearing'}</p>
-                    <p className="font-medium">{caseData.next_hearing_date ? new Date(caseData.next_hearing_date).toLocaleDateString(locale) : '-'}</p>
+                    <p className="font-medium">{caseData.nextHearingDate ? new Date(caseData.nextHearingDate).toLocaleDateString(locale) : '-'}</p>
                   </div>
                 </div>
               </CardContent>
@@ -347,27 +439,27 @@ export default function CaseDetailClient() {
               <CardContent className="space-y-4">
                 <div className="p-3 rounded-lg bg-muted/50">
                   <p className="text-xs text-muted-foreground mb-1">{locale === 'ar' ? 'العميل' : 'Client'}</p>
-                  <p className="font-medium">{caseData.client_name}</p>
-                  {caseData.client_email && (
+                  <p className="font-medium">{caseData.clientName}</p>
+                  {caseData.clientEmail && (
                     <div className="flex items-center gap-1 text-sm text-muted-foreground mt-1">
                       <Mail className="h-3 w-3" />
-                      {caseData.client_email}
+                      {caseData.clientEmail}
                     </div>
                   )}
-                  {caseData.client_phone && (
+                  {caseData.clientPhone && (
                     <div className="flex items-center gap-1 text-sm text-muted-foreground">
                       <Phone className="h-3 w-3" />
-                      {caseData.client_phone}
+                      {caseData.clientPhone}
                     </div>
                   )}
                 </div>
 
-                {caseData.opposing_party && (
+                {caseData.opposingParty && (
                   <div className="p-3 rounded-lg bg-muted/50">
                     <p className="text-xs text-muted-foreground mb-1">{locale === 'ar' ? 'الطرف المقابل' : 'Opposing Party'}</p>
-                    <p className="font-medium">{caseData.opposing_party}</p>
-                    {caseData.opposing_counsel && (
-                      <p className="text-sm text-muted-foreground">{locale === 'ar' ? 'المحامي:' : 'Counsel:'} {caseData.opposing_counsel}</p>
+                    <p className="font-medium">{caseData.opposingParty}</p>
+                    {caseData.opposingCounsel && (
+                      <p className="text-sm text-muted-foreground">{locale === 'ar' ? 'المحامي:' : 'Counsel:'} {caseData.opposingCounsel}</p>
                     )}
                   </div>
                 )}
@@ -382,43 +474,43 @@ export default function CaseDetailClient() {
                 <div className="grid grid-cols-2 gap-4 text-sm">
                   <div>
                     <p className="text-muted-foreground">{locale === 'ar' ? 'نوع الفوترة' : 'Billing Type'}</p>
-                    <p className="font-medium capitalize">{caseData.billing_type}</p>
+                    <p className="font-medium capitalize">{caseData.billingType || 'hourly'}</p>
                   </div>
-                  {caseData.hourly_rate && (
+                  {caseData.hourlyRate && (
                     <div>
                       <p className="text-muted-foreground">{locale === 'ar' ? 'السعر بالساعة' : 'Hourly Rate'}</p>
-                      <p className="font-medium">{caseData.currency} {caseData.hourly_rate}</p>
+                      <p className="font-medium">{caseData.currency} {caseData.hourlyRate}</p>
                     </div>
                   )}
                   <div>
                     <p className="text-muted-foreground">{locale === 'ar' ? 'إجمالي الفواتير' : 'Total Billed'}</p>
-                    <p className="font-medium text-lg">{caseData.currency} {caseData.total_billed.toLocaleString()}</p>
+                    <p className="font-medium text-lg">{caseData.currency} {(caseData.totalBilled || 0).toLocaleString()}</p>
                   </div>
                   <div>
                     <p className="text-muted-foreground">{locale === 'ar' ? 'المدفوع' : 'Paid'}</p>
-                    <p className="font-medium text-lg text-green-600">{caseData.currency} {caseData.total_paid.toLocaleString()}</p>
+                    <p className="font-medium text-lg text-green-600">{caseData.currency} {(caseData.totalPaid || 0).toLocaleString()}</p>
                   </div>
                 </div>
                 <div>
                   <div className="flex justify-between text-sm mb-1">
                     <span className="text-muted-foreground">{locale === 'ar' ? 'المتبقي' : 'Outstanding'}</span>
-                    <span className="font-medium text-orange-500">{caseData.currency} {(caseData.total_billed - caseData.total_paid).toLocaleString()}</span>
+                    <span className="font-medium text-orange-500">{caseData.currency} {((caseData.totalBilled || 0) - (caseData.totalPaid || 0)).toLocaleString()}</span>
                   </div>
-                  <Progress value={(caseData.total_paid / caseData.total_billed) * 100} className="h-2" />
+                  <Progress value={caseData.totalBilled ? ((caseData.totalPaid || 0) / caseData.totalBilled) * 100 : 0} className="h-2" />
                 </div>
               </CardContent>
             </Card>
 
-            {caseData.case_value && (
+            {caseData.caseValue && (
               <Card>
                 <CardHeader>
                   <CardTitle>{locale === 'ar' ? 'قيمة القضية' : 'Case Value'}</CardTitle>
                 </CardHeader>
                 <CardContent>
-                  <p className="text-3xl font-bold">{caseData.currency} {caseData.case_value.toLocaleString()}</p>
-                  {caseData.statute_of_limitations && (
+                  <p className="text-3xl font-bold">{caseData.currency} {caseData.caseValue.toLocaleString()}</p>
+                  {caseData.statuteOfLimitations && (
                     <p className="text-sm text-muted-foreground mt-2">
-                      {locale === 'ar' ? 'تقادم الدعوى:' : 'Statute of Limitations:'} {new Date(caseData.statute_of_limitations).toLocaleDateString(locale)}
+                      {locale === 'ar' ? 'تقادم الدعوى:' : 'Statute of Limitations:'} {new Date(caseData.statuteOfLimitations).toLocaleDateString(locale)}
                     </p>
                   )}
                 </CardContent>
@@ -438,24 +530,38 @@ export default function CaseDetailClient() {
           </div>
 
           <div className="space-y-3">
-            {tasks.map((task) => (
+            {tasks.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-8 text-center">
+                  <Target className="h-10 w-10 text-muted-foreground mb-2" />
+                  <p className="text-muted-foreground">{locale === 'ar' ? 'لا توجد مهام بعد' : 'No tasks yet'}</p>
+                  <Button variant="link" size="sm" onClick={() => setIsAddTaskOpen(true)}>
+                    {locale === 'ar' ? 'إضافة أول مهمة' : 'Add your first task'}
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : tasks.map((task) => (
               <Card key={task.id} className={task.status === 'completed' ? 'opacity-60' : ''}>
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3">
-                    <Checkbox checked={task.status === 'completed'} />
+                    <Checkbox
+                      checked={task.status === 'completed'}
+                      onCheckedChange={() => handleTaskToggle(task)}
+                      disabled={updateTask.isPending}
+                    />
                     <div>
                       <div className="flex items-center gap-2">
                         <p className={`font-medium ${task.status === 'completed' ? 'line-through' : ''}`}>{task.title}</p>
-                        {task.is_court_deadline && (
+                        {task.isCourtDeadline && (
                           <Badge variant="destructive" className="text-xs">{locale === 'ar' ? 'موعد قضائي' : 'Court Deadline'}</Badge>
                         )}
                       </div>
                       <div className="flex items-center gap-3 text-sm text-muted-foreground">
-                        <span>{taskTypeLabels[task.task_type]?.[locale] || task.task_type}</span>
+                        <span>{taskTypeLabels[task.taskType]?.[locale] || task.taskType}</span>
                         <span>•</span>
-                        <span className={`flex items-center gap-1 ${new Date(task.due_date) < new Date() && task.status !== 'completed' ? 'text-destructive' : ''}`}>
+                        <span className={`flex items-center gap-1 ${new Date(task.dueDate) < new Date() && task.status !== 'completed' ? 'text-destructive' : ''}`}>
                           <Calendar className="h-3 w-3" />
-                          {new Date(task.due_date).toLocaleDateString(locale)}
+                          {new Date(task.dueDate).toLocaleDateString(locale)}
                         </span>
                       </div>
                     </div>
@@ -483,7 +589,14 @@ export default function CaseDetailClient() {
           </div>
 
           <div className="space-y-3">
-            {documents.map((doc) => (
+            {documents.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-8 text-center">
+                  <FileText className="h-10 w-10 text-muted-foreground mb-2" />
+                  <p className="text-muted-foreground">{locale === 'ar' ? 'لا توجد مستندات مرتبطة' : 'No linked documents'}</p>
+                </CardContent>
+              </Card>
+            ) : documents.map((doc) => (
               <Card key={doc.id}>
                 <CardContent className="flex items-center justify-between p-4">
                   <div className="flex items-center gap-3">
@@ -492,11 +605,11 @@ export default function CaseDetailClient() {
                     </div>
                     <div>
                       <p className="font-medium">{doc.title}</p>
-                      <p className="text-sm text-muted-foreground">{doc.document_number}</p>
+                      <p className="text-sm text-muted-foreground">{doc.documentNumber}</p>
                     </div>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Badge variant="outline">{doc.document_type}</Badge>
+                    <Badge variant="outline">{doc.documentType}</Badge>
                     <Badge variant={doc.status === 'signed' ? 'default' : 'secondary'}>{doc.status}</Badge>
                   </div>
                 </CardContent>
@@ -528,13 +641,19 @@ export default function CaseDetailClient() {
                   </tr>
                 </thead>
                 <tbody>
-                  {timeEntries.map((entry) => (
+                  {timeEntries.length === 0 ? (
+                    <tr>
+                      <td colSpan={5} className="p-8 text-center text-muted-foreground">
+                        {locale === 'ar' ? 'لا يوجد وقت مسجل' : 'No time entries yet'}
+                      </td>
+                    </tr>
+                  ) : timeEntries.map((entry) => (
                     <tr key={entry.id} className="border-b last:border-0">
                       <td className="p-4 text-sm">{new Date(entry.date).toLocaleDateString(locale)}</td>
                       <td className="p-4 text-sm">{entry.description}</td>
-                      <td className="p-4"><Badge variant="outline" className="capitalize">{entry.activity_type}</Badge></td>
-                      <td className="p-4 text-sm text-end">{Math.floor(entry.duration_minutes / 60)}h {entry.duration_minutes % 60}m</td>
-                      <td className="p-4 text-sm text-end font-medium">{caseData.currency} {entry.amount.toLocaleString()}</td>
+                      <td className="p-4"><Badge variant="outline" className="capitalize">{entry.activityType}</Badge></td>
+                      <td className="p-4 text-sm text-end">{Math.floor(entry.durationMinutes / 60)}h {entry.durationMinutes % 60}m</td>
+                      <td className="p-4 text-sm text-end font-medium">{caseData.currency} {(entry.amount || 0).toLocaleString()}</td>
                     </tr>
                   ))}
                 </tbody>
@@ -561,18 +680,28 @@ export default function CaseDetailClient() {
           </div>
 
           <div className="space-y-3">
-            {notes.map((note) => (
-              <Card key={note.id} className={note.is_pinned ? 'border-primary' : ''}>
+            {notes.length === 0 ? (
+              <Card>
+                <CardContent className="flex flex-col items-center justify-center py-8 text-center">
+                  <FileText className="h-10 w-10 text-muted-foreground mb-2" />
+                  <p className="text-muted-foreground">{locale === 'ar' ? 'لا توجد ملاحظات بعد' : 'No notes yet'}</p>
+                  <Button variant="link" size="sm" onClick={() => setIsAddNoteOpen(true)}>
+                    {locale === 'ar' ? 'إضافة أول ملاحظة' : 'Add your first note'}
+                  </Button>
+                </CardContent>
+              </Card>
+            ) : notes.map((note) => (
+              <Card key={note.id} className={note.isPinned ? 'border-primary' : ''}>
                 <CardContent className="p-4">
                   <div className="flex items-start justify-between mb-2">
                     <div className="flex items-center gap-2">
-                      <Badge variant="outline">{note.note_type}</Badge>
-                      {note.is_pinned && <Badge variant="secondary">{locale === 'ar' ? 'مثبتة' : 'Pinned'}</Badge>}
+                      <Badge variant="outline">{note.noteType}</Badge>
+                      {note.isPinned && <Badge variant="secondary">{locale === 'ar' ? 'مثبتة' : 'Pinned'}</Badge>}
                     </div>
-                    <span className="text-xs text-muted-foreground">{new Date(note.created_at).toLocaleDateString(locale)}</span>
+                    <span className="text-xs text-muted-foreground">{new Date(note.createdAt).toLocaleDateString(locale)}</span>
                   </div>
                   <p className="text-sm">{note.content}</p>
-                  <p className="text-xs text-muted-foreground mt-2">— {note.author_name}</p>
+                  <p className="text-xs text-muted-foreground mt-2">— {note.authorName}</p>
                 </CardContent>
               </Card>
             ))}
@@ -581,7 +710,7 @@ export default function CaseDetailClient() {
       </Tabs>
 
       {/* Add Task Dialog */}
-      <Dialog open={isAddTaskOpen} onOpenChange={setIsAddTaskOpen}>
+      <Dialog open={isAddTaskOpen} onOpenChange={(open) => { setIsAddTaskOpen(open); if (!open) resetTaskForm(); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{locale === 'ar' ? 'إضافة مهمة جديدة' : 'Add New Task'}</DialogTitle>
@@ -589,12 +718,16 @@ export default function CaseDetailClient() {
           <div className="space-y-4">
             <div>
               <Label>{locale === 'ar' ? 'العنوان' : 'Title'}</Label>
-              <Input placeholder={locale === 'ar' ? 'عنوان المهمة' : 'Task title'} />
+              <Input
+                placeholder={locale === 'ar' ? 'عنوان المهمة' : 'Task title'}
+                value={newTask.title}
+                onChange={(e) => setNewTask({ ...newTask, title: e.target.value })}
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>{locale === 'ar' ? 'النوع' : 'Type'}</Label>
-                <Select>
+                <Select value={newTask.taskType} onValueChange={(v) => setNewTask({ ...newTask, taskType: v })}>
                   <SelectTrigger><SelectValue placeholder={locale === 'ar' ? 'اختر النوع' : 'Select type'} /></SelectTrigger>
                   <SelectContent>
                     {Object.entries(taskTypeLabels).map(([key, labels]) => (
@@ -605,7 +738,7 @@ export default function CaseDetailClient() {
               </div>
               <div>
                 <Label>{locale === 'ar' ? 'الأولوية' : 'Priority'}</Label>
-                <Select>
+                <Select value={newTask.priority} onValueChange={(v) => setNewTask({ ...newTask, priority: v })}>
                   <SelectTrigger><SelectValue placeholder={locale === 'ar' ? 'اختر الأولوية' : 'Select priority'} /></SelectTrigger>
                   <SelectContent>
                     {Object.entries(priorityLabels).map(([key, labels]) => (
@@ -617,22 +750,33 @@ export default function CaseDetailClient() {
             </div>
             <div>
               <Label>{locale === 'ar' ? 'تاريخ الاستحقاق' : 'Due Date'}</Label>
-              <Input type="date" />
+              <Input
+                type="date"
+                value={newTask.dueDate}
+                onChange={(e) => setNewTask({ ...newTask, dueDate: e.target.value })}
+              />
             </div>
             <div className="flex items-center gap-2">
-              <Checkbox id="court-deadline" />
+              <Checkbox
+                id="court-deadline"
+                checked={newTask.isCourtDeadline}
+                onCheckedChange={(checked) => setNewTask({ ...newTask, isCourtDeadline: !!checked })}
+              />
               <Label htmlFor="court-deadline" className="text-sm">{locale === 'ar' ? 'موعد قضائي' : 'Court Deadline'}</Label>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddTaskOpen(false)}>{locale === 'ar' ? 'إلغاء' : 'Cancel'}</Button>
-            <Button onClick={() => setIsAddTaskOpen(false)}>{locale === 'ar' ? 'إضافة' : 'Add Task'}</Button>
+            <Button onClick={handleCreateTask} disabled={createTask.isPending || !newTask.title || !newTask.dueDate}>
+              {createTask.isPending && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
+              {locale === 'ar' ? 'إضافة' : 'Add Task'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Add Note Dialog */}
-      <Dialog open={isAddNoteOpen} onOpenChange={setIsAddNoteOpen}>
+      <Dialog open={isAddNoteOpen} onOpenChange={(open) => { setIsAddNoteOpen(open); if (!open) resetNoteForm(); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{locale === 'ar' ? 'إضافة ملاحظة' : 'Add Note'}</DialogTitle>
@@ -640,7 +784,7 @@ export default function CaseDetailClient() {
           <div className="space-y-4">
             <div>
               <Label>{locale === 'ar' ? 'النوع' : 'Type'}</Label>
-              <Select>
+              <Select value={newNote.noteType} onValueChange={(v) => setNewNote({ ...newNote, noteType: v })}>
                 <SelectTrigger><SelectValue placeholder={locale === 'ar' ? 'اختر النوع' : 'Select type'} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="note">{locale === 'ar' ? 'ملاحظة' : 'Note'}</SelectItem>
@@ -651,22 +795,34 @@ export default function CaseDetailClient() {
             </div>
             <div>
               <Label>{locale === 'ar' ? 'المحتوى' : 'Content'}</Label>
-              <Textarea rows={4} placeholder={locale === 'ar' ? 'اكتب ملاحظتك هنا...' : 'Write your note here...'} />
+              <Textarea
+                rows={4}
+                placeholder={locale === 'ar' ? 'اكتب ملاحظتك هنا...' : 'Write your note here...'}
+                value={newNote.content}
+                onChange={(e) => setNewNote({ ...newNote, content: e.target.value })}
+              />
             </div>
             <div className="flex items-center gap-2">
-              <Checkbox id="pin-note" />
+              <Checkbox
+                id="pin-note"
+                checked={newNote.isPinned}
+                onCheckedChange={(checked) => setNewNote({ ...newNote, isPinned: !!checked })}
+              />
               <Label htmlFor="pin-note" className="text-sm">{locale === 'ar' ? 'تثبيت الملاحظة' : 'Pin this note'}</Label>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsAddNoteOpen(false)}>{locale === 'ar' ? 'إلغاء' : 'Cancel'}</Button>
-            <Button onClick={() => setIsAddNoteOpen(false)}>{locale === 'ar' ? 'حفظ' : 'Save Note'}</Button>
+            <Button onClick={handleAddNote} disabled={addNote.isPending || !newNote.content}>
+              {addNote.isPending && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
+              {locale === 'ar' ? 'حفظ' : 'Save Note'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>
 
       {/* Log Time Dialog */}
-      <Dialog open={isLogTimeOpen} onOpenChange={setIsLogTimeOpen}>
+      <Dialog open={isLogTimeOpen} onOpenChange={(open) => { setIsLogTimeOpen(open); if (!open) resetTimeForm(); }}>
         <DialogContent>
           <DialogHeader>
             <DialogTitle>{locale === 'ar' ? 'تسجيل الوقت' : 'Log Time'}</DialogTitle>
@@ -674,21 +830,35 @@ export default function CaseDetailClient() {
           <div className="space-y-4">
             <div>
               <Label>{locale === 'ar' ? 'الوصف' : 'Description'}</Label>
-              <Input placeholder={locale === 'ar' ? 'ماذا عملت؟' : 'What did you work on?'} />
+              <Input
+                placeholder={locale === 'ar' ? 'ماذا عملت؟' : 'What did you work on?'}
+                value={newTime.description}
+                onChange={(e) => setNewTime({ ...newTime, description: e.target.value })}
+              />
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <Label>{locale === 'ar' ? 'التاريخ' : 'Date'}</Label>
-                <Input type="date" defaultValue={new Date().toISOString().split('T')[0]} />
+                <Input
+                  type="date"
+                  value={newTime.date}
+                  onChange={(e) => setNewTime({ ...newTime, date: e.target.value })}
+                />
               </div>
               <div>
                 <Label>{locale === 'ar' ? 'المدة (دقائق)' : 'Duration (minutes)'}</Label>
-                <Input type="number" min="1" placeholder="60" />
+                <Input
+                  type="number"
+                  min="1"
+                  placeholder="60"
+                  value={newTime.durationMinutes}
+                  onChange={(e) => setNewTime({ ...newTime, durationMinutes: parseInt(e.target.value) || 0 })}
+                />
               </div>
             </div>
             <div>
               <Label>{locale === 'ar' ? 'نوع النشاط' : 'Activity Type'}</Label>
-              <Select>
+              <Select value={newTime.activityType} onValueChange={(v) => setNewTime({ ...newTime, activityType: v })}>
                 <SelectTrigger><SelectValue placeholder={locale === 'ar' ? 'اختر النوع' : 'Select type'} /></SelectTrigger>
                 <SelectContent>
                   <SelectItem value="research">{locale === 'ar' ? 'بحث' : 'Research'}</SelectItem>
@@ -702,13 +872,20 @@ export default function CaseDetailClient() {
               </Select>
             </div>
             <div className="flex items-center gap-2">
-              <Checkbox id="billable" defaultChecked />
+              <Checkbox
+                id="billable"
+                checked={newTime.isBillable}
+                onCheckedChange={(checked) => setNewTime({ ...newTime, isBillable: !!checked })}
+              />
               <Label htmlFor="billable" className="text-sm">{locale === 'ar' ? 'قابل للفوترة' : 'Billable'}</Label>
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" onClick={() => setIsLogTimeOpen(false)}>{locale === 'ar' ? 'إلغاء' : 'Cancel'}</Button>
-            <Button onClick={() => setIsLogTimeOpen(false)}>{locale === 'ar' ? 'حفظ' : 'Log Time'}</Button>
+            <Button onClick={handleLogTime} disabled={logTime.isPending || !newTime.description || !newTime.durationMinutes}>
+              {logTime.isPending && <Loader2 className="h-4 w-4 me-2 animate-spin" />}
+              {locale === 'ar' ? 'حفظ' : 'Log Time'}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

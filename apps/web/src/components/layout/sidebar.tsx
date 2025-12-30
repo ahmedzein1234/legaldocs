@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { usePathname } from 'next/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import {
@@ -517,11 +518,15 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* Mobile header */}
         <div className="flex items-center justify-between p-4 border-b md:hidden">
           <div className="flex items-center gap-2">
-            <div className="h-9 w-9 rounded-xl bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center shadow-lg">
-              <FileText className="h-5 w-5 text-white" />
-            </div>
+            <Image
+              src="/logo.jpg"
+              alt="Qannoni"
+              width={36}
+              height={36}
+              className="h-9 w-9 rounded-xl shadow-lg object-contain"
+            />
             <div>
-              <span className="font-bold text-lg">LegalDocs</span>
+              <span className="font-bold text-lg">Qannoni</span>
               <span className="block text-xs text-muted-foreground">
                 {isArabic ? 'الوثائق القانونية' : 'Legal Documents'}
               </span>
@@ -649,7 +654,7 @@ export function Sidebar({ isOpen, onClose }: SidebarProps) {
         {/* Footer */}
         <div className="p-3 border-t">
           <div className="flex items-center justify-between text-xs text-muted-foreground">
-            <span>© 2025 LegalDocs</span>
+            <span>© 2025 Qannoni</span>
             <span className="flex items-center gap-1">
               <span className="h-2 w-2 rounded-full bg-green-500 animate-pulse" />
               {isArabic ? 'متصل' : 'Online'}

@@ -1,7 +1,7 @@
 'use client';
 
 import { useQuery } from '@tanstack/react-query';
-import { apiRequest, getStoredToken } from '@/lib/api-client';
+import { apiRequest } from '@/lib/api-client';
 import { Template, Category } from '@/lib/api';
 
 // API response types
@@ -18,14 +18,10 @@ interface CategoriesResponse {
  * Templates can be fetched with or without authentication
  */
 export function useTemplates() {
-  const token = getStoredToken();
-
   return useQuery({
     queryKey: ['templates'],
     queryFn: async () => {
-      const response = await apiRequest<TemplatesResponse>('/api/templates', {
-        token: token || undefined,
-      });
+      const response = await apiRequest<TemplatesResponse>('/api/templates');
       return response.templates;
     },
     staleTime: 1000 * 60 * 5, // Templates don't change often, cache for 5 minutes
@@ -36,15 +32,11 @@ export function useTemplates() {
  * Hook to fetch a single template by ID
  */
 export function useTemplate(id: string | null) {
-  const token = getStoredToken();
-
   return useQuery({
     queryKey: ['templates', id],
     queryFn: async () => {
       if (!id) return null;
-      const response = await apiRequest<{ template: Template }>(`/api/templates/${id}`, {
-        token: token || undefined,
-      });
+      const response = await apiRequest<{ template: Template }>(`/api/templates/${id}`);
       return response.template;
     },
     enabled: !!id,

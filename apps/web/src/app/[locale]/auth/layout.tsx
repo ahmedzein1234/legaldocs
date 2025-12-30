@@ -1,6 +1,6 @@
 'use client';
 
-import { FileText } from 'lucide-react';
+import Image from 'next/image';
 import Link from 'next/link';
 import { useLocale } from 'next-intl';
 import { AuthGuard } from '@/components/auth/auth-guard';
@@ -14,9 +14,16 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
         {/* Left side - Branding */}
         <div className="hidden lg:flex lg:w-1/2 bg-primary text-primary-foreground p-12 flex-col justify-between">
           <div>
-            <Link href={`/${locale}`} className="flex items-center gap-2">
-              <FileText className="h-8 w-8" />
-              <span className="text-2xl font-bold">LegalDocs</span>
+            <Link href={`/${locale}`} className="flex items-center gap-3">
+              <Image
+                src="/logo.jpg"
+                alt="Qannoni"
+                width={48}
+                height={48}
+                className="h-12 w-12 rounded-lg object-contain"
+                priority
+              />
+              <span className="text-2xl font-bold">Qannoni</span>
             </Link>
           </div>
 
@@ -46,7 +53,7 @@ export default function AuthLayout({ children }: { children: React.ReactNode }) 
           </div>
 
           <div className="text-sm opacity-70">
-            © 2025 LegalDocs. {locale === 'ar' ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
+            © 2025 Qannoni. {locale === 'ar' ? 'جميع الحقوق محفوظة.' : 'All rights reserved.'}
           </div>
         </div>
 

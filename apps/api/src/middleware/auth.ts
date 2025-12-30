@@ -2,6 +2,7 @@ import { Context, Next } from 'hono';
 import { verifyToken, TokenError, TokenPayload } from '../lib/jwt.js';
 import { Errors, ApiError } from '../lib/errors.js';
 import { Language, parseAcceptLanguage } from '../lib/error-messages.js';
+import { getAccessToken } from '../lib/cookies.js';
 
 // Extend Hono's Variables type
 declare module 'hono' {
@@ -48,23 +49,30 @@ async function detectUserLanguage(c: Context<{ Bindings: Bindings }>, userId?: s
 
 /**
  * Authentication middleware
- * Validates JWT token and sets user context
+ * Validates JWT token from httpOnly cookie or Authorization header
+ * Priority: 1. httpOnly cookie, 2. Authorization header (for backward compatibility)
  */
 export async function authMiddleware(c: Context<{ Bindings: Bindings }>, next: Next) {
   // Detect language early (from header, will be updated after auth if user has preference)
   const headerLanguage = parseAcceptLanguage(c.req.header('Accept-Language'));
 
-  const authHeader = c.req.header('Authorization');
+  // Try to get token from httpOnly cookie first
+  let token = getAccessToken(c);
 
-  if (!authHeader) {
-    return c.json(Errors.unauthorized('Authorization header is required', headerLanguage).toJSON(), 401);
+  // Fall back to Authorization header for backward compatibility
+  if (!token) {
+    const authHeader = c.req.header('Authorization');
+
+    if (!authHeader) {
+      return c.json(Errors.unauthorized('Authentication required', headerLanguage).toJSON(), 401);
+    }
+
+    if (!authHeader.startsWith('Bearer ')) {
+      return c.json(Errors.unauthorized('Invalid authorization format. Use: Bearer <token>', headerLanguage).toJSON(), 401);
+    }
+
+    token = authHeader.substring(7);
   }
-
-  if (!authHeader.startsWith('Bearer ')) {
-    return c.json(Errors.unauthorized('Invalid authorization format. Use: Bearer <token>', headerLanguage).toJSON(), 401);
-  }
-
-  const token = authHeader.substring(7);
 
   if (!token) {
     return c.json(Errors.unauthorized('Token is required', headerLanguage).toJSON(), 401);
@@ -105,30 +113,36 @@ export async function authMiddleware(c: Context<{ Bindings: Bindings }>, next: N
 /**
  * Optional authentication middleware
  * Sets user context if token is valid, but doesn't fail if not present
+ * Supports both httpOnly cookies and Authorization header
  */
 export async function optionalAuthMiddleware(c: Context<{ Bindings: Bindings }>, next: Next) {
-  const authHeader = c.req.header('Authorization');
+  // Try to get token from httpOnly cookie first
+  let token = getAccessToken(c);
 
-  if (authHeader?.startsWith('Bearer ')) {
-    const token = authHeader.substring(7);
+  // Fall back to Authorization header
+  if (!token) {
+    const authHeader = c.req.header('Authorization');
+    if (authHeader?.startsWith('Bearer ')) {
+      token = authHeader.substring(7);
+    }
+  }
 
-    if (token) {
-      try {
-        const payload = await verifyToken(token, c.env.JWT_SECRET);
+  if (token) {
+    try {
+      const payload = await verifyToken(token, c.env.JWT_SECRET);
 
-        if (payload.type === 'access') {
-          c.set('userId', payload.userId);
-          c.set('userEmail', payload.email);
-          c.set('userRole', payload.role);
-          c.set('tokenPayload', payload);
+      if (payload.type === 'access') {
+        c.set('userId', payload.userId);
+        c.set('userEmail', payload.email);
+        c.set('userRole', payload.role);
+        c.set('tokenPayload', payload);
 
-          // Detect and set user's preferred language
-          const language = await detectUserLanguage(c, payload.userId);
-          c.set('language', language);
-        }
-      } catch {
-        // Token is invalid but we continue anyway for optional auth
+        // Detect and set user's preferred language
+        const language = await detectUserLanguage(c, payload.userId);
+        c.set('language', language);
       }
+    } catch {
+      // Token is invalid but we continue anyway for optional auth
     }
   }
 

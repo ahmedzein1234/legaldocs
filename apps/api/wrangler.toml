@@ -1,7 +1,22 @@
 name = "legaldocs-api"
 main = "src/index.ts"
-compatibility_date = "2024-01-01"
-compatibility_flags = ["nodejs_compat"]
+compatibility_date = "2024-09-23"
+compatibility_flags = ["nodejs_compat_v2"]
+
+# Browser Rendering for PDF generation (requires paid Workers plan)
+# Uncomment the line below to enable Cloudflare Browser Rendering
+# browser = { binding = "BROWSER" }
+
+# Email Sending via Cloudflare Email Workers
+# Requires Email Routing enabled on domain with verified destination addresses
+# Uncomment and configure to enable Cloudflare Email
+# For unrestricted sending to any verified address:
+# send_email = [{ name = "EMAIL" }]
+# For targeted sending to specific addresses:
+# send_email = [
+#   { name = "EMAIL_SUPPORT", destination_address = "support@qannoni.com" },
+#   { name = "EMAIL_NOTIFICATIONS", destination_address = "notifications@qannoni.com" }
+# ]
 
 # Development port
 [dev]
@@ -31,7 +46,9 @@ id = "62c5cf643b2a4f3eba1d2dd86330247e"
 # Secrets (set via wrangler secret put)
 # - JWT_SECRET
 # - OPENROUTER_API_KEY
-# - RESEND_API_KEY
+# - RESEND_API_KEY (optional fallback for email)
 # - TWILIO_ACCOUNT_SID
 # - TWILIO_AUTH_TOKEN
 # - TWILIO_WHATSAPP_FROM (e.g., whatsapp:+14155238886)
+# - CF_ACCOUNT_ID (for Browser Rendering REST API fallback)
+# - CF_API_TOKEN (for Browser Rendering REST API fallback)

@@ -14,12 +14,11 @@ import {
   sendSignatureRequestEmail,
   sendDocumentReminderEmail,
   sendDocumentSharedEmail,
-  sendSignatureRequestBatch,
-  getEmailLanguage,
   type SignatureRequestEmailData,
   type DocumentReminderEmailData,
   type DocumentSharedEmailData,
-} from '../lib/email.js';
+} from '../services/email/index.js';
+import { getEmailLanguage } from '../lib/email.js';
 
 // ============================================
 // TYPES
@@ -27,8 +26,12 @@ import {
 
 type Bindings = {
   DB: D1Database;
-  RESEND_API_KEY: string;
   CACHE: KVNamespace;
+  RESEND_API_KEY?: string;
+  // Cloudflare Email Workers binding (optional)
+  EMAIL?: {
+    send(message: any): Promise<void>;
+  };
 };
 
 type Variables = {
@@ -91,7 +94,6 @@ notifications.post(
   async (c) => {
     const userId = c.get('userId');
     const body = c.req.valid('json');
-    const apiKey = c.env.RESEND_API_KEY;
 
     // Get sender information
     const sender = await c.env.DB
@@ -103,35 +105,32 @@ notifications.post(
       return c.json(Errors.notFound('User').toJSON(), 404);
     }
 
-    // Prepare email data for each signer
-    const emailRequests = body.signers
-      .filter(signer => signer.email) // Only send to signers with emails
-      .map(signer => {
-        const language = signer.language || 'en';
-        const senderName = language === 'ar' && sender.full_name_ar
-          ? sender.full_name_ar
-          : sender.full_name;
+    // Prepare and send emails to each signer
+    // Uses Cloudflare Email Workers if available, falls back to Resend
+    const results = await Promise.all(
+      body.signers
+        .filter(signer => signer.email)
+        .map(async (signer) => {
+          const language = signer.language || 'en';
+          const senderName = language === 'ar' && sender.full_name_ar
+            ? sender.full_name_ar
+            : sender.full_name;
 
-        const emailData: SignatureRequestEmailData = {
-          signerName: signer.name,
-          senderName,
-          documentName: body.documentName,
-          documentType: body.documentType,
-          signingLink: signer.signingLink,
-          message: body.message,
-          expiresAt: body.expiresAt,
-          role: signer.role,
-          language,
-        };
+          const emailData: SignatureRequestEmailData = {
+            signerName: signer.name,
+            senderName,
+            documentName: body.documentName,
+            documentType: body.documentType,
+            signingLink: signer.signingLink,
+            message: body.message,
+            expiresAt: body.expiresAt,
+            role: signer.role,
+            language,
+          };
 
-        return {
-          email: signer.email,
-          data: emailData,
-        };
-      });
-
-    // Send emails
-    const results = await sendSignatureRequestBatch(apiKey, emailRequests);
+          return sendSignatureRequestEmail(c.env, signer.email, emailData);
+        })
+    );
 
     // Count successes and failures
     const successful = results.filter(r => r.success).length;
@@ -168,7 +167,6 @@ notifications.post(
     const userId = c.get('userId');
     const body = c.req.valid('json');
     const cache = c.env.CACHE;
-    const apiKey = c.env.RESEND_API_KEY;
 
     // Get signature request from cache
     const cached = await cache.get(`signature:${body.requestId}`);
@@ -216,6 +214,7 @@ notifications.post(
     }
 
     // Send reminder emails
+    // Uses Cloudflare Email Workers if available, falls back to Resend
     const results = await Promise.all(
       signersToRemind
         .filter((signer: any) => signer.email)
@@ -231,7 +230,7 @@ notifications.post(
             language,
           };
 
-          return sendDocumentReminderEmail(apiKey, signer.email, emailData);
+          return sendDocumentReminderEmail(c.env, signer.email, emailData);
         })
     );
 
@@ -282,7 +281,6 @@ notifications.post(
   async (c) => {
     const userId = c.get('userId');
     const body = c.req.valid('json');
-    const apiKey = c.env.RESEND_API_KEY;
 
     // Get sender information
     const sender = await c.env.DB
@@ -295,6 +293,7 @@ notifications.post(
     }
 
     // Send emails to all recipients
+    // Uses Cloudflare Email Workers if available, falls back to Resend
     const results = await Promise.all(
       body.recipients.map(async (recipient) => {
         const language = recipient.language || 'en';
@@ -312,7 +311,7 @@ notifications.post(
           language,
         };
 
-        return sendDocumentSharedEmail(apiKey, recipient.email, emailData);
+        return sendDocumentSharedEmail(c.env, recipient.email, emailData);
       })
     );
 
@@ -341,23 +340,31 @@ notifications.post(
  * Test endpoint to verify email configuration
  */
 notifications.get('/test', authMiddleware, async (c) => {
-  const apiKey = c.env.RESEND_API_KEY;
+  const hasCloudflare = !!c.env.EMAIL;
+  const hasResend = !!c.env.RESEND_API_KEY;
 
-  if (!apiKey) {
+  if (!hasCloudflare && !hasResend) {
     return c.json(
       {
         success: false,
-        error: 'RESEND_API_KEY is not configured',
+        error: 'No email provider configured. Set up Cloudflare Email or RESEND_API_KEY.',
       },
       500
     );
   }
 
+  // Determine active provider (Cloudflare preferred if available)
+  const provider = hasCloudflare ? 'Cloudflare Email Workers' : 'Resend';
+  const fallback = hasCloudflare && hasResend ? 'Resend (fallback)' : null;
+
   return c.json({
     success: true,
     data: {
       message: 'Email service is configured',
-      provider: 'Resend',
+      provider,
+      fallback,
+      cloudflareAvailable: hasCloudflare,
+      resendAvailable: hasResend,
     },
   });
 });

@@ -200,13 +200,13 @@ export function csrfProtection(c: Context<{ Bindings: Bindings }>, next: Next) {
  * Generate and return a CSRF token for the current session
  * Use this in a GET endpoint to provide tokens to clients
  */
-export async function getCSRFToken(c: Context<{ Bindings: Bindings }>) {
-  const userId = c.get('userId');
+export async function getCSRFToken(c: Context) {
+  const userId = c.get('userId') as string | undefined;
   if (!userId) {
     return c.json(Errors.unauthorized().toJSON(), 401);
   }
 
-  const csrfSecret = c.env.CSRF_SECRET || c.env.JWT_SECRET;
+  const csrfSecret = (c.env as Bindings).CSRF_SECRET || (c.env as Bindings).JWT_SECRET;
   const token = await generateCSRFToken(csrfSecret, userId);
 
   return c.json({

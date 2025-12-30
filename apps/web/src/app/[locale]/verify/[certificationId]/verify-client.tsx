@@ -68,7 +68,7 @@ export default function VerifyClient() {
               timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
               blockNumber: Math.floor(Math.random() * 1000000) + 18000000,
               transactionHash: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
-              certifiedBy: 'LegalDocs Platform',
+              certifiedBy: 'Qannoni Platform',
             },
           };
           setResult(mockResult);
@@ -87,7 +87,7 @@ export default function VerifyClient() {
               timestamp: data.timestamp,
               blockNumber: data.blockNumber,
               transactionHash: data.transactionHash,
-              certifiedBy: data.certifiedBy || 'LegalDocs Platform',
+              certifiedBy: data.certifiedBy || 'Qannoni Platform',
             },
           });
           setStatus('success');
@@ -106,7 +106,7 @@ export default function VerifyClient() {
             timestamp: new Date(Date.now() - Math.random() * 7 * 24 * 60 * 60 * 1000).toISOString(),
             blockNumber: Math.floor(Math.random() * 1000000) + 18000000,
             transactionHash: `0x${Array.from({ length: 64 }, () => Math.floor(Math.random() * 16).toString(16)).join('')}`,
-            certifiedBy: 'LegalDocs Platform',
+            certifiedBy: 'Qannoni Platform',
           },
         };
         setResult(mockResult);
@@ -134,7 +134,7 @@ export default function VerifyClient() {
         <div className="text-center mb-8">
           <Link href={`/${locale}`} className="inline-flex items-center gap-2 text-2xl font-bold text-gray-900 dark:text-white">
             <span className="text-3xl">⚖️</span>
-            LegalDocs
+            Qannoni
           </Link>
           <h1 className="mt-4 text-xl text-gray-600 dark:text-gray-400">{translations.title}</h1>
         </div>

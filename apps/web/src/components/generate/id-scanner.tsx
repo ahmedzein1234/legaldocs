@@ -24,9 +24,9 @@ import {
   Building2,
   Sparkles,
   RotateCcw,
-  ZoomIn,
-  Image as ImageIcon,
 } from 'lucide-react';
+import { apiClient } from '@/lib/api-client';
+import { captureError } from '@/lib/error-tracking';
 
 interface ExtractedData {
   name?: string;
@@ -170,30 +170,32 @@ export function IdScanner({ onExtract, locale = 'en', documentType = 'auto' }: I
 
     try {
       // Call the OCR API
-      const response = await fetch('https://legaldocs-api.a-m-zein.workers.dev/ocr/extract', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          image: imageData,
-          documentType: selectedDocType,
-          language: locale,
-        }),
+      const result = await apiClient.post<{ data: ExtractedData }>('/api/ai/ocr/extract', {
+        image: imageData,
+        documentType: selectedDocType,
+        language: locale,
       });
 
-      const result = await response.json();
-
-      if (!response.ok) {
-        throw new Error(result.error || 'OCR extraction failed');
+      if (result.data) {
+        setExtractedData(result.data);
+        setStatus('success');
+      } else {
+        throw new Error('No data returned from OCR');
       }
-
-      setExtractedData(result.data);
-      setStatus('success');
     } catch (err) {
-      console.error('OCR Error:', err);
-      // For demo purposes, simulate extracted data
-      simulateExtraction();
+      captureError(err, { component: 'IdScanner', action: 'processImage', documentType: selectedDocType });
+
+      // Try to show a user-friendly error
+      const errorMessage = err instanceof Error ? err.message : 'OCR extraction failed';
+      setError(errorMessage);
+
+      // For demo purposes when API isn't available, simulate extracted data
+      // In production, this would show an error instead
+      if (process.env.NODE_ENV === 'development') {
+        simulateExtraction();
+      } else {
+        setStatus('error');
+      }
     }
   };
 
@@ -533,17 +535,22 @@ export function IdScannerCompact({
       const imageData = event.target?.result as string;
 
       try {
-        const response = await fetch('https://legaldocs-api.a-m-zein.workers.dev/ocr/extract', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ image: imageData, documentType: 'auto', language: locale }),
+        const result = await apiClient.post<{ data: ExtractedData }>('/api/ai/ocr/extract', {
+          image: imageData,
+          documentType: 'auto',
+          language: locale,
         });
 
-        const result = await response.json();
-        if (response.ok && result.data) {
+        if (result.data) {
           onExtract(result.data);
         } else {
-          // Simulate for demo
+          throw new Error('No data returned');
+        }
+      } catch (err) {
+        captureError(err, { component: 'IdScannerCompact', action: 'processImage' });
+
+        // In development, simulate for demo. In production, show error.
+        if (process.env.NODE_ENV === 'development') {
           setTimeout(() => {
             onExtract({
               name: 'Ahmed Mohammed',
@@ -552,15 +559,6 @@ export function IdScannerCompact({
             });
           }, 1500);
         }
-      } catch {
-        // Simulate for demo
-        setTimeout(() => {
-          onExtract({
-            name: 'Ahmed Mohammed',
-            idNumber: '784-1990-1234567-1',
-            nationality: 'UAE',
-          });
-        }, 1500);
       } finally {
         setIsProcessing(false);
       }

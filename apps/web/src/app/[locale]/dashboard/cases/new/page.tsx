@@ -15,7 +15,9 @@ import {
   FileText,
   Loader2,
   Scale,
+  AlertCircle,
 } from 'lucide-react';
+import { casesApi } from '@/lib/api';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -35,6 +37,7 @@ export default function NewCasePage() {
   const locale = useLocale() as 'en' | 'ar' | 'ur';
   const router = useRouter();
   const [isSubmitting, setIsSubmitting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
   const [tags, setTags] = React.useState<string[]>([]);
   const [tagInput, setTagInput] = React.useState('');
 
@@ -145,25 +148,43 @@ export default function NewCasePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
 
     try {
-      // TODO: API call to create case
       const payload = {
-        ...formData,
-        tags,
+        title: formData.title,
+        titleAr: formData.titleAr || undefined,
+        description: formData.description || undefined,
+        caseType: formData.caseType,
+        practiceArea: formData.practiceArea || undefined,
+        jurisdiction: formData.jurisdiction,
+        court: formData.court || undefined,
+        priority: formData.priority,
+        clientName: formData.clientName || undefined,
+        clientEmail: formData.clientEmail || undefined,
+        clientPhone: formData.clientPhone || undefined,
+        opposingParty: formData.opposingParty || undefined,
+        opposingCounsel: formData.opposingCounsel || undefined,
         caseValue: formData.caseValue ? parseFloat(formData.caseValue) : undefined,
+        currency: formData.currency,
+        billingType: formData.billingType,
         hourlyRate: formData.hourlyRate ? parseFloat(formData.hourlyRate) : undefined,
+        courtCaseNumber: formData.courtCaseNumber || undefined,
+        referenceNumber: formData.referenceNumber || undefined,
+        statuteOfLimitations: formData.statuteOfLimitations || undefined,
+        tags: tags.length > 0 ? tags : undefined,
+        notes: formData.notes || undefined,
       };
 
-      console.log('Creating case:', payload);
+      const response = await casesApi.create(payload);
 
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 1000));
-
-      // Navigate to cases list on success
-      router.push(`/${locale}/dashboard/cases`);
-    } catch (error) {
-      console.error('Error creating case:', error);
+      if (response.success) {
+        // Navigate to the new case detail page
+        router.push(`/${locale}/dashboard/cases/${response.data.case.id}`);
+      }
+    } catch (err) {
+      console.error('Error creating case:', err);
+      setError(err instanceof Error ? err.message : locale === 'ar' ? 'حدث خطأ أثناء إنشاء القضية' : 'Failed to create case. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -194,6 +215,17 @@ export default function NewCasePage() {
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Error Display */}
+        {error && (
+          <div className="bg-destructive/10 border border-destructive/20 text-destructive rounded-lg p-4 flex items-start gap-3">
+            <AlertCircle className="h-5 w-5 mt-0.5 flex-shrink-0" />
+            <div>
+              <p className="font-medium">{locale === 'ar' ? 'خطأ' : 'Error'}</p>
+              <p className="text-sm">{error}</p>
+            </div>
+          </div>
+        )}
+
         {/* Basic Information */}
         <Card>
           <CardHeader>

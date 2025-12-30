@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
+import Image from 'next/image';
 import { motion, useScroll, useTransform, useInView } from 'framer-motion';
 import {
   FileText,
@@ -64,8 +65,8 @@ const translations = {
     hero: {
       badge: 'Trusted by 500+ UAE businesses',
       title: 'Legal documents',
-      titleHighlight: 'made human',
-      subtitle: 'Stop wrestling with complex legal jargon. Create professionally-crafted contracts, NDAs, and legal documents in minutes — not hours.',
+      titleHighlight: 'made simple',
+      subtitle: 'Create professionally-crafted contracts, NDAs, and legal documents in minutes with AI. Trusted by businesses across the GCC.',
       cta: 'Start Creating for Free',
       ctaSecondary: 'Watch Demo',
       stats: {
@@ -104,10 +105,10 @@ const translations = {
         },
       ],
       solutionTitle: 'There\'s a better way',
-      solutionDescription: 'LegalDocs combines AI intelligence with UAE legal expertise to give you professional documents in minutes.',
+      solutionDescription: 'Qannoni combines AI intelligence with UAE legal expertise to give you professional documents in minutes.',
     },
     features: {
-      label: 'Why Choose LegalDocs',
+      label: 'Why Choose Qannoni',
       title: 'Everything you need.',
       titleHighlight: 'Nothing you don\'t.',
       subtitle: 'We\'ve stripped away the complexity. What\'s left is a powerful, intuitive platform that just works.',
@@ -247,7 +248,7 @@ const translations = {
       ],
     },
     comparison: {
-      label: 'Why LegalDocs',
+      label: 'Why Qannoni',
       title: 'The smarter way to handle',
       titleHighlight: 'legal documents',
       traditional: {
@@ -262,7 +263,7 @@ const translations = {
         ],
       },
       legaldocs: {
-        title: 'With LegalDocs',
+        title: 'With Qannoni',
         items: [
           { text: 'Generate documents in minutes', negative: false },
           { text: 'Starting from free, Pro at AED 199/mo', negative: false },
@@ -309,7 +310,7 @@ const translations = {
       title: 'Don\'t take our word for it.',
       items: [
         {
-          quote: 'LegalDocs saved us weeks of back-and-forth with lawyers. We created all our employment contracts in one afternoon. The Arabic translations are perfect.',
+          quote: 'Qannoni saved us weeks of back-and-forth with lawyers. We created all our employment contracts in one afternoon. The Arabic translations are perfect.',
           author: 'Sarah Al-Rashid',
           role: 'HR Director, TechStart Dubai',
           company: 'TechStart',
@@ -461,7 +462,7 @@ const translations = {
         title: 'Support',
         links: ['Help Center', 'Contact Us', 'Status', 'Feedback'],
       },
-      copyright: '© 2024 LegalDocs. All rights reserved.',
+      copyright: '© 2024 Qannoni. All rights reserved.',
     },
   },
   ar: {
@@ -478,8 +479,8 @@ const translations = {
     hero: {
       badge: 'موثوق من 500+ شركة إماراتية',
       title: 'وثائق قانونية',
-      titleHighlight: 'بلمسة إنسانية',
-      subtitle: 'توقف عن معاناة اللغة القانونية المعقدة. أنشئ عقوداً واتفاقيات سرية ووثائق قانونية في دقائق — وليس ساعات.',
+      titleHighlight: 'بكل سهولة',
+      subtitle: 'أنشئ عقوداً واتفاقيات سرية ووثائق قانونية احترافية في دقائق مع الذكاء الاصطناعي. موثوق من الشركات في دول الخليج.',
       cta: 'ابدأ مجاناً الآن',
       ctaSecondary: 'شاهد العرض',
       stats: {
@@ -502,7 +503,7 @@ const translations = {
         { icon: 'Languages', title: 'كوابيس الترجمة', description: 'صعوبة الحصول على ترجمة قانونية عربية دقيقة' },
       ],
       solutionTitle: 'هناك طريقة أفضل',
-      solutionDescription: 'LegalDocs يجمع بين الذكاء الاصطناعي والخبرة القانونية الإماراتية لتقديم وثائق احترافية في دقائق.',
+      solutionDescription: 'Qannoni يجمع بين الذكاء الاصطناعي والخبرة القانونية الإماراتية لتقديم وثائق احترافية في دقائق.',
     },
     showcase: {
       label: 'شاهدها تعمل',
@@ -527,7 +528,7 @@ const translations = {
       ],
     },
     comparison: {
-      label: 'لماذا LegalDocs',
+      label: 'لماذا Qannoni',
       title: 'الطريقة الذكية للتعامل مع',
       titleHighlight: 'الوثائق القانونية',
       traditional: {
@@ -542,7 +543,7 @@ const translations = {
         ],
       },
       legaldocs: {
-        title: 'مع LegalDocs',
+        title: 'مع Qannoni',
         items: [
           { text: 'إنشاء وثائق في دقائق', negative: false },
           { text: 'مجاني للبدء، المحترف 199 درهم/شهر', negative: false },
@@ -579,7 +580,7 @@ const translations = {
       ],
     },
     features: {
-      label: 'لماذا LegalDocs',
+      label: 'لماذا Qannoni',
       title: 'كل ما تحتاجه.',
       titleHighlight: 'لا شيء زائد.',
       subtitle: 'أزلنا التعقيد. ما تبقى هو منصة قوية وبديهية تعمل بكفاءة.',
@@ -669,7 +670,7 @@ const translations = {
       title: 'لا تأخذ كلامنا فقط.',
       items: [
         {
-          quote: 'LegalDocs وفّر لنا أسابيع من التواصل مع المحامين. أنشأنا كل عقود التوظيف في عصر واحد.',
+          quote: 'Qannoni وفّر لنا أسابيع من التواصل مع المحامين. أنشأنا كل عقود التوظيف في عصر واحد.',
           author: 'سارة الراشد',
           role: 'مديرة الموارد البشرية، تك ستارت دبي',
           avatar: 'س',
@@ -761,7 +762,7 @@ const translations = {
         title: 'قانوني',
         links: ['الخصوصية', 'الشروط', 'الكوكيز'],
       },
-      copyright: '© 2024 LegalDocs. جميع الحقوق محفوظة.',
+      copyright: '© 2024 Qannoni. جميع الحقوق محفوظة.',
     },
   },
 };
@@ -877,13 +878,15 @@ export function HomePageClient({ locale }: HomePageClientProps) {
           <div className="flex items-center justify-between h-20">
             {/* Logo */}
             <Link href={`/${locale}`} className="flex items-center gap-3">
-              <div className="relative">
-                <div className="w-10 h-10 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a87] rounded-xl flex items-center justify-center transform -rotate-6">
-                  <Scale className="w-5 h-5 text-white" />
-                </div>
-                <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#D4AF37] rounded-full" />
-              </div>
-              <span className="text-xl font-bold text-[#1e3a5f]">LegalDocs</span>
+              <Image
+                src="/logo.jpg"
+                alt="Qannoni"
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-xl object-contain"
+                priority
+              />
+              <span className="text-xl font-bold text-[#1e3a5f]">Qannoni</span>
             </Link>
 
             {/* Desktop Nav */}
@@ -1301,7 +1304,7 @@ export function HomePageClient({ locale }: HomePageClientProps) {
                 {t.problemSolution?.solutionTitle || 'There\'s a better way'}
               </h3>
               <p className="text-lg text-white/80 max-w-2xl mx-auto mb-8">
-                {t.problemSolution?.solutionDescription || 'LegalDocs combines AI intelligence with UAE legal expertise to give you professional documents in minutes.'}
+                {t.problemSolution?.solutionDescription || 'Qannoni combines AI intelligence with UAE legal expertise to give you professional documents in minutes.'}
               </p>
               <Link
                 href={`/${locale}/auth/register`}
@@ -1545,7 +1548,7 @@ export function HomePageClient({ locale }: HomePageClientProps) {
               viewport={{ once: true }}
               className="text-[#D4AF37] font-semibold uppercase tracking-wider text-sm"
             >
-              {t.comparison?.label || 'Why LegalDocs'}
+              {t.comparison?.label || 'Why Qannoni'}
             </motion.span>
             <motion.h2
               initial={{ opacity: 0, y: 20 }}
@@ -1584,7 +1587,7 @@ export function HomePageClient({ locale }: HomePageClientProps) {
               </div>
             </motion.div>
 
-            {/* With LegalDocs */}
+            {/* With Qannoni */}
             <motion.div
               initial={{ opacity: 0, x: 20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -1594,7 +1597,7 @@ export function HomePageClient({ locale }: HomePageClientProps) {
               <div className="absolute top-4 right-4 px-3 py-1 bg-[#D4AF37] text-[#1e3a5f] text-xs font-bold rounded-full">
                 RECOMMENDED
               </div>
-              <h3 className="text-xl font-bold mb-6">{t.comparison?.legaldocs?.title || 'With LegalDocs'}</h3>
+              <h3 className="text-xl font-bold mb-6">{t.comparison?.legaldocs?.title || 'With Qannoni'}</h3>
               <div className="space-y-4">
                 {(t.comparison?.legaldocs?.items || [
                   { text: 'Generate documents in minutes', negative: false },
@@ -2185,13 +2188,14 @@ export function HomePageClient({ locale }: HomePageClientProps) {
             {/* Brand */}
             <div className="md:col-span-2">
               <Link href={`/${locale}`} className="flex items-center gap-3 mb-6">
-                <div className="relative">
-                  <div className="w-10 h-10 bg-gradient-to-br from-[#1e3a5f] to-[#2d5a87] rounded-xl flex items-center justify-center transform -rotate-6">
-                    <Scale className="w-5 h-5 text-white" />
-                  </div>
-                  <div className="absolute -top-1 -right-1 w-3 h-3 bg-[#D4AF37] rounded-full" />
-                </div>
-                <span className="text-xl font-bold text-white">LegalDocs</span>
+                <Image
+                  src="/logo.jpg"
+                  alt="Qannoni"
+                  width={40}
+                  height={40}
+                  className="h-10 w-10 rounded-xl object-contain"
+                />
+                <span className="text-xl font-bold text-white">Qannoni</span>
               </Link>
               <p className="text-gray-500 mb-6">{t.footer.tagline}</p>
 
