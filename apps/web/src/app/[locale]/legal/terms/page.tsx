@@ -21,7 +21,7 @@ export default function TermsPage() {
       icon: FileText,
       title: locale === 'ar' ? 'القبول والأهلية' : locale === 'ur' ? 'قبولیت اور اہلیت' : 'Acceptance & Eligibility',
       content: locale === 'ar' ? `
-        <p>باستخدامك لمنصة LegalDocs، فإنك توافق على الالتزام بهذه الشروط والأحكام. إذا كنت لا توافق على أي جزء من هذه الشروط، يرجى عدم استخدام خدماتنا.</p>
+        <p>باستخدامك لمنصة Qannoni، فإنك توافق على الالتزام بهذه الشروط والأحكام. إذا كنت لا توافق على أي جزء من هذه الشروط، يرجى عدم استخدام خدماتنا.</p>
         <h4>متطلبات الأهلية:</h4>
         <ul>
           <li>يجب أن يكون عمرك 18 عاماً على الأقل</li>
@@ -30,7 +30,7 @@ export default function TermsPage() {
           <li>إذا كنت تستخدم المنصة نيابة عن شركة، فيجب أن تكون لديك السلطة لإلزام تلك الشركة</li>
         </ul>
       ` : locale === 'ur' ? `
-        <p>LegalDocs پلیٹ فارم استعمال کرکے، آپ ان شرائط و ضوابط سے متفق ہوتے ہیں۔ اگر آپ کسی شرط سے متفق نہیں ہیں، تو براہ کرم ہماری خدمات استعمال نہ کریں۔</p>
+        <p>Qannoni پلیٹ فارم استعمال کرکے، آپ ان شرائط و ضوابط سے متفق ہوتے ہیں۔ اگر آپ کسی شرط سے متفق نہیں ہیں، تو براہ کرم ہماری خدمات استعمال نہ کریں۔</p>
         <h4>اہلیت کے تقاضے:</h4>
         <ul>
           <li>آپ کی عمر کم از کم 18 سال ہونی چاہیے</li>
@@ -39,7 +39,7 @@ export default function TermsPage() {
           <li>اگر کمپنی کی جانب سے استعمال کر رہے ہیں، تو آپ کے پاس اس کمپنی کو پابند کرنے کا اختیار ہونا چاہیے</li>
         </ul>
       ` : `
-        <p>By using the LegalDocs platform, you agree to be bound by these Terms and Conditions. If you do not agree to any part of these terms, please do not use our services.</p>
+        <p>By using the Qannoni platform, you agree to be bound by these Terms and Conditions. If you do not agree to any part of these terms, please do not use our services.</p>
         <h4>Eligibility Requirements:</h4>
         <ul>
           <li>You must be at least 18 years old</li>
@@ -54,7 +54,7 @@ export default function TermsPage() {
       icon: Scale,
       title: locale === 'ar' ? 'وصف الخدمة' : locale === 'ur' ? 'خدمات کی تفصیل' : 'Service Description',
       content: locale === 'ar' ? `
-        <p>LegalDocs هي منصة برمجية كخدمة (SaaS) توفر:</p>
+        <p>Qannoni هي منصة برمجية كخدمة (SaaS) توفر:</p>
         <ul>
           <li><strong>إنشاء المستندات بالذكاء الاصطناعي:</strong> قوالب مستندات قانونية آلية مدعومة بتقنية الذكاء الاصطناعي</li>
           <li><strong>التوقيع الرقمي:</strong> إمكانيات التوقيع الإلكتروني للمستندات</li>
@@ -62,9 +62,9 @@ export default function TermsPage() {
           <li><strong>دعم متعدد اللغات:</strong> الإنجليزية والعربية والأردية</li>
           <li><strong>الامتثال لدول الخليج:</strong> قوالب مصممة لدول الإمارات والسعودية وقطر والكويت والبحرين وعُمان</li>
         </ul>
-        <p><strong>هام:</strong> LegalDocs هي شركة تقنية، وليست مكتب محاماة. نحن لا نقدم استشارات قانونية.</p>
+        <p><strong>هام:</strong> Qannoni هي شركة تقنية، وليست مكتب محاماة. نحن لا نقدم استشارات قانونية.</p>
       ` : locale === 'ur' ? `
-        <p>LegalDocs ایک سافٹ ویئر بطور سروس (SaaS) پلیٹ فارم ہے جو فراہم کرتا ہے:</p>
+        <p>Qannoni ایک سافٹ ویئر بطور سروس (SaaS) پلیٹ فارم ہے جو فراہم کرتا ہے:</p>
         <ul>
           <li><strong>AI دستاویز تخلیق:</strong> AI سے چلنے والے خودکار قانونی دستاویز ٹیمپلیٹس</li>
           <li><strong>ڈیجیٹل دستخط:</strong> الیکٹرانک دستاویز دستخط کی صلاحیتیں</li>
@@ -72,9 +72,9 @@ export default function TermsPage() {
           <li><strong>کثیر لسانی معاونت:</strong> انگریزی، عربی، اور اردو</li>
           <li><strong>خلیجی تعمیل:</strong> متحدہ عرب امارات، سعودی عرب، قطر، کویت، بحرین، عمان کے لیے ٹیمپلیٹس</li>
         </ul>
-        <p><strong>اہم:</strong> LegalDocs ایک ٹیکنالوجی کمپنی ہے، قانونی فرم نہیں۔ ہم قانونی مشورہ فراہم نہیں کرتے۔</p>
+        <p><strong>اہم:</strong> Qannoni ایک ٹیکنالوجی کمپنی ہے، قانونی فرم نہیں۔ ہم قانونی مشورہ فراہم نہیں کرتے۔</p>
       ` : `
-        <p>LegalDocs is a Software-as-a-Service (SaaS) platform that provides:</p>
+        <p>Qannoni is a Software-as-a-Service (SaaS) platform that provides:</p>
         <ul>
           <li><strong>AI Document Generation:</strong> AI-powered automated legal document templates</li>
           <li><strong>Digital Signatures:</strong> Electronic document signing capabilities</li>
@@ -82,7 +82,7 @@ export default function TermsPage() {
           <li><strong>Multi-language Support:</strong> English, Arabic, and Urdu</li>
           <li><strong>GCC Compliance:</strong> Templates designed for UAE, Saudi Arabia, Qatar, Kuwait, Bahrain, Oman</li>
         </ul>
-        <p><strong>Important:</strong> LegalDocs is a technology company, NOT a law firm. We do not provide legal advice.</p>
+        <p><strong>Important:</strong> Qannoni is a technology company, NOT a law firm. We do not provide legal advice.</p>
       `
     },
     {
@@ -93,7 +93,7 @@ export default function TermsPage() {
         <div class="warning-box">
           <p><strong>تحذير هام:</strong></p>
           <ul>
-            <li>LegalDocs ليست مكتب محاماة ولا تقدم خدمات قانونية</li>
+            <li>Qannoni ليست مكتب محاماة ولا تقدم خدمات قانونية</li>
             <li>المستندات المُنشأة هي قوالب للأغراض المعلوماتية فقط</li>
             <li>لا تتشكل علاقة محامي-موكل من خلال استخدام منصتنا</li>
             <li>يجب عليك استشارة محامٍ مؤهل لأي مسائل قانونية</li>
@@ -105,7 +105,7 @@ export default function TermsPage() {
         <div class="warning-box">
           <p><strong>اہم انتباہ:</strong></p>
           <ul>
-            <li>LegalDocs قانونی فرم نہیں ہے اور قانونی خدمات فراہم نہیں کرتی</li>
+            <li>Qannoni قانونی فرم نہیں ہے اور قانونی خدمات فراہم نہیں کرتی</li>
             <li>تیار کردہ دستاویزات صرف معلوماتی مقاصد کے لیے ٹیمپلیٹس ہیں</li>
             <li>ہمارے پلیٹ فارم کے استعمال سے کوئی وکیل-موکل تعلق قائم نہیں ہوتا</li>
             <li>کسی بھی قانونی معاملے کے لیے آپ کو اہل وکیل سے مشورہ کرنا چاہیے</li>
@@ -117,7 +117,7 @@ export default function TermsPage() {
         <div class="warning-box">
           <p><strong>Critical Warning:</strong></p>
           <ul>
-            <li>LegalDocs is NOT a law firm and does NOT provide legal services</li>
+            <li>Qannoni is NOT a law firm and does NOT provide legal services</li>
             <li>Generated documents are templates for informational purposes only</li>
             <li>No attorney-client relationship is formed through use of our platform</li>
             <li>You MUST consult a qualified attorney for any legal matters</li>
@@ -132,7 +132,7 @@ export default function TermsPage() {
       icon: Shield,
       title: locale === 'ar' ? 'التزامات المستخدم' : locale === 'ur' ? 'صارف کی ذمہ داریاں' : 'User Obligations',
       content: locale === 'ar' ? `
-        <p>بصفتك مستخدماً لـ LegalDocs، فإنك توافق على:</p>
+        <p>بصفتك مستخدماً لـ Qannoni، فإنك توافق على:</p>
         <h4>تقديم معلومات دقيقة</h4>
         <ul>
           <li>تقديم معلومات صحيحة ودقيقة وحديثة</li>
@@ -148,7 +148,7 @@ export default function TermsPage() {
           <li>محاولة الهندسة العكسية لأي جزء من الخدمة</li>
         </ul>
       ` : locale === 'ur' ? `
-        <p>LegalDocs کے صارف کے طور پر، آپ متفق ہیں:</p>
+        <p>Qannoni کے صارف کے طور پر، آپ متفق ہیں:</p>
         <h4>درست معلومات فراہم کرنا</h4>
         <ul>
           <li>سچی، درست، اور موجودہ معلومات فراہم کریں</li>
@@ -164,7 +164,7 @@ export default function TermsPage() {
           <li>سروس کے کسی حصے کی ریورس انجینئرنگ کی کوشش</li>
         </ul>
       ` : `
-        <p>As a user of LegalDocs, you agree to:</p>
+        <p>As a user of Qannoni, you agree to:</p>
         <h4>Provide Accurate Information</h4>
         <ul>
           <li>Provide truthful, accurate, and current information</li>
@@ -187,7 +187,7 @@ export default function TermsPage() {
       title: locale === 'ar' ? 'الملكية الفكرية' : locale === 'ur' ? 'دانشورانہ ملکیت' : 'Intellectual Property',
       content: locale === 'ar' ? `
         <h4>ملكية المنصة</h4>
-        <p>LegalDocs تملك جميع الحقوق في المنصة، بما في ذلك:</p>
+        <p>Qannoni تملك جميع الحقوق في المنصة، بما في ذلك:</p>
         <ul>
           <li>البرنامج والشفرة الأساسية</li>
           <li>هياكل وصيغ القوالب</li>
@@ -203,7 +203,7 @@ export default function TermsPage() {
         </ul>
       ` : locale === 'ur' ? `
         <h4>پلیٹ فارم کی ملکیت</h4>
-        <p>LegalDocs پلیٹ فارم کے تمام حقوق کی مالک ہے، بشمول:</p>
+        <p>Qannoni پلیٹ فارم کے تمام حقوق کی مالک ہے، بشمول:</p>
         <ul>
           <li>سافٹ ویئر اور بنیادی کوڈ</li>
           <li>ٹیمپلیٹ ڈھانچے اور فارمیٹس</li>
@@ -219,7 +219,7 @@ export default function TermsPage() {
         </ul>
       ` : `
         <h4>Platform Ownership</h4>
-        <p>LegalDocs owns all rights to the platform, including:</p>
+        <p>Qannoni owns all rights to the platform, including:</p>
         <ul>
           <li>Software and underlying code</li>
           <li>Template structures and formats</li>
@@ -307,34 +307,34 @@ export default function TermsPage() {
         <p>يتم تقديم المنصة "كما هي" دون أي ضمانات من أي نوع، صريحة أو ضمنية.</p>
         <h4>حدود المسؤولية</h4>
         <ul>
-          <li>لن تكون LegalDocs مسؤولة عن أي أضرار غير مباشرة أو عرضية أو خاصة أو تبعية</li>
+          <li>لن تكون Qannoni مسؤولة عن أي أضرار غير مباشرة أو عرضية أو خاصة أو تبعية</li>
           <li>لا نتحمل مسؤولية العواقب القانونية الناتجة عن استخدام مستنداتنا</li>
           <li>يقتصر الحد الأقصى لمسؤوليتنا على المبلغ المدفوع لنا في الأشهر الـ 12 الماضية</li>
         </ul>
         <h4>التعويض</h4>
-        <p>توافق على تعويض LegalDocs من أي مطالبات ناشئة عن استخدامك للمنصة.</p>
+        <p>توافق على تعويض Qannoni من أي مطالبات ناشئة عن استخدامك للمنصة.</p>
       ` : locale === 'ur' ? `
         <h4>وارنٹی کا اعلان</h4>
         <p>پلیٹ فارم "جیسا ہے" فراہم کیا جاتا ہے کسی بھی قسم کی وارنٹی کے بغیر، واضح یا مضمر۔</p>
         <h4>ذمہ داری کی حدود</h4>
         <ul>
-          <li>LegalDocs کسی بھی بالواسطہ، حادثاتی، خاص، یا نتیجہ خیز نقصانات کے لیے ذمہ دار نہیں ہوگی</li>
+          <li>Qannoni کسی بھی بالواسطہ، حادثاتی، خاص، یا نتیجہ خیز نقصانات کے لیے ذمہ دار نہیں ہوگی</li>
           <li>ہم اپنے دستاویزات کے استعمال سے پیدا ہونے والے قانونی نتائج کے ذمہ دار نہیں ہیں</li>
           <li>ہماری زیادہ سے زیادہ ذمہ داری پچھلے 12 مہینوں میں ہمیں ادا کی گئی رقم تک محدود ہے</li>
         </ul>
         <h4>معاوضہ</h4>
-        <p>آپ پلیٹ فارم کے اپنے استعمال سے پیدا ہونے والے کسی بھی دعووں سے LegalDocs کو معاوضہ دینے پر متفق ہیں۔</p>
+        <p>آپ پلیٹ فارم کے اپنے استعمال سے پیدا ہونے والے کسی بھی دعووں سے Qannoni کو معاوضہ دینے پر متفق ہیں۔</p>
       ` : `
         <h4>Warranty Disclaimer</h4>
         <p>The platform is provided "as is" without warranties of any kind, express or implied.</p>
         <h4>Liability Limits</h4>
         <ul>
-          <li>LegalDocs shall not be liable for any indirect, incidental, special, or consequential damages</li>
+          <li>Qannoni shall not be liable for any indirect, incidental, special, or consequential damages</li>
           <li>We are not responsible for legal consequences arising from use of our documents</li>
           <li>Our maximum liability is limited to the amount paid to us in the past 12 months</li>
         </ul>
         <h4>Indemnification</h4>
-        <p>You agree to indemnify LegalDocs from any claims arising from your use of the platform.</p>
+        <p>You agree to indemnify Qannoni from any claims arising from your use of the platform.</p>
       `
     },
     {
@@ -449,22 +449,22 @@ export default function TermsPage() {
       content: locale === 'ar' ? `
         <p>إذا كان لديك أي أسئلة حول هذه الشروط والأحكام، يرجى التواصل معنا:</p>
         <ul>
-          <li><strong>البريد الإلكتروني:</strong> legal@legaldocs.ae</li>
+          <li><strong>البريد الإلكتروني:</strong> legal@qannoni.com</li>
           <li><strong>العنوان:</strong> دبي، الإمارات العربية المتحدة</li>
           <li><strong>ساعات العمل:</strong> الأحد - الخميس، 9 صباحاً - 6 مساءً (توقيت الخليج)</li>
         </ul>
       ` : locale === 'ur' ? `
         <p>اگر آپ کے ان شرائط و ضوابط کے بارے میں کوئی سوالات ہیں، تو براہ کرم ہم سے رابطہ کریں:</p>
         <ul>
-          <li><strong>ای میل:</strong> legal@legaldocs.ae</li>
+          <li><strong>ای میل:</strong> legal@qannoni.com</li>
           <li><strong>پتہ:</strong> دبئی، متحدہ عرب امارات</li>
           <li><strong>کاروباری اوقات:</strong> اتوار - جمعرات، صبح 9 بجے - شام 6 بجے (GST)</li>
         </ul>
       ` : `
         <p>If you have any questions about these Terms and Conditions, please contact us:</p>
         <ul>
-          <li><strong>Email:</strong> legal@legaldocs.ae</li>
-          <li><strong>Address:</strong> Dubai, United Arab Emirates</li>
+          <li><strong>Email:</strong> legal@qannoni.com</li>
+          <li><strong>Address:</strong> 131 Continental Dr, Suite 305, Newark, DE 19713 US</li>
           <li><strong>Business Hours:</strong> Sunday - Thursday, 9 AM - 6 PM (GST)</li>
         </ul>
       `
@@ -496,10 +496,10 @@ export default function TermsPage() {
           <CardContent className="p-6">
             <p className="text-muted-foreground leading-relaxed">
               {locale === 'ar'
-                ? 'مرحباً بك في LegalDocs. تحكم هذه الشروط والأحكام استخدامك لمنصتنا. يرجى قراءتها بعناية قبل استخدام خدماتنا. باستخدام LegalDocs، فإنك توافق على هذه الشروط.'
+                ? 'مرحباً بك في Qannoni. تحكم هذه الشروط والأحكام استخدامك لمنصتنا. يرجى قراءتها بعناية قبل استخدام خدماتنا. باستخدام Qannoni، فإنك توافق على هذه الشروط.'
                 : locale === 'ur'
-                ? 'LegalDocs میں خوش آمدید۔ یہ شرائط و ضوابط ہمارے پلیٹ فارم کے آپ کے استعمال کو کنٹرول کرتے ہیں۔ براہ کرم ہماری خدمات استعمال کرنے سے پہلے انہیں احتیاط سے پڑھیں۔ LegalDocs استعمال کرکے، آپ ان شرائط سے متفق ہوتے ہیں۔'
-                : 'Welcome to LegalDocs. These Terms and Conditions govern your use of our platform. Please read them carefully before using our services. By using LegalDocs, you agree to these terms.'
+                ? 'Qannoni میں خوش آمدید۔ یہ شرائط و ضوابط ہمارے پلیٹ فارم کے آپ کے استعمال کو کنٹرول کرتے ہیں۔ براہ کرم ہماری خدمات استعمال کرنے سے پہلے انہیں احتیاط سے پڑھیں۔ Qannoni استعمال کرکے، آپ ان شرائط سے متفق ہوتے ہیں۔'
+                : 'Welcome to Qannoni. These Terms and Conditions govern your use of our platform. Please read them carefully before using our services. By using Qannoni, you agree to these terms.'
               }
             </p>
           </CardContent>
@@ -516,10 +516,10 @@ export default function TermsPage() {
                 </h3>
                 <p className="text-amber-700 dark:text-amber-300 text-sm">
                   {locale === 'ar'
-                    ? 'LegalDocs هي شركة برمجيات تقنية. نحن لسنا مكتب محاماة ولا نقدم خدمات أو استشارات قانونية. القوالب والمستندات المُنشأة من خلال منصتنا للأغراض المعلوماتية فقط ويجب مراجعتها من قبل متخصص قانوني مؤهل.'
+                    ? 'Qannoni هي شركة برمجيات تقنية. نحن لسنا مكتب محاماة ولا نقدم خدمات أو استشارات قانونية. القوالب والمستندات المُنشأة من خلال منصتنا للأغراض المعلوماتية فقط ويجب مراجعتها من قبل متخصص قانوني مؤهل.'
                     : locale === 'ur'
-                    ? 'LegalDocs ایک سافٹ ویئر ٹیکنالوجی کمپنی ہے۔ ہم قانونی فرم نہیں ہیں اور قانونی خدمات یا مشورہ فراہم نہیں کرتے۔ ہمارے پلیٹ فارم کے ذریعے تیار کردہ ٹیمپلیٹس اور دستاویزات صرف معلوماتی مقاصد کے لیے ہیں اور اہل قانونی پیشہ ور کے ذریعے جائزہ لیا جانا چاہیے۔'
-                    : 'LegalDocs is a software technology company. We are NOT a law firm and do NOT provide legal services or advice. Templates and documents generated through our platform are for informational purposes only and should be reviewed by a qualified legal professional.'
+                    ? 'Qannoni ایک سافٹ ویئر ٹیکنالوجی کمپنی ہے۔ ہم قانونی فرم نہیں ہیں اور قانونی خدمات یا مشورہ فراہم نہیں کرتے۔ ہمارے پلیٹ فارم کے ذریعے تیار کردہ ٹیمپلیٹس اور دستاویزات صرف معلوماتی مقاصد کے لیے ہیں اور اہل قانونی پیشہ ور کے ذریعے جائزہ لیا جانا چاہیے۔'
+                    : 'Qannoni is a software technology company. We are NOT a law firm and do NOT provide legal services or advice. Templates and documents generated through our platform are for informational purposes only and should be reviewed by a qualified legal professional.'
                   }
                 </p>
               </div>
@@ -587,10 +587,10 @@ export default function TermsPage() {
             </h3>
             <p className="text-muted-foreground mb-4">
               {locale === 'ar'
-                ? 'باستخدامك لـ LegalDocs، فإنك تقر بأنك قرأت وفهمت ووافقت على الالتزام بهذه الشروط والأحكام.'
+                ? 'باستخدامك لـ Qannoni، فإنك تقر بأنك قرأت وفهمت ووافقت على الالتزام بهذه الشروط والأحكام.'
                 : locale === 'ur'
-                ? 'LegalDocs استعمال کرکے، آپ تسلیم کرتے ہیں کہ آپ نے یہ شرائط و ضوابط پڑھ لیے ہیں، سمجھ لیے ہیں، اور ان سے پابند رہنے پر متفق ہیں۔'
-                : 'By using LegalDocs, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.'
+                ? 'Qannoni استعمال کرکے، آپ تسلیم کرتے ہیں کہ آپ نے یہ شرائط و ضوابط پڑھ لیے ہیں، سمجھ لیے ہیں، اور ان سے پابند رہنے پر متفق ہیں۔'
+                : 'By using Qannoni, you acknowledge that you have read, understood, and agree to be bound by these Terms and Conditions.'
               }
             </p>
             <div className="flex justify-center gap-4">
@@ -612,10 +612,10 @@ export default function TermsPage() {
         <div className="mt-8 text-center text-sm text-muted-foreground">
           <p>
             {locale === 'ar'
-              ? `© ${new Date().getFullYear()} LegalDocs. جميع الحقوق محفوظة. شركة برمجيات - ليست خدمة قانونية.`
+              ? `© ${new Date().getFullYear()} Qannoni. جميع الحقوق محفوظة. شركة برمجيات - ليست خدمة قانونية.`
               : locale === 'ur'
-              ? `© ${new Date().getFullYear()} LegalDocs. جملہ حقوق محفوظ ہیں۔ سافٹ ویئر کمپنی - قانونی سروس نہیں۔`
-              : `© ${new Date().getFullYear()} LegalDocs. All rights reserved. Software Company - Not a Legal Service.`
+              ? `© ${new Date().getFullYear()} Qannoni. جملہ حقوق محفوظ ہیں۔ سافٹ ویئر کمپنی - قانونی سروس نہیں۔`
+              : `© ${new Date().getFullYear()} Qannoni. All rights reserved. Software Company - Not a Legal Service.`
             }
           </p>
         </div>

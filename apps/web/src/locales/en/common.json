@@ -1,23 +1,23 @@
 {
   "app": {
-    "name": "LegalDocs",
+    "name": "Qannoni",
     "tagline": "AI-Powered Legal Documents for GCC"
   },
   "seo": {
     "home": {
-      "title": "LegalDocs - AI-Powered Legal Documents & Digital Signatures UAE",
+      "title": "Qannoni - AI-Powered Legal Documents & Digital Signatures UAE",
       "description": "Create, manage, and sign legal documents in UAE with AI assistance. Employment contracts, NDAs, rental agreements in English, Arabic & Urdu. Secure digital signatures, instant document generation.",
-      "ogTitle": "LegalDocs UAE - AI Legal Document Generation & Digital Signatures",
+      "ogTitle": "Qannoni UAE - AI Legal Document Generation & Digital Signatures",
       "ogDescription": "Generate professional legal documents instantly with AI. Multilingual support (English, Arabic, Urdu). Secure e-signatures. Trusted by businesses across UAE."
     },
     "templates": {
-      "title": "Legal Document Templates - Employment, NDA, Rental Agreements | LegalDocs UAE",
+      "title": "Legal Document Templates - Employment, NDA, Rental Agreements | Qannoni UAE",
       "description": "Browse 100+ professional legal document templates for UAE. Employment contracts, NDAs, rental agreements, service agreements in English, Arabic & Urdu. Free & premium templates.",
       "ogTitle": "Professional Legal Document Templates - UAE",
       "ogDescription": "Access 100+ legal templates tailored for UAE law. Employment contracts, NDAs, agreements in multiple languages. Start creating professional documents today."
     },
     "generate": {
-      "title": "AI Document Generator - Create Legal Documents in Minutes | LegalDocs UAE",
+      "title": "AI Document Generator - Create Legal Documents in Minutes | Qannoni UAE",
       "description": "Generate professional legal documents with AI in minutes. Employment contracts, NDAs, agreements in English, Arabic & Urdu. Smart forms, instant generation, legally compliant.",
       "ogTitle": "AI-Powered Legal Document Generator - UAE",
       "ogDescription": "Create professional legal documents in minutes with AI assistance. Just answer a few questions and get legally compliant documents instantly."
@@ -501,7 +501,7 @@
     "phone": "Phone",
     "address": "Address",
     "vsLastMonth": "vs last month",
-    "poweredBy": "Powered by LegalDocs - Secure Digital Signatures"
+    "poweredBy": "Powered by Qannoni - Secure Digital Signatures"
   },
   "errors": {
     "required": "This field is required",
@@ -523,7 +523,7 @@
     "faq": "FAQ",
     "tagline": "Professional legal document generation platform powered by AI. Create, manage, and sign documents with confidence.",
     "softwareNotice": "Software Platform - Not Legal Advice",
-    "registeredTrademark": "LegalDocs is a registered trademark.",
+    "registeredTrademark": "Qannoni is a registered trademark.",
     "sections": {
       "product": "Product",
       "legal": "Legal",
@@ -556,17 +556,17 @@
     },
     "regional": {
       "title": "UAE & GCC Region",
-      "notice": "LegalDocs is a software platform designed for the UAE and GCC markets. All documents should be reviewed by qualified legal professionals familiar with local laws and regulations before use in legal matters."
+      "notice": "Qannoni is a software platform designed for the UAE and GCC markets. All documents should be reviewed by qualified legal professionals familiar with local laws and regulations before use in legal matters."
     }
   },
   "legal": {
     "disclaimer": {
       "title": "Legal Disclaimer",
       "lastUpdated": "Last Updated",
-      "importantNotice": "IMPORTANT: Please read this disclaimer carefully before using LegalDocs. By using our platform, you acknowledge that you have read, understood, and agree to be bound by this disclaimer.",
+      "importantNotice": "IMPORTANT: Please read this disclaimer carefully before using Qannoni. By using our platform, you acknowledge that you have read, understood, and agree to be bound by this disclaimer.",
       "criticalWarning": {
         "title": "Critical Warning",
-        "subtitle": "LegalDocs is a SOFTWARE COMPANY, NOT a law firm or legal service provider.",
+        "subtitle": "Qannoni is a SOFTWARE COMPANY, NOT a law firm or legal service provider.",
         "point1": "We do NOT provide legal advice, legal representation, or legal services of any kind",
         "point2": "We are NOT attorneys, lawyers, or legal professionals",
         "point3": "We do NOT create attorney-client relationships with our users",
@@ -574,7 +574,7 @@
       },
       "natureOfService": {
         "title": "Nature of Our Service",
-        "description": "LegalDocs is a software-as-a-service (SaaS) platform that provides technology tools for creating, managing, and signing documents. We are a technology company, not a legal services provider.",
+        "description": "Qannoni is a software-as-a-service (SaaS) platform that provides technology tools for creating, managing, and signing documents. We are a technology company, not a legal services provider.",
         "weProvide": "What We Provide:",
         "item1": "Document template libraries and generation tools",
         "item2": "AI-powered document drafting assistance",
@@ -588,8 +588,8 @@
       },
       "noAttorneyClient": {
         "title": "No Attorney-Client Relationship",
-        "statement": "Use of LegalDocs does NOT create an attorney-client relationship.",
-        "explanation": "No attorney-client relationship exists between you and LegalDocs, its owners, employees, contractors, or affiliated entities. The information provided through our platform:",
+        "statement": "Use of Qannoni does NOT create an attorney-client relationship.",
+        "explanation": "No attorney-client relationship exists between you and Qannoni, its owners, employees, contractors, or affiliated entities. The information provided through our platform:",
         "point1": "Is for general informational purposes only",
         "point2": "Does not constitute legal advice or legal services",
         "point3": "Should not be relied upon as legal guidance",
@@ -597,7 +597,7 @@
       },
       "templates": {
         "title": "Templates and AI-Generated Content",
-        "description": "All document templates and AI-generated content provided by LegalDocs are generic forms intended for informational purposes only. They are NOT tailored to your specific legal needs or circumstances.",
+        "description": "All document templates and AI-generated content provided by Qannoni are generic forms intended for informational purposes only. They are NOT tailored to your specific legal needs or circumstances.",
         "aiWarning": "AI-generated documents may contain errors, omissions, or inappropriate content. Always review and verify all AI-generated content.",
         "point1": "Templates are starting points, not finished legal documents",
         "point2": "AI-generated content may not be accurate, complete, or suitable for your needs",
@@ -615,8 +615,8 @@
       },
       "liability": {
         "title": "Limitation of Liability",
-        "statement": "TO THE MAXIMUM EXTENT PERMITTED BY LAW, LEGALDOCS DISCLAIMS ALL LIABILITY.",
-        "description": "LegalDocs, its owners, employees, contractors, and affiliated entities shall not be liable for any damages, losses, or consequences arising from:",
+        "statement": "TO THE MAXIMUM EXTENT PERMITTED BY LAW, QANNONI DISCLAIMS ALL LIABILITY.",
+        "description": "Qannoni, its owners, employees, contractors, and affiliated entities shall not be liable for any damages, losses, or consequences arising from:",
         "point1": "Use or inability to use our platform or services",
         "point2": "Reliance on any templates, documents, or information provided",
         "point3": "Errors, omissions, or inaccuracies in AI-generated content",
@@ -651,7 +651,7 @@
       },
       "changes": {
         "title": "Changes to This Disclaimer",
-        "description": "We reserve the right to modify this disclaimer at any time. Changes will be effective immediately upon posting. Your continued use of LegalDocs after changes constitutes acceptance of the modified disclaimer."
+        "description": "We reserve the right to modify this disclaimer at any time. Changes will be effective immediately upon posting. Your continued use of Qannoni after changes constitutes acceptance of the modified disclaimer."
       },
       "contact": {
         "title": "Questions About This Disclaimer",
@@ -675,8 +675,8 @@
       "commitment": "Your privacy is important to us. This policy explains how we collect, use, and protect your personal information.",
       "introduction": {
         "title": "Introduction",
-        "p1": "LegalDocs (\"we\", \"our\", \"us\") is committed to protecting your privacy and personal data. This Privacy Policy explains how we collect, use, store, and share information when you use our platform.",
-        "p2": "By using LegalDocs, you agree to the collection and use of information in accordance with this policy. If you do not agree with this policy, please do not use our services."
+        "p1": "Qannoni (\"we\", \"our\", \"us\") is committed to protecting your privacy and personal data. This Privacy Policy explains how we collect, use, store, and share information when you use our platform.",
+        "p2": "By using Qannoni, you agree to the collection and use of information in accordance with this policy. If you do not agree with this policy, please do not use our services."
       },
       "collection": {
         "title": "Information We Collect",
@@ -793,7 +793,7 @@
       },
       "children": {
         "title": "Children's Privacy",
-        "description": "LegalDocs is not intended for users under 18 years of age. We do not knowingly collect personal information from children. If we become aware of such data collection, we will delete it promptly."
+        "description": "Qannoni is not intended for users under 18 years of age. We do not knowingly collect personal information from children. If we become aware of such data collection, we will delete it promptly."
       },
       "international": {
         "title": "International Data Transfers",
@@ -803,7 +803,7 @@
       "changes": {
         "title": "Changes to This Policy",
         "description": "We may update this Privacy Policy from time to time. Significant changes will be communicated via email or platform notifications.",
-        "notification": "Continued use of LegalDocs after changes constitutes acceptance of the updated policy."
+        "notification": "Continued use of Qannoni after changes constitutes acceptance of the updated policy."
       },
       "contact": {
         "title": "Contact Us",
@@ -840,7 +840,7 @@
       },
       "disclaimer": {
         "title": "Not Legal Advice",
-        "description": "LegalDocs is a software platform, not a law firm. This document is a template and does not constitute legal advice. No attorney-client relationship is formed."
+        "description": "Qannoni is a software platform, not a law firm. This document is a template and does not constitute legal advice. No attorney-client relationship is formed."
       },
       "review": {
         "title": "Professional Review Recommended",
@@ -868,8 +868,8 @@
     }
   },
   "faq": {
-    "metaTitle": "Frequently Asked Questions - LegalDocs UAE",
-    "metaDescription": "Find answers to common questions about LegalDocs platform, document generation, digital signatures, billing, security, and more.",
+    "metaTitle": "Frequently Asked Questions - Qannoni UAE",
+    "metaDescription": "Find answers to common questions about Qannoni platform, document generation, digital signatures, billing, security, and more.",
     "title": "Frequently Asked Questions",
     "subtitle": "Find answers to common questions about our platform",
     "searchPlaceholder": "Search FAQs...",
@@ -886,21 +886,21 @@
       "legal": "Legal Compliance"
     },
     "general": {
-      "whatIsLegalDocs": {
-        "question": "What is LegalDocs?",
-        "answer": "LegalDocs is an AI-powered platform that helps individuals and businesses in the UAE and GCC region create, manage, and sign legal documents. We offer intelligent document generation, professional templates in multiple languages (English, Arabic, Urdu), and secure digital signature capabilities. Our platform is designed to make legal documentation faster, more accessible, and more affordable while ensuring compliance with local laws."
+      "whatIsQannoni": {
+        "question": "What is Qannoni?",
+        "answer": "Qannoni is an AI-powered platform that helps individuals and businesses in the UAE and GCC region create, manage, and sign legal documents. We offer intelligent document generation, professional templates in multiple languages (English, Arabic, Urdu), and secure digital signature capabilities. Our platform is designed to make legal documentation faster, more accessible, and more affordable while ensuring compliance with local laws."
       },
       "isLawFirm": {
-        "question": "Is LegalDocs a law firm?",
-        "answer": "No, LegalDocs is not a law firm and does not provide legal advice. We are a technology platform that provides tools for document creation and management. Our AI-generated documents and templates are designed to meet common legal requirements, but we strongly recommend consulting with a qualified lawyer for complex legal matters or if you have specific legal questions. For certain transactions, you may also need to have documents reviewed or notarized by legal professionals."
+        "question": "Is Qannoni a law firm?",
+        "answer": "No, Qannoni is not a law firm and does not provide legal advice. We are a technology platform that provides tools for document creation and management. Our AI-generated documents and templates are designed to meet common legal requirements, but we strongly recommend consulting with a qualified lawyer for complex legal matters or if you have specific legal questions. For certain transactions, you may also need to have documents reviewed or notarized by legal professionals."
       },
       "countries": {
         "question": "What countries do you support?",
-        "answer": "LegalDocs is primarily designed for the United Arab Emirates (UAE) and GCC (Gulf Cooperation Council) countries, including Saudi Arabia, Kuwait, Qatar, Bahrain, and Oman. Our documents are tailored to comply with UAE legal frameworks and common practices in the region. However, our digital signature technology is accepted in many countries worldwide. If you're using our platform outside the GCC, please verify that our documents and signatures meet your local legal requirements."
+        "answer": "Qannoni is primarily designed for the United Arab Emirates (UAE) and GCC (Gulf Cooperation Council) countries, including Saudi Arabia, Kuwait, Qatar, Bahrain, and Oman. Our documents are tailored to comply with UAE legal frameworks and common practices in the region. However, our digital signature technology is accepted in many countries worldwide. If you're using our platform outside the GCC, please verify that our documents and signatures meet your local legal requirements."
       },
       "languages": {
         "question": "What languages are available?",
-        "answer": "LegalDocs supports three languages:\n\n• English - Full support for all features\n• Arabic - Full support including right-to-left text and native document generation\n• Urdu - Full support with native document generation\n\nYou can switch between languages at any time, and all generated documents can be created in your preferred language. For bilingual documents, you can generate the same document in multiple languages and specify which version is legally binding."
+        "answer": "Qannoni supports three languages:\n\n• English - Full support for all features\n• Arabic - Full support including right-to-left text and native document generation\n• Urdu - Full support with native document generation\n\nYou can switch between languages at any time, and all generated documents can be created in your preferred language. For bilingual documents, you can generate the same document in multiple languages and specify which version is legally binding."
       },
       "dataSecurity": {
         "question": "Is my data secure?",
@@ -998,11 +998,11 @@
     "technical": {
       "browsers": {
         "question": "What browsers are supported?",
-        "answer": "LegalDocs works best on modern browsers:\n\nFully Supported:\n• Google Chrome (version 90+)\n• Microsoft Edge (version 90+)\n• Safari (version 14+)\n• Firefox (version 88+)\n\nMobile Browsers:\n• Safari on iOS 14+\n• Chrome on Android 10+\n• Samsung Internet 14+\n\nFeatures that require modern browsers:\n• Digital signature pad\n• Document preview\n• Real-time collaboration\n• Drag-and-drop file upload\n\nFor the best experience:\n• Enable JavaScript\n• Allow cookies\n• Use the latest browser version\n• Enable pop-ups for document downloads\n\nInternet Explorer is not supported. If you're on a corporate network with browser restrictions, please contact your IT department to whitelist *.legaldocs.ae"
+        "answer": "Qannoni works best on modern browsers:\n\nFully Supported:\n• Google Chrome (version 90+)\n• Microsoft Edge (version 90+)\n• Safari (version 14+)\n• Firefox (version 88+)\n\nMobile Browsers:\n• Safari on iOS 14+\n• Chrome on Android 10+\n• Samsung Internet 14+\n\nFeatures that require modern browsers:\n• Digital signature pad\n• Document preview\n• Real-time collaboration\n• Drag-and-drop file upload\n\nFor the best experience:\n• Enable JavaScript\n• Allow cookies\n• Use the latest browser version\n• Enable pop-ups for document downloads\n\nInternet Explorer is not supported. If you're on a corporate network with browser restrictions, please contact your IT department to whitelist *.qannoni.com"
       },
       "offline": {
-        "question": "Can I use LegalDocs offline?",
-        "answer": "LegalDocs requires an internet connection for most features:\n\nRequires Internet:\n• Document generation\n• Saving and syncing\n• Sending for signature\n• Real-time collaboration\n• Template browsing\n\nLimited Offline Capability:\n• View recently opened documents (cached)\n• Read-only access to downloaded PDFs\n• Mobile apps have offline document viewing\n\nComing Soon:\n• Progressive Web App (PWA) with offline editing\n• Sync when connection is restored\n• Offline signature capability\n\nWorkaround:\n• Download documents as PDF for offline access\n• Edit offline in your preferred app\n• Upload edited versions when online\n\nFor industries requiring offline capability (ships, remote locations), please contact us about our enterprise offline solution."
+        "question": "Can I use Qannoni offline?",
+        "answer": "Qannoni requires an internet connection for most features:\n\nRequires Internet:\n• Document generation\n• Saving and syncing\n• Sending for signature\n• Real-time collaboration\n• Template browsing\n\nLimited Offline Capability:\n• View recently opened documents (cached)\n• Read-only access to downloaded PDFs\n• Mobile apps have offline document viewing\n\nComing Soon:\n• Progressive Web App (PWA) with offline editing\n• Sync when connection is restored\n• Offline signature capability\n\nWorkaround:\n• Download documents as PDF for offline access\n• Edit offline in your preferred app\n• Upload edited versions when online\n\nFor industries requiring offline capability (ships, remote locations), please contact us about our enterprise offline solution."
       },
       "exportDocuments": {
         "question": "How do I export documents?",
@@ -1014,7 +1014,7 @@
       },
       "api": {
         "question": "Is there an API?",
-        "answer": "Yes! We offer a REST API for Professional and Enterprise customers:\n\nAPI Capabilities:\n• Generate documents programmatically\n• Send for signature\n• Check signature status\n• Retrieve signed documents\n• Webhook notifications\n• Bulk operations\n\nCommon Use Cases:\n• Integration with CRM systems\n• Automated contract generation\n• HR system integration\n• E-commerce order confirmations\n• Automated tenant agreements\n\nAPI Features:\n• RESTful endpoints\n• JSON request/response\n• OAuth 2.0 authentication\n• Rate limiting\n• Comprehensive documentation\n• Code examples (Node.js, Python, PHP)\n• Sandbox environment for testing\n• Webhook support for real-time updates\n\nTo Get Started:\n1. Upgrade to Professional or Enterprise\n2. Go to Settings > API Keys\n3. Generate an API key\n4. Read our API documentation\n5. Start integrating\n\nAPI Documentation: https://docs.legaldocs.ae/api\nSupport: api-support@legaldocs.ae"
+        "answer": "Yes! We offer a REST API for Professional and Enterprise customers:\n\nAPI Capabilities:\n• Generate documents programmatically\n• Send for signature\n• Check signature status\n• Retrieve signed documents\n• Webhook notifications\n• Bulk operations\n\nCommon Use Cases:\n• Integration with CRM systems\n• Automated contract generation\n• HR system integration\n• E-commerce order confirmations\n• Automated tenant agreements\n\nAPI Features:\n• RESTful endpoints\n• JSON request/response\n• OAuth 2.0 authentication\n• Rate limiting\n• Comprehensive documentation\n• Code examples (Node.js, Python, PHP)\n• Sandbox environment for testing\n• Webhook support for real-time updates\n\nTo Get Started:\n1. Upgrade to Professional or Enterprise\n2. Go to Settings > API Keys\n3. Generate an API key\n4. Read our API documentation\n5. Start integrating\n\nAPI Documentation: https://docs.qannoni.com/api\nSupport: api-support@qannoni.com"
       }
     },
     "legal": {

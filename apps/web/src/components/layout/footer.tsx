@@ -1,8 +1,9 @@
 'use client';
 
 import Link from 'next/link';
+import Image from 'next/image';
 import { useLocale, useTranslations } from 'next-intl';
-import { FileText, Mail, MapPin, Phone, Globe, Shield, Scale, Cookie, Facebook, Twitter, Linkedin, Instagram } from 'lucide-react';
+import { Mail, MapPin, Globe, Shield, Scale, Cookie, Facebook, Twitter, Linkedin, Instagram, FileText } from 'lucide-react';
 import { Separator } from '@/components/ui/separator';
 import { cn } from '@/lib/utils';
 
@@ -60,10 +61,14 @@ export function Footer({ className }: FooterProps) {
           {/* Brand Section */}
           <div className="lg:col-span-2 space-y-4">
             <Link href={`/${locale}/dashboard`} className="flex items-center gap-2 font-semibold text-lg">
-              <div className="flex items-center justify-center h-10 w-10 rounded-lg bg-primary text-primary-foreground">
-                <FileText className="h-5 w-5" />
-              </div>
-              <span>LegalDocs</span>
+              <Image
+                src="/logo.jpg"
+                alt="Qannoni"
+                width={40}
+                height={40}
+                className="h-10 w-10 rounded-lg object-contain"
+              />
+              <span>Qannoni</span>
             </Link>
 
             <p className="text-sm text-muted-foreground max-w-xs">
@@ -82,13 +87,13 @@ export function Footer({ className }: FooterProps) {
             <div className="space-y-2 pt-2">
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <Mail className="h-4 w-4" />
-                <a href="mailto:support@legaldocs.ae" className="hover:text-primary transition-colors">
-                  support@legaldocs.ae
+                <a href="mailto:support@qannoni.com" className="hover:text-primary transition-colors">
+                  support@qannoni.com
                 </a>
               </div>
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                <span>Dubai, United Arab Emirates</span>
+                <span>131 Continental Dr, Suite 305, Newark, DE 19713 US</span>
               </div>
             </div>
           </div>
@@ -167,7 +172,7 @@ export function Footer({ className }: FooterProps) {
           {/* Copyright */}
           <div className="space-y-1">
             <p className="text-sm text-muted-foreground">
-              © {currentYear} LegalDocs. {t('copyright')}
+              © {currentYear} Qannoni. {t('copyright')}
             </p>
             <p className="text-xs text-muted-foreground">
               {t('registeredTrademark')}

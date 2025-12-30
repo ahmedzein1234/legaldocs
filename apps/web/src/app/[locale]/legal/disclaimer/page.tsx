@@ -260,9 +260,9 @@ export default function DisclaimerPage() {
         <CardContent className="space-y-3">
           <p>{t('contact.description')}</p>
           <div className="bg-muted p-4 rounded-lg space-y-2">
-            <p className="font-semibold">LegalDocs</p>
-            <p className="text-sm">{t('contact.email')}: support@legaldocs.ae</p>
-            <p className="text-sm">{t('contact.address')}: Dubai, United Arab Emirates</p>
+            <p className="font-semibold">Ai Creative innovations, LLC</p>
+            <p className="text-sm">{t('contact.email')}: support@qannoni.com</p>
+            <p className="text-sm">{t('contact.address')}: 131 Continental Dr, Suite 305, Newark, DE 19713 US</p>
           </div>
         </CardContent>
       </Card>

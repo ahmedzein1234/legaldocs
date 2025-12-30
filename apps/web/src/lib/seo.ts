@@ -32,16 +32,16 @@ export function generateMetadata({
   path = '',
 }: SEOMetadata & { locale?: Locale; path?: string }): Metadata {
   const url = `${SITE_URL}${path}`;
-  const defaultImage = `${SITE_URL}/og-image.png`;
+  const defaultImage = `${SITE_URL}/og-image.jpg`;
   const imageUrl = image || defaultImage;
 
   return {
     title,
     description,
     keywords: keywords.join(', '),
-    authors: [{ name: 'LegalDocs' }],
-    creator: 'LegalDocs',
-    publisher: 'LegalDocs',
+    authors: [{ name: 'Qannoni' }],
+    creator: 'Qannoni',
+    publisher: 'Qannoni',
     robots: noIndex
       ? 'noindex, nofollow'
       : 'index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1',
@@ -59,7 +59,7 @@ export function generateMetadata({
       url,
       title: ogTitle || title,
       description: ogDescription || description,
-      siteName: 'LegalDocs',
+      siteName: 'Qannoni',
       images: [
         {
           url: imageUrl,
@@ -74,8 +74,8 @@ export function generateMetadata({
       title: twitterTitle || ogTitle || title,
       description: twitterDescription || ogDescription || description,
       images: [imageUrl],
-      creator: '@legaldocs',
-      site: '@legaldocs',
+      creator: '@qannoni',
+      site: '@qannoni',
     },
     verification: {
       google: process.env.NEXT_PUBLIC_GOOGLE_SITE_VERIFICATION,
@@ -90,7 +90,7 @@ export function generateMetadata({
 export function getHomeMetadata(locale: Locale): SEOMetadata {
   const metadata: Record<Locale, SEOMetadata> = {
     en: {
-      title: 'LegalDocs - AI-Powered Legal Documents & Digital Signatures UAE',
+      title: 'Qannoni - AI-Powered Legal Documents & Digital Signatures UAE',
       description:
         'Create, manage, and sign legal documents in UAE with AI assistance. Employment contracts, NDAs, rental agreements in English, Arabic & Urdu. Secure digital signatures, instant document generation.',
       keywords: [
@@ -107,7 +107,7 @@ export function getHomeMetadata(locale: Locale): SEOMetadata {
         'UAE document signing',
         'legal document automation',
       ],
-      ogTitle: 'LegalDocs UAE - AI Legal Document Generation & Digital Signatures',
+      ogTitle: 'Qannoni UAE - AI Legal Document Generation & Digital Signatures',
       ogDescription:
         'Generate professional legal documents instantly with AI. Multilingual support (English, Arabic, Urdu). Secure e-signatures. Trusted by businesses across UAE.',
     },
@@ -126,7 +126,7 @@ export function getHomeMetadata(locale: Locale): SEOMetadata {
         'وثائق قانونية بالذكاء الاصطناعي',
         'التوقيع الإلكتروني',
       ],
-      ogTitle: 'LegalDocs الإمارات - إنشاء وثائق قانونية بالذكاء الاصطناعي',
+      ogTitle: 'Qannoni الإمارات - إنشاء وثائق قانونية بالذكاء الاصطناعي',
       ogDescription:
         'إنشاء وثائق قانونية احترافية فوريًا بالذكاء الاصطناعي. دعم متعدد اللغات (عربي، إنجليزي، أردي). توقيعات إلكترونية آمنة.',
     },
@@ -142,7 +142,7 @@ export function getHomeMetadata(locale: Locale): SEOMetadata {
         'رازداری کا معاہدہ',
         'کرایہ کا معاہدہ',
       ],
-      ogTitle: 'LegalDocs UAE - AI قانونی دستاویزات اور ڈیجیٹل دستخط',
+      ogTitle: 'Qannoni UAE - AI قانونی دستاویزات اور ڈیجیٹل دستخط',
       ogDescription:
         'AI کے ساتھ فوری طور پر پیشہ ورانہ قانونی دستاویزات بنائیں۔ کثیر لسانی معاونت۔ محفوظ ای-دستخط۔',
     },
@@ -157,7 +157,7 @@ export function getHomeMetadata(locale: Locale): SEOMetadata {
 export function getTemplatesMetadata(locale: Locale): SEOMetadata {
   const metadata: Record<Locale, SEOMetadata> = {
     en: {
-      title: 'Legal Document Templates - Employment, NDA, Rental Agreements | LegalDocs UAE',
+      title: 'Legal Document Templates - Employment, NDA, Rental Agreements | Qannoni UAE',
       description:
         'Browse 100+ professional legal document templates for UAE. Employment contracts, NDAs, rental agreements, service agreements in English, Arabic & Urdu. Free & premium templates.',
       keywords: [
@@ -212,7 +212,7 @@ export function getTemplatesMetadata(locale: Locale): SEOMetadata {
 export function getGenerateMetadata(locale: Locale): SEOMetadata {
   const metadata: Record<Locale, SEOMetadata> = {
     en: {
-      title: 'AI Document Generator - Create Legal Documents in Minutes | LegalDocs UAE',
+      title: 'AI Document Generator - Create Legal Documents in Minutes | Qannoni UAE',
       description:
         'Generate professional legal documents with AI in minutes. Employment contracts, NDAs, agreements in English, Arabic & Urdu. Smart forms, instant generation, legally compliant.',
       keywords: [
@@ -315,14 +315,14 @@ export function generateOrganizationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'Organization',
-    name: 'LegalDocs',
+    name: 'Qannoni',
     description: 'AI-Powered Legal Documents and Digital Signatures for UAE',
     url: SITE_URL,
-    logo: `${SITE_URL}/logo.png`,
+    logo: `${SITE_URL}/logo.jpg`,
     sameAs: [
-      'https://twitter.com/legaldocs',
-      'https://linkedin.com/company/legaldocs',
-      'https://facebook.com/legaldocs',
+      'https://twitter.com/qannoni',
+      'https://linkedin.com/company/qannoni',
+      'https://facebook.com/qannoni',
     ],
     contactPoint: {
       '@type': 'ContactPoint',
@@ -333,9 +333,11 @@ export function generateOrganizationSchema() {
     },
     address: {
       '@type': 'PostalAddress',
-      addressCountry: 'AE',
-      addressRegion: 'Dubai',
-      addressLocality: 'Dubai',
+      streetAddress: '131 Continental Dr, Suite 305',
+      addressLocality: 'Newark',
+      addressRegion: 'DE',
+      postalCode: '19713',
+      addressCountry: 'US',
     },
   };
 }
@@ -347,7 +349,7 @@ export function generateSoftwareApplicationSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
-    name: 'LegalDocs',
+    name: 'Qannoni',
     applicationCategory: 'BusinessApplication',
     operatingSystem: 'Web',
     offers: {
@@ -378,7 +380,7 @@ export function generateWebSiteSchema() {
   return {
     '@context': 'https://schema.org',
     '@type': 'WebSite',
-    name: 'LegalDocs',
+    name: 'Qannoni',
     url: SITE_URL,
     potentialAction: {
       '@type': 'SearchAction',
