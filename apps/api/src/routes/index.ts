@@ -31,3 +31,6 @@ export { pdf } from './pdf.js';
 
 // Analytics routes
 export { analytics } from './analytics.js';
+
+// Subscription and pricing routes
+export { subscriptions } from './subscriptions.js';

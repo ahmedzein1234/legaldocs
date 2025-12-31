@@ -49,6 +49,7 @@ import {
   compliance,
   pdf,
   analytics,
+  subscriptions,
 } from './routes/index.js';
 import whatsappRoutes from './routes/whatsapp.js';
 import { logoGenerator } from './routes/logo-generator.js';
@@ -268,6 +269,10 @@ app.route('/api/pdf', pdf);
 // Analytics routes - /api/analytics/*
 // User activity tracking and dashboard metrics
 app.route('/api/analytics', analytics);
+
+// Subscription and pricing routes - /api/subscriptions/*
+// Pricing plans, user subscriptions, usage tracking, promo codes
+app.route('/api/subscriptions', subscriptions);
 
 // Legacy compliance route for document templates
 app.get('/api/compliance/:country/:documentType', (c) => {
