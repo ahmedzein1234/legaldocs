@@ -50,6 +50,7 @@ import {
   pdf,
   analytics,
   subscriptions,
+  firms,
 } from './routes/index.js';
 import whatsappRoutes from './routes/whatsapp.js';
 import { logoGenerator } from './routes/logo-generator.js';
@@ -273,6 +274,10 @@ app.route('/api/analytics', analytics);
 // Subscription and pricing routes - /api/subscriptions/*
 // Pricing plans, user subscriptions, usage tracking, promo codes
 app.route('/api/subscriptions', subscriptions);
+
+// Firm marketplace routes - /api/firms/*
+// Law firm registration, bidding, engagements, reviews, anchor partner
+app.route('/api/firms', firms);
 
 // Legacy compliance route for document templates
 app.get('/api/compliance/:country/:documentType', (c) => {

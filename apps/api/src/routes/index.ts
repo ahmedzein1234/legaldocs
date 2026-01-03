@@ -34,3 +34,6 @@ export { analytics } from './analytics.js';
 
 // Subscription and pricing routes
 export { subscriptions } from './subscriptions.js';
+
+// Firm marketplace routes
+export { firms } from './firms.js';
