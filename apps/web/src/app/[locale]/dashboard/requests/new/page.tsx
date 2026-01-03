@@ -14,6 +14,11 @@ import {
   CheckCircle,
   Loader2,
   Send,
+  Upload,
+  X,
+  File,
+  Image,
+  FileIcon,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -79,6 +84,13 @@ const translations = {
     successAnchor: 'Your request has been offered to our anchor partner first. They have 4 hours to respond.',
     viewRequests: 'View My Requests',
     browseFirms: 'Browse Firms',
+    attachments: 'Attachments',
+    attachmentsDesc: 'Upload relevant documents (contracts, correspondence, etc.)',
+    dragDrop: 'Drag & drop files here, or click to browse',
+    maxFileSize: 'Max 10MB per file. PDF, Word, Images accepted.',
+    uploading: 'Uploading...',
+    uploadError: 'Upload failed',
+    removeFile: 'Remove',
   },
   ar: {
     title: 'اطلب خدمة قانونية',
@@ -117,10 +129,50 @@ const translations = {
     successAnchor: 'تم عرض طلبك على شريكنا الرئيسي أولاً. لديهم 4 ساعات للرد.',
     viewRequests: 'عرض طلباتي',
     browseFirms: 'تصفح المكاتب',
+    attachments: 'المرفقات',
+    attachmentsDesc: 'ارفع المستندات ذات الصلة (عقود، مراسلات، إلخ)',
+    dragDrop: 'اسحب وأفلت الملفات هنا، أو انقر للتصفح',
+    maxFileSize: 'حجم أقصى 10 ميجابايت لكل ملف. PDF، Word، صور مقبولة.',
+    uploading: 'جاري الرفع...',
+    uploadError: 'فشل الرفع',
+    removeFile: 'إزالة',
   },
 };
 
 const steps = ['step1', 'step2', 'step3', 'step4'] as const;
+
+interface UploadedFile {
+  id: string;
+  name: string;
+  size: number;
+  type: string;
+  uploadId?: string;
+  status: 'uploading' | 'success' | 'error';
+  error?: string;
+}
+
+const ACCEPTED_FILE_TYPES = [
+  'application/pdf',
+  'application/msword',
+  'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+  'image/jpeg',
+  'image/png',
+  'image/webp',
+];
+
+const MAX_FILE_SIZE = 10 * 1024 * 1024; // 10MB
+
+function formatFileSize(bytes: number): string {
+  if (bytes < 1024) return bytes + ' B';
+  if (bytes < 1024 * 1024) return (bytes / 1024).toFixed(1) + ' KB';
+  return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
+}
+
+function getFileIcon(mimeType: string) {
+  if (mimeType.startsWith('image/')) return Image;
+  if (mimeType === 'application/pdf') return FileText;
+  return File;
+}
 
 export default function NewRequestPage() {
   const params = useParams();
@@ -146,8 +198,89 @@ export default function NewRequestPage() {
   const [urgency, setUrgency] = useState<Urgency>('standard');
   const [budgetMin, setBudgetMin] = useState('');
   const [budgetMax, setBudgetMax] = useState('');
+  const [attachments, setAttachments] = useState<UploadedFile[]>([]);
 
   const createRequest = useCreateServiceRequest();
+
+  // File upload handler
+  const handleFileUpload = async (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+
+    for (const file of Array.from(files)) {
+      // Validate file type
+      if (!ACCEPTED_FILE_TYPES.includes(file.type)) {
+        continue;
+      }
+
+      // Validate file size
+      if (file.size > MAX_FILE_SIZE) {
+        continue;
+      }
+
+      const fileId = crypto.randomUUID();
+      const newFile: UploadedFile = {
+        id: fileId,
+        name: file.name,
+        size: file.size,
+        type: file.type,
+        status: 'uploading',
+      };
+
+      setAttachments(prev => [...prev, newFile]);
+
+      try {
+        // Convert to base64
+        const base64 = await new Promise<string>((resolve, reject) => {
+          const reader = new FileReader();
+          reader.onload = () => {
+            const result = reader.result as string;
+            resolve(result.split(',')[1]); // Remove data:mime;base64, prefix
+          };
+          reader.onerror = reject;
+          reader.readAsDataURL(file);
+        });
+
+        // Upload to API
+        const response = await fetch('/api/uploads/direct', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({
+            fileName: file.name,
+            mimeType: file.type,
+            fileData: base64,
+            category: 'uploads',
+          }),
+        });
+
+        const result = await response.json();
+
+        if (result.success) {
+          setAttachments(prev =>
+            prev.map(f =>
+              f.id === fileId
+                ? { ...f, status: 'success', uploadId: result.data.uploadId }
+                : f
+            )
+          );
+        } else {
+          throw new Error(result.error?.message || 'Upload failed');
+        }
+      } catch (error) {
+        setAttachments(prev =>
+          prev.map(f =>
+            f.id === fileId
+              ? { ...f, status: 'error', error: (error as Error).message }
+              : f
+          )
+        );
+      }
+    }
+  };
+
+  const removeFile = (fileId: string) => {
+    setAttachments(prev => prev.filter(f => f.id !== fileId));
+  };
   const submitForBidding = useSubmitRequestForBidding();
 
   const isStepValid = () => {
@@ -179,6 +312,11 @@ export default function NewRequestPage() {
 
   const handleSubmit = async () => {
     try {
+      // Get successfully uploaded attachment IDs
+      const attachmentIds = attachments
+        .filter(f => f.status === 'success' && f.uploadId)
+        .map(f => f.uploadId as string);
+
       // Create the request
       const result = await createRequest.mutateAsync({
         serviceType,
@@ -190,6 +328,7 @@ export default function NewRequestPage() {
         urgency,
         budgetMin: budgetMin ? parseFloat(budgetMin) : undefined,
         budgetMax: budgetMax ? parseFloat(budgetMax) : undefined,
+        attachmentIds: attachmentIds.length > 0 ? attachmentIds : undefined,
       });
 
       if (result.success && result.data?.requestId) {
@@ -382,6 +521,81 @@ export default function NewRequestPage() {
                       ))}
                     </SelectContent>
                   </Select>
+                </div>
+
+                {/* File Upload */}
+                <div>
+                  <Label>{t.attachments} <span className="text-muted-foreground">({t.optional})</span></Label>
+                  <p className="text-sm text-muted-foreground mb-2">{t.attachmentsDesc}</p>
+
+                  {/* Upload Area */}
+                  <div
+                    className="border-2 border-dashed border-border rounded-lg p-6 text-center hover:border-primary/50 transition-colors cursor-pointer"
+                    onClick={() => document.getElementById('file-upload')?.click()}
+                    onDragOver={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.add('border-primary');
+                    }}
+                    onDragLeave={(e) => {
+                      e.currentTarget.classList.remove('border-primary');
+                    }}
+                    onDrop={(e) => {
+                      e.preventDefault();
+                      e.currentTarget.classList.remove('border-primary');
+                      handleFileUpload(e.dataTransfer.files);
+                    }}
+                  >
+                    <Upload className="h-8 w-8 mx-auto text-muted-foreground mb-2" />
+                    <p className="text-sm font-medium">{t.dragDrop}</p>
+                    <p className="text-xs text-muted-foreground mt-1">{t.maxFileSize}</p>
+                    <input
+                      id="file-upload"
+                      type="file"
+                      multiple
+                      accept=".pdf,.doc,.docx,.jpg,.jpeg,.png,.webp"
+                      className="hidden"
+                      onChange={(e) => handleFileUpload(e.target.files)}
+                    />
+                  </div>
+
+                  {/* Uploaded Files List */}
+                  {attachments.length > 0 && (
+                    <div className="mt-4 space-y-2">
+                      {attachments.map((file) => {
+                        const FileIcon = getFileIcon(file.type);
+                        return (
+                          <div
+                            key={file.id}
+                            className={`flex items-center gap-3 p-3 rounded-lg border ${
+                              file.status === 'error' ? 'border-red-200 bg-red-50' : 'border-border bg-muted/30'
+                            }`}
+                          >
+                            <FileIcon className="h-5 w-5 text-muted-foreground flex-shrink-0" />
+                            <div className="flex-1 min-w-0">
+                              <p className="text-sm font-medium truncate">{file.name}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {formatFileSize(file.size)}
+                                {file.status === 'uploading' && ` • ${t.uploading}`}
+                                {file.status === 'error' && ` • ${t.uploadError}`}
+                              </p>
+                            </div>
+                            {file.status === 'uploading' ? (
+                              <Loader2 className="h-4 w-4 animate-spin text-primary" />
+                            ) : file.status === 'success' ? (
+                              <CheckCircle className="h-4 w-4 text-green-600" />
+                            ) : null}
+                            <button
+                              onClick={() => removeFile(file.id)}
+                              className="p-1 hover:bg-muted rounded"
+                              title={t.removeFile}
+                            >
+                              <X className="h-4 w-4 text-muted-foreground" />
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
                 </div>
               </div>
             )}

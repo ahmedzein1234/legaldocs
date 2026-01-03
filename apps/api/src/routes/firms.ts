@@ -185,7 +185,7 @@ app.post('/requests', requireAuth, async (c) => {
     const {
       serviceType, category, documentId, title, description,
       requiredLanguages, requiredEmirate, urgency, deadline,
-      complexity, budgetMin, budgetMax,
+      complexity, budgetMin, budgetMax, attachmentIds,
     } = body;
 
     if (!serviceType || !category || !title || !description) {
@@ -219,10 +219,21 @@ app.post('/requests', requireAuth, async (c) => {
       }, 400);
     }
 
+    // Store attachments if provided
+    if (attachmentIds && Array.isArray(attachmentIds) && attachmentIds.length > 0) {
+      for (const uploadId of attachmentIds) {
+        await c.env.DB.prepare(`
+          INSERT INTO request_attachments (id, request_id, upload_id, created_at)
+          VALUES (?, ?, ?, datetime('now'))
+        `).bind(crypto.randomUUID(), result.requestId, uploadId).run();
+      }
+    }
+
     return c.json({
       success: true,
       data: {
         requestId: result.requestId,
+        attachmentsCount: attachmentIds?.length || 0,
         message: 'Service request created as draft',
       },
     });

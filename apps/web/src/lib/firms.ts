@@ -316,6 +316,7 @@ export interface CreateServiceRequestData {
   complexity?: 'simple' | 'medium' | 'complex' | 'highly_complex';
   budgetMin?: number;
   budgetMax?: number;
+  attachmentIds?: string[];
 }
 
 export async function createServiceRequest(data: CreateServiceRequestData) {
