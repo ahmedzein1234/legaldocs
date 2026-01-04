@@ -9,6 +9,7 @@ import { QueryProvider } from '@/providers/query-provider';
 import { generateMetadata as genMeta, getHomeMetadata, SITE_URL } from '@/lib/seo';
 import { GlobalSchemas } from '@/components/seo/structured-data';
 import { CookieConsent } from '@/components/cookie-consent';
+import { PWAInstallPrompt } from '@/components/pwa-install-prompt';
 import '@/styles/globals.css';
 
 export function generateStaticParams() {
@@ -51,6 +52,14 @@ export default async function LocaleLayout({
         <GlobalSchemas />
         <link rel="icon" href="/logo.jpg" type="image/jpeg" />
         <link rel="apple-touch-icon" href="/logo.jpg" />
+        {/* PWA Meta Tags */}
+        <link rel="manifest" href="/manifest.json" />
+        <meta name="theme-color" content="#2563eb" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+        <meta name="apple-mobile-web-app-title" content="LegalDocs" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="format-detection" content="telephone=no" />
       </head>
       <body className={direction === 'rtl' ? 'font-arabic' : 'font-sans'} suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
@@ -65,6 +74,7 @@ export default async function LocaleLayout({
               <UserPreferencesProvider>
                 <AuthProvider>{children}</AuthProvider>
                 <CookieConsent />
+                <PWAInstallPrompt locale={locale} />
               </UserPreferencesProvider>
             </ClientOnly>
           </QueryProvider>

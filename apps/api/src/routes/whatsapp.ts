@@ -25,6 +25,7 @@ import {
   type OTPData,
 } from '../lib/whatsapp-templates.js';
 import { Language } from '../lib/error-messages.js';
+import { createAIService, parseJSONFromResponse } from '../lib/ai.js';
 
 // Environment bindings
 type Bindings = {
@@ -34,6 +35,7 @@ type Bindings = {
   TWILIO_AUTH_TOKEN: string;
   TWILIO_WHATSAPP_FROM: string;
   APP_URL: string;
+  OPENROUTER_API_KEY?: string;
 };
 
 const whatsappRoutes = new Hono<{ Bindings: Bindings }>();
@@ -405,6 +407,18 @@ whatsappRoutes.post('/webhook/incoming', async (c) => {
   const profileName = formData.get('ProfileName') as string | null;
   const numMedia = parseInt(formData.get('NumMedia') as string || '0');
 
+  // Extract media URLs if present
+  const mediaUrls: string[] = [];
+  const mediaTypes: string[] = [];
+  for (let i = 0; i < numMedia; i++) {
+    const url = formData.get(`MediaUrl${i}`) as string;
+    const contentType = formData.get(`MediaContentType${i}`) as string;
+    if (url) {
+      mediaUrls.push(url);
+      mediaTypes.push(contentType || 'unknown');
+    }
+  }
+
   const now = new Date().toISOString();
 
   try {
@@ -433,19 +447,35 @@ whatsappRoutes.post('/webhook/incoming', async (c) => {
 
     // Log incoming message
     const messageId = crypto.randomUUID();
+    const messageType = numMedia > 0 ? 'media' : 'text';
     await c.env.DB.prepare(`
-      INSERT INTO whatsapp_messages (id, session_id, direction, message_type, content, twilio_sid, status, created_at)
-      VALUES (?, ?, 'inbound', 'text', ?, ?, 'received', ?)
-    `).bind(messageId, session.id, body, messageSid, now).run();
+      INSERT INTO whatsapp_messages (id, session_id, direction, message_type, content, media_url, twilio_sid, status, created_at)
+      VALUES (?, ?, 'inbound', ?, ?, ?, ?, 'received', ?)
+    `).bind(messageId, session.id, messageType, body || '', mediaUrls[0] || null, messageSid, now).run();
 
     // Process the message and generate response
-    const response = await processIncomingMessage(
-      c.env,
-      session,
-      body,
-      from,
-      profileName
-    );
+    let response: string;
+
+    // Check if this is a document/image for analysis
+    if (numMedia > 0 && isAnalyzableMedia(mediaTypes[0])) {
+      response = await processDocumentAnalysis(
+        c.env,
+        session,
+        mediaUrls[0],
+        mediaTypes[0],
+        body,
+        from,
+        profileName
+      );
+    } else {
+      response = await processIncomingMessage(
+        c.env,
+        session,
+        body,
+        from,
+        profileName
+      );
+    }
 
     // Send response via TwiML
     const twiml = `<?xml version="1.0" encoding="UTF-8"?>
@@ -680,6 +710,9 @@ async function processIncomingMessage(
     مساعدة: () => getHelpMessage(lang),
     status: () => getStatusMessage(lang),
     حالة: () => getStatusMessage(lang),
+    lawyer: () => getLawyerConnectMessage(lang),
+    محامي: () => getLawyerConnectMessage(lang),
+    وکیل: () => getLawyerConnectMessage(lang),
   };
 
   // Check for exact command match
@@ -727,11 +760,15 @@ function getHelpMessage(lang: Language): string {
   const messages = {
     en: `📚 *LegalDocs Help*
 
-Available commands:
+*Document Analysis:*
+📄 Send a photo of any contract or legal document for instant AI analysis. Get risk assessment and key findings in 60 seconds!
+
+*Available commands:*
 • *help* - Show this help message
 • *status* - Check pending documents
 • *documents* - List your documents
-• *sign* - View documents awaiting your signature
+• *sign* - View documents awaiting signature
+• *lawyer* - Connect with a real lawyer
 
 Need human assistance? Reply *support* to connect with our team.
 
@@ -739,11 +776,15 @@ _LegalDocs - Your Legal Partner_`,
 
     ar: `📚 *مساعدة LegalDocs*
 
-الأوامر المتاحة:
+*تحليل المستندات:*
+📄 أرسل صورة أي عقد أو مستند قانوني للتحليل الفوري بالذكاء الاصطناعي. احصل على تقييم المخاطر والنتائج الرئيسية في 60 ثانية!
+
+*الأوامر المتاحة:*
 • *مساعدة* - عرض هذه الرسالة
 • *حالة* - التحقق من المستندات المعلقة
 • *مستندات* - عرض مستنداتك
 • *توقيع* - عرض المستندات التي تنتظر توقيعك
+• *محامي* - التواصل مع محامٍ حقيقي
 
 تحتاج مساعدة بشرية؟ أرسل *دعم* للتواصل مع فريقنا.
 
@@ -751,11 +792,15 @@ _LegalDocs - شريكك القانوني_`,
 
     ur: `📚 *LegalDocs مدد*
 
-دستیاب کمانڈز:
+*دستاویز کا تجزیہ:*
+📄 فوری AI تجزیے کے لیے کسی بھی معاہدے یا قانونی دستاویز کی تصویر بھیجیں۔ 60 سیکنڈ میں خطرے کی تشخیص اور اہم نتائج حاصل کریں!
+
+*دستیاب کمانڈز:*
 • *مدد* - یہ پیغام دکھائیں
 • *حیثیت* - زیر التواء دستاویزات چیک کریں
 • *دستاویزات* - اپنی دستاویزات کی فہرست
 • *دستخط* - دستخط کے منتظر دستاویزات دیکھیں
+• *وکیل* - ایک حقیقی وکیل سے رابطہ کریں
 
 انسانی مدد چاہیے؟ ہماری ٹیم سے رابطے کے لیے *سپورٹ* لکھیں۔
 
@@ -795,11 +840,15 @@ function getDefaultResponse(lang: Language): string {
 
 I'm the LegalDocs assistant. For help, reply *help*.
 
+📄 *Tip:* Send a photo of any contract for instant AI analysis!
+
 To speak with a human, reply *support*.`,
 
     ar: `شكراً لرسالتك!
 
 أنا مساعد LegalDocs. للمساعدة، أرسل *مساعدة*.
+
+📄 *نصيحة:* أرسل صورة أي عقد للتحليل الفوري بالذكاء الاصطناعي!
 
 للتحدث مع شخص، أرسل *دعم*.`,
 
@@ -807,10 +856,349 @@ To speak with a human, reply *support*.`,
 
 میں LegalDocs اسسٹنٹ ہوں۔ مدد کے لیے *مدد* لکھیں۔
 
+📄 *ٹپ:* فوری AI تجزیے کے لیے کسی بھی معاہدے کی تصویر بھیجیں!
+
 کسی شخص سے بات کرنے کے لیے *سپورٹ* لکھیں۔`,
   };
 
   return messages[lang];
+}
+
+function getLawyerConnectMessage(lang: Language): string {
+  const messages = {
+    en: `⚖️ *Connect with a Lawyer*
+
+Our network of verified UAE lawyers is ready to help you.
+
+*Consultation options:*
+1️⃣ *Quick Call* - 15 min call (AED 150)
+2️⃣ *Full Consultation* - 30 min video (AED 300)
+3️⃣ *Document Review* - Written opinion (AED 500)
+
+Reply with 1, 2, or 3 to book, or visit:
+https://www.qannoni.com/lawyers
+
+_All consultations include follow-up support._`,
+
+    ar: `⚖️ *تواصل مع محامٍ*
+
+شبكتنا من المحامين المعتمدين في الإمارات جاهزة لمساعدتك.
+
+*خيارات الاستشارة:*
+1️⃣ *مكالمة سريعة* - 15 دقيقة (150 درهم)
+2️⃣ *استشارة كاملة* - 30 دقيقة فيديو (300 درهم)
+3️⃣ *مراجعة مستند* - رأي مكتوب (500 درهم)
+
+أرسل 1 أو 2 أو 3 للحجز، أو زر:
+https://www.qannoni.com/lawyers
+
+_جميع الاستشارات تشمل دعم المتابعة._`,
+
+    ur: `⚖️ *وکیل سے رابطہ کریں*
+
+ہمارے UAE تصدیق شدہ وکلاء کا نیٹ ورک آپ کی مدد کے لیے تیار ہے۔
+
+*مشاورت کے اختیارات:*
+1️⃣ *فوری کال* - 15 منٹ (150 درہم)
+2️⃣ *مکمل مشاورت* - 30 منٹ ویڈیو (300 درہم)
+3️⃣ *دستاویز کا جائزہ* - تحریری رائے (500 درہم)
+
+بکنگ کے لیے 1، 2، یا 3 بھیجیں، یا وزٹ کریں:
+https://www.qannoni.com/lawyers
+
+_تمام مشاورتوں میں فالو اپ سپورٹ شامل ہے۔_`,
+  };
+
+  return messages[lang];
+}
+
+/**
+ * Check if media type is analyzable (image or PDF)
+ */
+function isAnalyzableMedia(contentType: string): boolean {
+  const analyzableTypes = [
+    'image/jpeg',
+    'image/jpg',
+    'image/png',
+    'image/webp',
+    'image/heic',
+    'application/pdf',
+  ];
+  return analyzableTypes.some(type => contentType.toLowerCase().includes(type));
+}
+
+/**
+ * Process document analysis from WhatsApp media
+ */
+async function processDocumentAnalysis(
+  env: Bindings,
+  session: { id: string; state: string; context: string; detected_language: string },
+  mediaUrl: string,
+  mediaType: string,
+  caption: string | null,
+  from: string,
+  profileName: string | null
+): Promise<string> {
+  const lang = session.detected_language as Language;
+
+  // Check if AI is configured
+  if (!env.OPENROUTER_API_KEY) {
+    return getAINotConfiguredMessage(lang);
+  }
+
+  try {
+    // Send acknowledgment message
+    const processingMsg = getProcessingMessage(lang, profileName);
+
+    // Fetch the media from Twilio (requires auth)
+    const mediaResponse = await fetch(mediaUrl, {
+      headers: {
+        'Authorization': `Basic ${btoa(`${env.TWILIO_ACCOUNT_SID}:${env.TWILIO_AUTH_TOKEN}`)}`,
+      },
+    });
+
+    if (!mediaResponse.ok) {
+      console.error('Failed to fetch media:', mediaResponse.status);
+      return getMediaFetchErrorMessage(lang);
+    }
+
+    // Convert to base64
+    const mediaBuffer = await mediaResponse.arrayBuffer();
+    const base64Data = btoa(String.fromCharCode(...new Uint8Array(mediaBuffer)));
+
+    // Create AI service
+    const aiService = createAIService({
+      apiKey: env.OPENROUTER_API_KEY,
+      referer: env.APP_URL || 'https://www.qannoni.com',
+      appTitle: 'LegalDocs WhatsApp Bot',
+    });
+
+    // Determine document type from caption or default
+    const documentType = caption?.toLowerCase().includes('contract') ? 'contract' :
+                         caption?.toLowerCase().includes('license') ? 'trade_license' :
+                         caption?.toLowerCase().includes('id') ? 'emirates_id' :
+                         caption?.toLowerCase().includes('passport') ? 'passport' :
+                         caption?.toLowerCase().includes('visa') ? 'visa' :
+                         'contract'; // Default to contract analysis
+
+    // First, extract text from the document
+    const extractResult = await aiService.extractFromImage({
+      imageData: base64Data,
+      documentType,
+    });
+
+    // Parse the extracted content
+    let extractedData: Record<string, unknown>;
+    try {
+      extractedData = parseJSONFromResponse(extractResult.content) as Record<string, unknown>;
+    } catch {
+      // If not JSON, use raw text
+      extractedData = { rawText: extractResult.content };
+    }
+
+    // Now analyze the document for risks
+    const analysisResult = await aiService.analyze({
+      contractText: typeof extractedData === 'string' ? extractedData : JSON.stringify(extractedData),
+      position: 'client',
+      country: 'AE', // Default to UAE
+      language: lang,
+    });
+
+    // Parse and format the analysis
+    let analysis: DocumentAnalysis;
+    try {
+      analysis = parseJSONFromResponse(analysisResult.content) as DocumentAnalysis;
+    } catch {
+      // Format raw response
+      analysis = {
+        riskScore: 50,
+        summary: analysisResult.content.substring(0, 500),
+        risks: [],
+        recommendations: [],
+      };
+    }
+
+    // Log the analysis to database
+    const analysisId = crypto.randomUUID();
+    const now = new Date().toISOString();
+
+    try {
+      await env.DB.prepare(`
+        INSERT INTO whatsapp_document_analyses (id, session_id, document_type, risk_score, analysis_json, created_at)
+        VALUES (?, ?, ?, ?, ?, ?)
+      `).bind(
+        analysisId,
+        session.id,
+        documentType,
+        analysis.riskScore || 50,
+        JSON.stringify(analysis),
+        now
+      ).run();
+    } catch (error) {
+      console.error('Failed to log document analysis:', error);
+    }
+
+    // Format and return the response
+    return formatAnalysisResponse(lang, analysis, profileName);
+
+  } catch (error) {
+    console.error('Document analysis failed:', error);
+    return getAnalysisErrorMessage(lang);
+  }
+}
+
+interface DocumentAnalysis {
+  riskScore?: number;
+  summary?: string;
+  risks?: Array<{ title: string; severity: string; description: string }>;
+  recommendations?: string[];
+  documentType?: string;
+  keyTerms?: Record<string, string>;
+}
+
+function getProcessingMessage(lang: Language, name: string | null): string {
+  const messages = {
+    en: `Analyzing your document${name ? `, ${name}` : ''}...
+
+This usually takes about 30-60 seconds. Please wait.`,
+
+    ar: `جاري تحليل مستندك${name ? ` ${name}` : ''}...
+
+يستغرق هذا عادة 30-60 ثانية. يرجى الانتظار.`,
+
+    ur: `آپ کی دستاویز کا تجزیہ کیا جا رہا ہے${name ? ` ${name}` : ''}...
+
+اس میں عام طور پر 30-60 سیکنڈ لگتے ہیں۔ براہ کرم انتظار کریں۔`,
+  };
+
+  return messages[lang];
+}
+
+function getAINotConfiguredMessage(lang: Language): string {
+  const messages = {
+    en: `Document analysis is currently unavailable. Please try again later or contact support.
+
+To speak with a lawyer directly, reply *lawyer*.`,
+
+    ar: `تحليل المستندات غير متاح حالياً. يرجى المحاولة لاحقاً أو الاتصال بالدعم.
+
+للتحدث مع محامٍ مباشرة، أرسل *محامي*.`,
+
+    ur: `دستاویز کا تجزیہ فی الحال دستیاب نہیں ہے۔ براہ کرم بعد میں دوبارہ کوشش کریں یا سپورٹ سے رابطہ کریں۔
+
+کسی وکیل سے براہ راست بات کرنے کے لیے *وکیل* لکھیں۔`,
+  };
+
+  return messages[lang];
+}
+
+function getMediaFetchErrorMessage(lang: Language): string {
+  const messages = {
+    en: `We couldn't retrieve your document. Please try sending it again.
+
+Supported formats: JPEG, PNG, PDF`,
+
+    ar: `لم نتمكن من استرداد مستندك. يرجى محاولة إرساله مرة أخرى.
+
+الصيغ المدعومة: JPEG، PNG، PDF`,
+
+    ur: `ہم آپ کی دستاویز حاصل نہیں کر سکے۔ براہ کرم اسے دوبارہ بھیجنے کی کوشش کریں۔
+
+معاون فارمیٹس: JPEG، PNG، PDF`,
+  };
+
+  return messages[lang];
+}
+
+function getAnalysisErrorMessage(lang: Language): string {
+  const messages = {
+    en: `Sorry, we encountered an error analyzing your document. Please try again.
+
+If the problem persists, reply *support* to speak with our team.`,
+
+    ar: `عذراً، واجهنا خطأ في تحليل مستندك. يرجى المحاولة مرة أخرى.
+
+إذا استمرت المشكلة، أرسل *دعم* للتحدث مع فريقنا.`,
+
+    ur: `معذرت، آپ کی دستاویز کا تجزیہ کرتے وقت ایک خرابی پیش آئی۔ براہ کرم دوبارہ کوشش کریں۔
+
+اگر مسئلہ برقرار رہے تو ہماری ٹیم سے بات کرنے کے لیے *سپورٹ* لکھیں۔`,
+  };
+
+  return messages[lang];
+}
+
+function formatAnalysisResponse(lang: Language, analysis: DocumentAnalysis, name: string | null): string {
+  const riskLevel = (analysis.riskScore || 50) <= 30 ? 'LOW' :
+                    (analysis.riskScore || 50) <= 60 ? 'MEDIUM' : 'HIGH';
+
+  const riskEmoji = riskLevel === 'LOW' ? '' : riskLevel === 'MEDIUM' ? '' : '';
+
+  if (lang === 'ar') {
+    const riskLevelAr = riskLevel === 'LOW' ? 'منخفض' : riskLevel === 'MEDIUM' ? 'متوسط' : 'مرتفع';
+
+    return `${riskEmoji} *تحليل المستند*${name ? ` - ${name}` : ''}
+
+*مستوى المخاطر:* ${riskLevelAr} (${analysis.riskScore || 50}/100)
+
+*الملخص:*
+${analysis.summary || 'تم تحليل المستند بنجاح.'}
+
+${analysis.risks && analysis.risks.length > 0 ? `*المخاطر الرئيسية:*
+${analysis.risks.slice(0, 3).map((r, i) => `${i + 1}. ${r.title}: ${r.description}`).join('\n')}
+
+` : ''}${analysis.recommendations && analysis.recommendations.length > 0 ? `*التوصيات:*
+${analysis.recommendations.slice(0, 3).map((r, i) => `• ${r}`).join('\n')}
+
+` : ''}---
+هل تريد التحدث مع محامٍ حول هذا المستند؟
+أرسل *محامي* للحصول على استشارة مهنية.
+
+_LegalDocs - مساعدك القانوني_`;
+  }
+
+  if (lang === 'ur') {
+    const riskLevelUr = riskLevel === 'LOW' ? 'کم' : riskLevel === 'MEDIUM' ? 'درمیانہ' : 'زیادہ';
+
+    return `${riskEmoji} *دستاویز کا تجزیہ*${name ? ` - ${name}` : ''}
+
+*خطرے کی سطح:* ${riskLevelUr} (${analysis.riskScore || 50}/100)
+
+*خلاصہ:*
+${analysis.summary || 'دستاویز کا کامیابی سے تجزیہ کیا گیا۔'}
+
+${analysis.risks && analysis.risks.length > 0 ? `*اہم خطرات:*
+${analysis.risks.slice(0, 3).map((r, i) => `${i + 1}. ${r.title}: ${r.description}`).join('\n')}
+
+` : ''}${analysis.recommendations && analysis.recommendations.length > 0 ? `*سفارشات:*
+${analysis.recommendations.slice(0, 3).map((r, i) => `• ${r}`).join('\n')}
+
+` : ''}---
+کیا آپ اس دستاویز کے بارے میں کسی وکیل سے بات کرنا چاہتے ہیں؟
+پیشہ ورانہ مشورے کے لیے *وکیل* لکھیں۔
+
+_LegalDocs - آپ کا قانونی معاون_`;
+  }
+
+  // English (default)
+  return `${riskEmoji} *Document Analysis*${name ? ` - ${name}` : ''}
+
+*Risk Level:* ${riskLevel} (${analysis.riskScore || 50}/100)
+
+*Summary:*
+${analysis.summary || 'Document analyzed successfully.'}
+
+${analysis.risks && analysis.risks.length > 0 ? `*Key Risks:*
+${analysis.risks.slice(0, 3).map((r, i) => `${i + 1}. ${r.title}: ${r.description}`).join('\n')}
+
+` : ''}${analysis.recommendations && analysis.recommendations.length > 0 ? `*Recommendations:*
+${analysis.recommendations.slice(0, 3).map((r, i) => `• ${r}`).join('\n')}
+
+` : ''}---
+Would you like to speak with a lawyer about this document?
+Reply *lawyer* for professional consultation.
+
+_LegalDocs - Your Legal Assistant_`;
 }
 
 export default whatsappRoutes;
